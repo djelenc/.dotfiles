@@ -66,7 +66,7 @@
 
   # List packages installed in system profile. 
   environment.systemPackages = with pkgs; [
-    neovim 
+    # neovim 
     bat
     emacs
     lf
@@ -100,6 +100,13 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    vimAlias = true;
+    viAlias = true;
+  };
+ 
 
   # programs.gnupg.agent = {
   #   enable = true;

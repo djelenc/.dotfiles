@@ -20,6 +20,11 @@
         defaultBranch = "main";
       };
     };
+    aliases = {
+      ci = "commit";
+      co = "checkout";
+      s = "status";
+    };
   };
 
   # This value determines the home Manager release that your
