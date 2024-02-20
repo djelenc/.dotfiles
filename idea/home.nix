@@ -4,7 +4,6 @@
   home.username = "david";
   home.homeDirectory = "/home/david";
 
-
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # cowsay
@@ -19,11 +18,9 @@
       init = {
         defaultBranch = "main";
       };
-    };
-    aliases = {
-      ci = "commit";
-      co = "checkout";
-      s = "status";
+      core = {
+        editor = "nvim";
+      };
     };
   };
 
@@ -31,7 +28,6 @@
   # configuration is compatible with. This helps avoid breakage
   # when a new home Manager release introduces backwards
   # incompatible changes.
-  #
   # You can update home Manager without changing this value. See
   # the home Manager release notes for a list of state version
   # changes in each release.

@@ -1,6 +1,6 @@
 {
 
-  description = "Davidove snežinke";
+  description = "Davidov NixOS";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";

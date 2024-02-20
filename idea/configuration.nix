@@ -1,11 +1,6 @@
-# help:
-#  man configuration.nix(5) 
-#  ‘nixos-help’
-
 { config, pkgs, lib, ... }:
 {
   imports = [ 
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
@@ -66,16 +61,13 @@
 
   # List packages installed in system profile. 
   environment.systemPackages = with pkgs; [
-    # neovim 
     bat
     emacs
     lf
     nix-index
     python3
-    libreoffice-qt
-    hunspell
-    onlyoffice-bin
-    hunspellDicts.en_US-large
+    libreoffice-qt onlyoffice-bin
+    hunspell hunspellDicts.en_US-large
     htop tree mtr dig wget curl 
     kitty
     rofi-wayland rofi-bluetooth rofi-power-menu
@@ -107,13 +99,6 @@
     viAlias = true;
   };
  
-
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
   # terminal greeter
   services.greetd = {
     enable = true;
@@ -138,14 +123,6 @@
     TTYVTDisallocate = true;
   };
 
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
@@ -156,13 +133,6 @@
   };
 
   programs.fish.enable = true;
-
-  # VirtualBox
-  # virtualisation.virtualbox.host.enable = true;
-  # users.extraGroups.vboxusers.members = [ "david" ];
-  # virtualisation.virtualbox.host.enableExtensionPack = true;
-  # virtualisation.virtualbox.guest.enable = true;
-  # virtualisation.virtualbox.guest.x11 = true;
 
   # sound
   sound.enable = true;
