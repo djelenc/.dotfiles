@@ -18,10 +18,12 @@
       init = {
         defaultBranch = "main";
       };
-      core = {
-        editor = "nvim";
-      };
     };
+  };
+
+  # ENV
+  home.sessionVariables = {
+    EDITOR = "nvim";
   };
 
   # This value determines the home Manager release that your
