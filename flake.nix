@@ -4,10 +4,18 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    hyprland.url = "github:hyprwm/Hyprland";
+
+    # virtual-desktops = {
+    #     url = "github:levnikmyskin/hyprland-virtual-desktops";
+    #     inputs.hyprland.follows = "hyprland"; 
+    # };
   };
 
   outputs = { self, nixpkgs, home-manager, ... } : 

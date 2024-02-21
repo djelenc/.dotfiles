@@ -87,6 +87,10 @@
     gsimplecal
     swaylock
     hyprnome
+    
+    # vscodium.fhs
+    vscodium
+
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -127,10 +131,10 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  # programs.hyprland = {
+  #   enable = true;
+  #   xwayland.enable = true;
+  # };
 
   programs.fish.enable = true;
 
@@ -157,8 +161,8 @@
   };
 
   # XDG
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # xdg.portal.enable = true;
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # power management
   powerManagement.enable = true;

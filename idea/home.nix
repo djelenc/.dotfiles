@@ -9,6 +9,24 @@
     # cowsay
   ];
 
+  wayland.windowManager.hyprland = {
+    enable = true;
+    package = pkgs.hyprland;
+    xwayland.enable = true;
+    systemd.enable = false;
+
+    plugins = [
+      # hyrpland-virtual-desktops
+      # (import ./hyprland-virtual-desktops.nix)
+    ];
+  };
+
+  home.file."~/.config/hypr/hyprland.conf".source = ./hyprland.conf;
+  
+  xdg.portal.config.common.default = "*";
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
   # basic configuration of git, please change to your own
   programs.git = {
     enable = true;
