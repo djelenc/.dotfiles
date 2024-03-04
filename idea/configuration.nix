@@ -63,6 +63,7 @@
   environment.systemPackages = with pkgs; [
     bat
     emacs
+    firefox
     lf
     nix-index
     python3
@@ -86,11 +87,9 @@
     pavucontrol
     gsimplecal
     swaylock
-    hyprnome
+    # hyprnome
     
-    # vscodium.fhs
-    vscodium
-
+    vscodium.fhs
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -152,7 +151,7 @@
   # useful envs
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
-    NIXOS_OZONE_WL = "1";
+    # NIXOS_OZONE_WL = "1";
   };
 
   # opengl

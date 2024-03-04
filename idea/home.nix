@@ -1,12 +1,14 @@
-{ config, pkgs, ... }:
-
+{ config, pkgs, lib, ... }:
+let
+  hyprland-virtual-desktops = import ./hyprland-virtual-desktops.nix { 
+    inherit (pkgs) stdenv hyprland fetchFromGitHub; };
+in
 {
   home.username = "david";
   home.homeDirectory = "/home/david";
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
-    # cowsay
   ];
 
   wayland.windowManager.hyprland = {
@@ -16,13 +18,12 @@
     systemd.enable = false;
 
     plugins = [
-      # hyrpland-virtual-desktops
-      # (import ./hyprland-virtual-desktops.nix)
+      hyprland-virtual-desktops
     ];
+
+    extraConfig = lib.fileContents ./hyprland.conf;
   };
 
-  home.file."~/.config/hypr/hyprland.conf".source = ./hyprland.conf;
-  
   xdg.portal.config.common.default = "*";
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];

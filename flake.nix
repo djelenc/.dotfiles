@@ -1,5 +1,4 @@
 {
-
   description = "Davidov NixOS";
 
   inputs = {
@@ -25,19 +24,18 @@
     nixosConfigurations = {
       idea = lib.nixosSystem {
         system = "x86_64-linux";
-	modules = [ 
+      	modules = [ 
           # sistem
           ./idea/configuration.nix 
 
-	  # uporabniške nastavitve
+          # uporabniške nastavitve
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.david = import ./idea/home.nix;
           }
-	];
+        ];
       };
     };
   };
-
 }

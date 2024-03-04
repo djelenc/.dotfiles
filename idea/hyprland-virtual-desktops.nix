@@ -1,11 +1,7 @@
 { 
-# pkgs ? import <nixpkgs> {}
-  stdenv
-, fetchFromGitHub
-, hyprland
-, ...
+  # pkgs ? import <nixpkgs> {}
+  stdenv, fetchFromGitHub, hyprland, ...
 }:
-# with pkgs;
 
 stdenv.mkDerivation rec {
   pname = "hyprland-virtual-desktops";
