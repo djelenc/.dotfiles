@@ -87,7 +87,6 @@
     pavucontrol
     gsimplecal
     swaylock
-    # hyprnome
     
     vscodium.fhs
   ];
