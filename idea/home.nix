@@ -7,19 +7,9 @@
   home.packages = with pkgs; [
   ];
 
-  wayland.windowManager.hyprland = {
-    enable = true;
-    # package = pkgs.hyprland;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    xwayland.enable = true;
-    systemd.enable = false;
-
-    plugins = [
-      hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
-    ];
-
-    extraConfig = lib.fileContents ./hyprland.conf;
-  };
+  imports = [
+    ./hyprland-configuration.nix
+  ];
 
   xdg.portal.config.common.default = "*";
   xdg.portal.enable = true;

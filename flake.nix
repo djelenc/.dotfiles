@@ -24,7 +24,6 @@
   in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;}; 
       	modules = [ 
 	  # sys
           ./idea/configuration.nix 
