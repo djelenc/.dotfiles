@@ -1,9 +1,4 @@
-{ config, pkgs, lib, hyprland-virtual-desktops, ... }:
-let
-#   hyprland-virtual-desktops = import ./hyprland-virtual-desktops.nix { 
-#     inherit (pkgs) stdenv hyprland fetchFromGitHub; };
-#   system = "x86_64-linux";
-in
+{ config, inputs, pkgs, lib, hyprland-virtual-desktops, ... }:
 {
   home.username = "david";
   home.homeDirectory = "/home/david";
@@ -14,13 +9,13 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = pkgs.hyprland;
+    # package = pkgs.hyprland;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     xwayland.enable = true;
     systemd.enable = false;
 
     plugins = [
-      # enable below
-      # hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
+      hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
     ];
 
     extraConfig = lib.fileContents ./hyprland.conf;

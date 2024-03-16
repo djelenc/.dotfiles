@@ -24,6 +24,7 @@
   in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;}; 
       	modules = [ 
 	  # sys
           ./idea/configuration.nix 
@@ -37,14 +38,5 @@
         ];
       };
     };
-
-    # homeConfigurations = {
-    #   "david@idea" = home-manager.lib.homeManagerConfiguration {
-    #     extraSpecialArgs = {inherit inputs outputs;}; 
-    #     modules = [
-    #       # ./path/to/file.nix
-    #     ];
-    #   };
-    # };
   };
 }
