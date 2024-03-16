@@ -9,26 +9,26 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland";
-
-    # virtual-desktops = {
-    #     url = "github:levnikmyskin/hyprland-virtual-desktops";
-    #     inputs.hyprland.follows = "hyprland"; 
-    # };
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      follows = "hyprland-virtual-desktops/hyprland"; 
+    };
+    hyprland-virtual-desktops.url = "github:levnikmyskin/hyprland-virtual-desktops";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } : 
+  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } : 
   let
     lib = nixpkgs.lib;
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
   in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
-        system = "x86_64-linux";
       	modules = [ 
-          # sistem
+	  # sys
           ./idea/configuration.nix 
 
-          # uporabniške nastavitve
+          # userland
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -37,5 +37,14 @@
         ];
       };
     };
+
+    # homeConfigurations = {
+    #   "david@idea" = home-manager.lib.homeManagerConfiguration {
+    #     extraSpecialArgs = {inherit inputs outputs;}; 
+    #     modules = [
+    #       # ./path/to/file.nix
+    #     ];
+    #   };
+    # };
   };
 }

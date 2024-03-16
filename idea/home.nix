@@ -1,7 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, hyprland-virtual-desktops, ... }:
 let
-  hyprland-virtual-desktops = import ./hyprland-virtual-desktops.nix { 
-    inherit (pkgs) stdenv hyprland fetchFromGitHub; };
+#   hyprland-virtual-desktops = import ./hyprland-virtual-desktops.nix { 
+#     inherit (pkgs) stdenv hyprland fetchFromGitHub; };
+#   system = "x86_64-linux";
 in
 {
   home.username = "david";
@@ -18,7 +19,8 @@ in
     systemd.enable = false;
 
     plugins = [
-      hyprland-virtual-desktops
+      # enable below
+      # hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
     ];
 
     extraConfig = lib.fileContents ./hyprland.conf;
