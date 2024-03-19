@@ -16,7 +16,7 @@
     hyprland-virtual-desktops.url = "github:levnikmyskin/hyprland-virtual-desktops";
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } : 
+  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs : 
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
@@ -24,16 +24,20 @@
   in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
+        specialArgs = { inherit inputs; };
       	modules = [ 
 	  # sys
           ./idea/configuration.nix 
 
           # userland
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.david = import ./idea/home.nix;
-          }
+          inputs.home-manager.nixosModules.default
+
+          # home-manager.nixosModules.home-manager {
+          #   home-manager.useGlobalPkgs = true;
+          #   home-manager.useUserPackages = true;
+          #   home-manager.extraSpecialArgs = { inherit inputs; };
+          #   home-manager.users.david = import ./idea/home.nix;
+          # }
         ];
       };
     };

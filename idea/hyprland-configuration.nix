@@ -1,8 +1,9 @@
-{inputs, pkgs, lib, hyprland-virtual-desktops, ...} :
+{ inputs, pkgs, lib, hyprland-virtual-desktops, ...} :
 {
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    # package = pkgs.hyprland;
     xwayland.enable = true;
     systemd.enable = false;
 

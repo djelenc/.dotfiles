@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, lib, hyprland-virtual-desktops, ... }:
+{ config, inputs, pkgs, lib, ... } :
 {
   home.username = "david";
   home.homeDirectory = "/home/david";
@@ -7,9 +7,23 @@
   home.packages = with pkgs; [
   ];
 
-  imports = [
-    ./hyprland-configuration.nix
-  ];
+  # imports = [
+  #   inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
+  # ];
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    # package = pkgs.hyprland;
+    xwayland.enable = true;
+    systemd.enable = false;
+
+    plugins = [
+      inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
+    ];
+
+    extraConfig = lib.fileContents ./hyprland.conf;
+  };
 
   xdg.portal.config.common.default = "*";
   xdg.portal.enable = true;
