@@ -26,18 +26,8 @@
       idea = lib.nixosSystem {
         specialArgs = { inherit inputs; };
       	modules = [ 
-	  # sys
           ./idea/configuration.nix 
-
-          # userland
           inputs.home-manager.nixosModules.default
-
-          # home-manager.nixosModules.home-manager {
-          #   home-manager.useGlobalPkgs = true;
-          #   home-manager.useUserPackages = true;
-          #   home-manager.extraSpecialArgs = { inherit inputs; };
-          #   home-manager.users.david = import ./idea/home.nix;
-          # }
         ];
       };
     };
