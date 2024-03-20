@@ -93,7 +93,7 @@
     waybar
     dunst
     libnotify
-    # wireplumber
+    wireplumber
     swww networkmanagerapplet 
     pavucontrol
     gsimplecal
@@ -158,9 +158,9 @@
   services.pipewire = {
     enable = true;
     # maybe disable if VBOX has issues
-    # alsa.enable = true;
-    # alsa.support32Bit = true;
-    # pulse.enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
     jack.enable = true;
   };
 
