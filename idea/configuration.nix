@@ -45,7 +45,6 @@
     shell = pkgs.fish;
   };
 
-
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -82,6 +81,7 @@
     hunspell hunspellDicts.en_US-large
     htop tree mtr dig wget curl 
     kitty
+    rio
     rofi-wayland rofi-bluetooth rofi-power-menu
     brave
     jetbrains.pycharm-community-bin
@@ -98,9 +98,13 @@
     pavucontrol
     gsimplecal
     swaylock
-    
     vscodium.fhs
+    vlc
   ];
+
+  # Virtualizacija
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "david" ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -153,6 +157,7 @@
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    # maybe disable if VBOX has issues
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
