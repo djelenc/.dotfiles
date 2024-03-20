@@ -2,7 +2,9 @@
   description = "Davidov NixOS";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs = {
+      url = "nixpkgs/nixos-unstable";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -13,7 +15,10 @@
       url = "github:hyprwm/Hyprland";
       follows = "hyprland-virtual-desktops/hyprland"; 
     };
-    hyprland-virtual-desktops.url = "github:levnikmyskin/hyprland-virtual-desktops";
+
+    hyprland-virtual-desktops = {
+      url = "github:levnikmyskin/hyprland-virtual-desktops";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs : 

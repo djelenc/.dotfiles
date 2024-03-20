@@ -7,14 +7,9 @@
   home.packages = with pkgs; [
   ];
 
-  # imports = [
-  #   inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
-  # ];
-
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    # package = pkgs.hyprland;
     xwayland.enable = true;
     systemd.enable = false;
 
