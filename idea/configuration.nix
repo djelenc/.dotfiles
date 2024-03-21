@@ -122,6 +122,18 @@
       relativenumber = true;
       shiftwidth = 2;
     };
+
+    colorschemes.gruvbox = {
+      enable = true;
+      settings = {
+        transparent_mode = true;
+      };
+    };
+
+    # colorschemes.tokyonight.enable = true;
+    # colorschemes.tokyonight.transparent = true;
+    # colorschemes.catppuccin.enable = true;
+    # colorschemes.catppuccin.transparentBackground = true;
   };
 
   # terminal greeter
