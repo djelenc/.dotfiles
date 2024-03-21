@@ -1,9 +1,10 @@
 { config, inputs, pkgs, lib, ... }:
 {
-  imports = [ 
+  imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
     inputs.nixvim.nixosModules.nixvim
+    ../modules/nixvim.nix
   ];
 
   # Bootloader.
@@ -13,8 +14,8 @@
   # Use latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "idea"; 
-  networking.wireless.userControlled.enable = true; 
+  networking.hostName = "idea";
+  networking.wireless.userControlled.enable = true;
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Ljubljana";
@@ -60,17 +61,17 @@
 
   # Allow installation of unfree corefonts package
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "corefonts" ];
+  builtins.elem (lib.getName pkg) [ "corefonts" ];
 
   fonts.packages = with pkgs; [
     corefonts
-      powerline-fonts
-      nerdfonts
-      nerd-font-patcher
-      font-awesome
+    powerline-fonts
+    nerdfonts
+    nerd-font-patcher
+    font-awesome
   ];
 
-  # List packages installed in system profile. 
+  # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
     emacs
@@ -80,9 +81,9 @@
     python3
     libreoffice-qt onlyoffice-bin
     hunspell hunspellDicts.en_US-large
-    htop tree mtr dig wget curl 
+    htop tree mtr dig wget curl
     rio
-    rofi-wayland rofi-bluetooth rofi-power-menu
+    rofi-wayland rofi-power-menu
     brave
     jetbrains.pycharm-community-bin
     git
@@ -94,7 +95,7 @@
     dunst
     libnotify
     wireplumber
-    swww networkmanagerapplet 
+    swww networkmanagerapplet
     pavucontrol
     gsimplecal
     swaylock
@@ -109,50 +110,24 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
-  programs.nixvim = {
-    enable = true;
-    defaultEditor = true;
-    vimAlias = true;
-    viAlias = true;
-
-    globals.mapleader = " ";
-
-    options = {
-      number = true;
-      relativenumber = true;
-      shiftwidth = 2;
-    };
-
-    colorschemes.gruvbox = {
-      enable = true;
-      settings = {
-        transparent_mode = true;
-      };
-    };
-
-    # colorschemes.tokyonight.enable = true;
-    # colorschemes.tokyonight.transparent = true;
-    # colorschemes.catppuccin.enable = true;
-    # colorschemes.catppuccin.transparentBackground = true;
-  };
 
   # terminal greeter
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-	command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
-	user = "david";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+        user = "david";
       };
     };
   };
 
-# https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
+  # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   systemd.services.greetd.serviceConfig = {
     Type = "idle";
     StandardInput = "tty";
     StandardOutput = "tty";
-    StandardError = "journal"; 
+    StandardError = "journal";
     # Without these bootlogs will spam on screen
     TTYReset = true;
     TTYVHangup = true;
@@ -167,10 +142,10 @@
   programs.fish = {
     enable = true;
     shellAbbrs = {
-     glg = "git log --oneline";
-     gst = "git status";
-     gdf = "git diff";
-     gco = "git checkout";
+      glg = "git log --oneline";
+      gst = "git status";
+      gdf = "git diff";
+      gco = "git checkout";
     };
   };
 
@@ -189,7 +164,7 @@
   # useful envs
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
-# NIXOS_OZONE_WL = "1";
+    # NIXOS_OZONE_WL = "1";
   };
 
   # opengl
@@ -197,27 +172,25 @@
     opengl.enable = true;
   };
 
-# XDG
-# xdg.portal.enable = true;
-# xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # XDG
+  # xdg.portal.enable = true;
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
-# power management
+  # power management
   powerManagement.enable = true;
   powerManagement.powertop.enable = true;
 
-# bluetooth
+  # bluetooth
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-# flakes
+  # flakes
   nix.settings.experimental-features = [
     "nix-command" "flakes"
   ];
 
-# swaylock
+  # swaylock
   security.pam.services.swaylock = {
-    text = ''
-      auth include login
-      '';
+    text = "auth include login";
   };
 }

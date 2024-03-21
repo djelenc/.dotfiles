@@ -13,7 +13,7 @@
 
     hyprland = {
       url = "github:hyprwm/Hyprland";
-      follows = "hyprland-virtual-desktops/hyprland"; 
+      follows = "hyprland-virtual-desktops/hyprland";
     };
 
     hyprland-virtual-desktops = {
@@ -26,19 +26,19 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs : 
-let
-  lib = nixpkgs.lib;
-  system = "x86_64-linux";
-  pkgs = nixpkgs.legacyPackages.${system};
-in {
+  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs :
+  let
+    lib = nixpkgs.lib;
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
-	specialArgs = { inherit inputs; };
-	modules = [ 
-	  ./idea/configuration.nix 
-	  inputs.home-manager.nixosModules.default
-	];
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./idea/configuration.nix
+          inputs.home-manager.nixosModules.default
+        ];
       };
     };
   };

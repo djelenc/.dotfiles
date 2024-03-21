@@ -25,8 +25,8 @@
       ];
 
       env = [
-	"XCURSOR_SIZE,24"
-	"GDK_SCALE,1.33"
+        "XCURSOR_SIZE,24"
+        "GDK_SCALE,1.33"
       ];
 
       input = {
@@ -68,13 +68,13 @@
         enabled = "yes";
         bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
         animation = [
-	  "windows, 1, 7, myBezier"
+          "windows, 1, 7, myBezier"
           "windowsOut, 1, 7, default, popin 80%"
           "border, 1, 10, default"
           "borderangle, 1, 8, default"
           "fade, 1, 7, default"
           "workspaces, 1, 2, default, slidevert"
-	];
+        ];
       };
 
       dwindle = {
@@ -104,7 +104,6 @@
         "$mainMod, F, exec, nemo"
         "$mainMod, G, togglefloating, "
         "$mainMod, P, exec, rofi -show power-menu -modi power-menu:rofi-power-menu -font 'MonaspiceKr Nerd Font 17'"
-        "$mainMod, B, exec, rofi-bluetooth -font 'MonaspiceKr Nerd Font 17'"
         "$mainMod, O, togglesplit, # dwindle"
         "$mainMod, h, movefocus, l"
         "$mainMod, l, movefocus, r"
@@ -140,6 +139,4 @@
       ];
     };
   };
-
-
 }
