@@ -18,7 +18,7 @@
       };
 
       exec-once = [
-        "sww init"
+        "swww init"
         "nm-applet --indicator"
         "waybar"
         "blueman-applet"
