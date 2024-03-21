@@ -152,7 +152,15 @@
   system.stateVersion = "24.05"; # Did you read the comment?
 
   # fish shell
-  programs.fish.enable = true;
+  programs.fish = {
+    enable = true;
+    shellAbbrs = {
+     glg = "git log --oneline";
+     gst = "git status";
+     gdf = "git diff";
+     gco = "git checkout";
+    };
+  };
 
   # sound
   sound.enable = true;
