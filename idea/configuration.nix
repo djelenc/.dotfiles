@@ -184,6 +184,8 @@
 
   # bluetooth
   hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
 
   # flakes
   nix.settings.experimental-features = [

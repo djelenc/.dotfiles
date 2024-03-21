@@ -21,6 +21,7 @@
         "sww init"
         "nm-applet --indicator"
         "waybar"
+        "blueman-applet"
       ];
 
       env = [
