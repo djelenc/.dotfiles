@@ -80,7 +80,6 @@
     libreoffice-qt onlyoffice-bin
     hunspell hunspellDicts.en_US-large
     htop tree mtr dig wget curl 
-    kitty
     rio
     rofi-wayland rofi-bluetooth rofi-power-menu
     brave
