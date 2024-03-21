@@ -19,21 +19,26 @@
     hyprland-virtual-desktops = {
       url = "github:levnikmyskin/hyprland-virtual-desktops";
     };
+
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs : 
-  let
-    lib = nixpkgs.lib;
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-  in {
+let
+  lib = nixpkgs.lib;
+  system = "x86_64-linux";
+  pkgs = nixpkgs.legacyPackages.${system};
+in {
     nixosConfigurations = {
       idea = lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-      	modules = [ 
-          ./idea/configuration.nix 
-          inputs.home-manager.nixosModules.default
-        ];
+	specialArgs = { inherit inputs; };
+	modules = [ 
+	  ./idea/configuration.nix 
+	  inputs.home-manager.nixosModules.default
+	];
       };
     };
   };
