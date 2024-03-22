@@ -23,6 +23,7 @@
       lightline.enable = true;
       autoclose.enable = true;
       emmet.enable = true;
+      treesitter.enable = true;
       nix.enable = true;
       noice.enable = true;
       surround.enable = true;

@@ -26,7 +26,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland-virtual-desktops, ... } @ inputs :
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs :
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
