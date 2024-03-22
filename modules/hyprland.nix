@@ -109,12 +109,13 @@
         "$mainMod, l, movefocus, r"
         "$mainMod, k, movefocus, u"
         "$mainMod, j, movefocus, d"
-        "$mainMod CONTROL, j, workspace, +1"
-        "$mainMod CONTROL, k, workspace, e-1"
-        "$mainMod SHIFT, j, movetoworkspace, +1"
-        "$mainMod SHIFT, k, movetoworkspace, -1"
-        "$mainMod, mouse_down, workspace, e+1"
-        "$mainMod, mouse_up, workspace, e-1"
+        # Assumes the monitors are side by side (horizontal)
+        "$mainMod CONTROL, j, nextdesk, "
+        "$mainMod CONTROL, k, prevdesk, "
+        "$mainMod SHIFT, j, movetonextdesk, "
+        "$mainMod SHIFT, k, movetoprevdesk, "
+        "$mainMod SHIFT, h, movewindow, l"
+        "$mainMod SHIFT, l, movewindow, r"
         "LALT,Tab,cyclenext,"
         "LALT,Tab,bringactivetotop,"
         ", xf86monbrightnessup, exec, brightnessctl set 10%+"
@@ -138,5 +139,15 @@
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };
+
+    extraConfig = ''
+      plugin {
+        virtual-desktops {
+          cycleworkspaces = 0
+          rememberlayout = size
+          notifyinit = 0
+          verbose_logging = 0
+        }
+      }'';
   };
 }

@@ -146,6 +146,16 @@
       gst = "git status";
       gdf = "git diff";
       gco = "git checkout";
+
+      # configuration management
+      cswitch = "sudo nixos-rebuild switch --flake /home/david/.dotfiles/flake.nix";
+      ctest = "sudo nixos-rebuild test --flake /home/david/.dotfiles/flake.nix";
+      cedit = "nvim -c 'cd /home/david/.dotfiles' /home/david/.dotfiles/flake.nix";
+      cst = "git -C /home/david/.dotfiles/ status";
+      cdiff = "git -C /home/david/.dotfiles/ diff";
+      csave = "git -C /home/david/.dotfiles/ commit -a";
+      cpush = "git -C /home/david/.dotfiles/ push origin main";
+      cpull = "git -C /home/david/.dotfiles/ pull origin main";
     };
   };
 
