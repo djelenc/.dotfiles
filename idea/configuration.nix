@@ -83,7 +83,8 @@
     hunspell hunspellDicts.en_US-large
     htop tree mtr dig wget curl
     rio
-    rofi-wayland rofi-power-menu
+    fuzzel
+    rofi-power-menu
     brave
     jetbrains.pycharm-community-bin
     git
@@ -94,13 +95,17 @@
     waybar
     dunst
     libnotify
-    wireplumber
+    wireplumber # part of pipewire suite
     swww networkmanagerapplet
     pavucontrol
     gsimplecal
-    swaylock
+    # swaylock
+    hyprlock
     vscodium.fhs
     vlc
+
+    fontpreview
+    wlsunset
   ];
 
   # Virtualizacija

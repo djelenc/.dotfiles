@@ -22,6 +22,7 @@
         "nm-applet --indicator"
         "waybar"
         "blueman-applet"
+        "wlsunset -l 46 -L 14.5"
       ];
 
       env = [
@@ -123,7 +124,8 @@
         ", xf86audioraisevolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
         ", xf86audiolowervolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
         ", xf86audiomute, exec, wpctl set-mute @DEFAULT_SINK@ toggle"
-        "$mainMod, escape, exec, swaylock -f --color 1e1e2eFF"
+        "$mainMod, escape, exec, hyprlock"
+        # "$mainMod, escape, exec, swaylock -f --color 1e1e2eFF"
       ];
 
       bindm = [
@@ -131,7 +133,8 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      "bindr" = "$mainMod, SUPER_L, exec, /home/david/.config/rofi/launchers/type-2/launcher.sh";
+      # "bindr" = "$mainMod, SUPER_L, exec, /home/david/.config/rofi/launchers/type-2/launcher.sh";
+      "bindr" = "$mainMod, SUPER_L, exec, fuzzel -D yes -f 'Hurmit Nerd Font'";
 
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"

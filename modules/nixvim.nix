@@ -22,10 +22,8 @@
     plugins = {
       lightline.enable = true;
       autoclose.enable = true;
-      emmet.enable = true;
       treesitter.enable = true;
       nix.enable = true;
-      noice.enable = true;
       surround.enable = true;
       telescope = {
         enable = true;
@@ -58,6 +56,38 @@
         event = [ "BufWritePre"];
         pattern = [ "*" ];
         command = '':%s/\s\+$//e'';
+      }
+    ];
+    keymaps = [
+      {
+        key = "<A-x>";
+        action = ":";
+        options.desc = "Open command line";
+      }
+      {
+        key = "<leader>j";
+        action = ":bn<CR>";
+        options.desc = "Next buffer";
+      }
+      {
+        key = "<leader>k";
+        action = ":bp<CR>";
+        options.desc = "Previous buffer";
+      }
+      {
+        key = "<leader>fs";
+        action = ":w<CR>";
+        options.desc = "Save buffer";
+      }
+      {
+        key = "<leader>fS";
+        action = ":wa<CR>";
+        options.desc = "Save all open buffers";
+      }
+      {
+        key = "<leader>qq";
+        action = ":qa<CR>";
+        options.desc = "Quit";
       }
     ];
   };
