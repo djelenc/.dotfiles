@@ -11,7 +11,9 @@
 
   config = {
     environment.systemPackages = with pkgs; [
-      fishPlugins.bobthefisher fishPlugins.plugin-git fishPlugins.fzf-fish
+      fishPlugins.bobthefisher
+      fishPlugins.plugin-git
+      fishPlugins.fzf-fish
     ];
 
     programs.fish = {
@@ -36,5 +38,4 @@
 
     users.users.david.shell = pkgs.fish;
   };
-
 }
