@@ -5,6 +5,7 @@
     inputs.home-manager.nixosModules.default
     inputs.nixvim.nixosModules.nixvim
     ../modules/nixvim.nix
+    ../modules/fish.nix
   ];
 
   # Bootloader.
@@ -44,7 +45,7 @@
     description = "David";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [];
-    shell = pkgs.fish;
+    # shell = pkgs.fish;
   };
 
   home-manager = {
@@ -89,7 +90,6 @@
     jetbrains.pycharm-community-bin
     git
     cinnamon.nemo-with-extensions
-    fishPlugins.bobthefisher fishPlugins.plugin-git fishPlugins.fzf-fish
     fzf
     brightnessctl
     waybar
@@ -103,7 +103,6 @@
     hyprlock
     vscodium.fhs
     vlc
-
     fontpreview
     wlsunset
   ];
@@ -112,8 +111,6 @@
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ "david" ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
   programs.mtr.enable = true;
 
   # terminal greeter
@@ -142,28 +139,6 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
-
-  # fish shell
-  programs.fish = {
-    enable = true;
-    shellAbbrs = {
-      glg = "git log --oneline";
-      gst = "git status";
-      gdf = "git diff";
-      gco = "git checkout";
-
-      # configuration management
-      cswitch = "sudo nixos-rebuild switch --flake /home/david/.dotfiles/flake.nix";
-      ctest = "sudo nixos-rebuild test --flake /home/david/.dotfiles/flake.nix";
-      cedit = "nvim -c 'cd /home/david/.dotfiles' /home/david/.dotfiles/flake.nix";
-      cdiff = "git -C /home/david/.dotfiles/ diff";
-      csave = ''git -C /home/david/.dotfiles/ commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
-      cpush = "git -C /home/david/.dotfiles/ push origin main";
-      cpull = "git -C /home/david/.dotfiles/ pull origin main";
-      cst = "git -C /home/david/.dotfiles/ status";
-      clg = "git -C /home/david/.dotfiles/ log --oneline";
-    };
-  };
 
   # sound
   sound.enable = true;

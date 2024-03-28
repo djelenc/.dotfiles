@@ -16,7 +16,7 @@
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
-  # basic configuration of git, please change to your own
+  # git
   programs.git = {
     enable = true;
     userName = "David Jelenc";
