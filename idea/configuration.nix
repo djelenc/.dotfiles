@@ -84,7 +84,7 @@
     htop tree mtr dig wget curl
     rio
     fuzzel
-    rofi-power-menu
+    rofi-wayland rofi-power-menu
     brave
     jetbrains.pycharm-community-bin
     git
@@ -187,10 +187,6 @@
   hardware = {
     opengl.enable = true;
   };
-
-  # XDG
-  # xdg.portal.enable = true;
-  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # power management
   powerManagement.enable = true;

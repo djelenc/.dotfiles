@@ -2,7 +2,7 @@
 {
 
   environment.systemPackages = with pkgs; [
-    ripgrep # required by telescope
+    ripgrep # req: tlescope
   ];
 
   programs.nixvim = {
@@ -73,6 +73,11 @@
         key = "<leader>k";
         action = ":bp<CR>";
         options.desc = "Previous buffer";
+      }
+      {
+        key = "<leader>bd";
+        action = ":bd<CR>";
+        options.desc = "Delete buffer";
       }
       {
         key = "<leader>fs";
