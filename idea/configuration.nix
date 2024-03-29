@@ -76,7 +76,6 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
-    emacs
     firefox
     lf
     nix-index
@@ -98,6 +97,7 @@
     libnotify
     wireplumber # part of pipewire suite
     swww networkmanagerapplet
+    xarchiver
     pavucontrol
     gsimplecal
     # swaylock
@@ -106,7 +106,17 @@
     vlc
     fontpreview
     wlsunset
+
+    # emacs
+    # emacs-git
+    # emacs29
   ];
+  # nixpkgs.overlays = [
+  #   (import (builtins.fetchTarball {
+  #     url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz;
+  #     sha256 = "1c75fn31jvz74iq1a4vgiszy68rk5hh1l07cycj12hpir05xqwj0";
+  #   }))
+  # ];
 
   # Virtualizacija
   virtualisation.virtualbox.host.enable = true;

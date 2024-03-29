@@ -6,12 +6,41 @@
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     zoom-us
+
+    # emacs
+    ripgrep
+    coreutils
+    fd
+    clang
+    shellcheck
+    graphviz
+    shfmt
+    imagemagick
+    pandoc
   ];
 
   imports = [
     ../modules/hyprland.nix
   ];
 
+  # emacs and doom
+  programs = {
+    emacs = {
+      enable = true;
+      package = pkgs.emacs29;
+      # extraPackages = (epkgs: [
+      #   pkgs.mu
+      #   pkgs.mu.mu4e
+      #   epkgs.mu4e
+      # ]);
+      overrides = self: super: {
+        org = self.elpaPackages.org;
+      };
+    };
+    mu.enable = true;
+    msmtp.enable = true;
+    mbsync.enable = true;
+  };
 
   xdg.portal.config.common.default = "*";
   xdg.portal.enable = true;
