@@ -5,11 +5,12 @@
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
-    # automount USB, disks, ...
-    udiskie
-
-    zoom-us
+    # FM
+    pcmanfm
     nextcloud-client
+
+    # utils
+    zoom-us
 
     # emacs
     ripgrep

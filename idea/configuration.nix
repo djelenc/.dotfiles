@@ -42,9 +42,9 @@
   };
 
   # automount
-  services.udisks2.enable = true;
+  services.gvfs.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # user account
   users.users.david = {
     isNormalUser = true;
     description = "David";

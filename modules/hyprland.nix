@@ -24,7 +24,6 @@
         "blueman-applet"
         "wlsunset -l 46 -L 14.5"
         "nextcloud"
-        "udiskie"
       ];
 
       env = [
@@ -104,7 +103,7 @@
         "$mainMod, Q, killactive, "
         "$mainMod, M, fullscreen, 1"
         "$mainMod SHIFT, Q, exit, "
-        "$mainMod, F, exec, nemo"
+        "$mainMod, F, exec, pcmanfm"
         "$mainMod, G, togglefloating, "
         "$mainMod, P, exec, rofi -show power-menu -modi power-menu:rofi-power-menu -font 'MonaspiceKr Nerd Font 17'"
         "$mainMod, O, togglesplit, # dwindle"
