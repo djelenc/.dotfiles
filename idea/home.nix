@@ -28,11 +28,10 @@
     emacs = {
       enable = true;
       package = pkgs.emacs29;
-      # extraPackages = (epkgs: [
-      #   pkgs.mu
-      #   pkgs.mu.mu4e
-      #   epkgs.mu4e
-      # ]);
+      extraPackages = (epkgs: [
+        pkgs.mu.mu4e
+        epkgs.mu4e
+      ]);
       overrides = self: super: {
         org = self.elpaPackages.org;
       };
