@@ -5,6 +5,9 @@
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
+    # automount USB, disks, ...
+    udiskie
+
     zoom-us
     nextcloud-client
 

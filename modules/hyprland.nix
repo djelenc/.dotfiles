@@ -24,6 +24,7 @@
         "blueman-applet"
         "wlsunset -l 46 -L 14.5"
         "nextcloud"
+        "udiskie"
       ];
 
       env = [

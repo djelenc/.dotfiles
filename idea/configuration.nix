@@ -41,6 +41,9 @@
     xkb.variant = "";
   };
 
+  # automount
+  services.udisks2.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.david = {
     isNormalUser = true;
