@@ -23,6 +23,7 @@
         "waybar"
         "blueman-applet"
         "wlsunset -l 46 -L 14.5"
+        "nextcloud"
       ];
 
       env = [
@@ -139,6 +140,7 @@
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
+        "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };
