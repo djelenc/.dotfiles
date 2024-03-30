@@ -70,11 +70,13 @@
 
   fonts.packages = with pkgs; [
     corefonts
+    fantasque-sans-mono
     powerline-fonts
     nerdfonts
     nerd-font-patcher
     font-awesome
   ];
+  fonts.fontDir.enable = true;
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [

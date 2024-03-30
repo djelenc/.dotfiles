@@ -32,7 +32,7 @@
   programs = {
     emacs = {
       enable = true;
-      package = pkgs.emacs29;
+      package = pkgs.emacs29-pgtk; # emacs29;
       extraPackages = (epkgs: [
         pkgs.mu.mu4e
         epkgs.mu4e
