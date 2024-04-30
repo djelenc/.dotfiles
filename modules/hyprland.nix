@@ -11,7 +11,7 @@
     ];
 
     settings = {
-      monitor = ",preferred,auto,1.333";
+      monitor = ",preferred,auto,1.25";
 
       xwayland = {
         force_zero_scaling = true;
@@ -41,6 +41,8 @@
         };
 
         sensitivity = 0;
+        repeat_rate = 50; # 25
+        repeat_delay = 300; # 600
       };
 
       general = {
