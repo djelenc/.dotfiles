@@ -130,6 +130,8 @@
   programs.mtr.enable = true;
 
   # terminal greeter
+  # programs.regreet.enable = true; # GUI login -- dela le,
+                                    # ce rocno vpises sejo
   services.greetd = {
     enable = true;
     settings = {
@@ -139,6 +141,8 @@
       };
     };
   };
+  # izgleda brez efekta na nextcloud
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   # systemd.services.greetd.serviceConfig = {

@@ -20,6 +20,7 @@
     };
 
     plugins = {
+      which-key.enable = true;
       lightline.enable = true;
       autoclose.enable = true;
       treesitter.enable = true;
