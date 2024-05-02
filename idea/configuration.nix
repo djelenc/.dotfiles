@@ -81,6 +81,7 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
+    nixfmt
     firefox
     lf
     nix-index
@@ -143,6 +144,8 @@
   };
   # izgleda brez efekta na nextcloud
   security.pam.services.greetd.enableGnomeKeyring = true;
+  services.gnome.gnome-keyring.enable = true;
+  programs.seahorse.enable = true;
 
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   # systemd.services.greetd.serviceConfig = {

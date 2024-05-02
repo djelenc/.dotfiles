@@ -2,7 +2,7 @@
 {
 
   environment.systemPackages = with pkgs; [
-    ripgrep # req: tlescope
+    ripgrep # req: telescope
   ];
 
   programs.nixvim = {
