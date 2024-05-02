@@ -44,6 +44,9 @@
   # automount
   services.gvfs.enable = true;
 
+  # To allow routing all traffic through VPN
+  networking.firewall.checkReversePath = false;
+
   # user account
   users.users.david = {
     isNormalUser = true;
