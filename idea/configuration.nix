@@ -124,6 +124,16 @@
     inputs.anyrun.packages.${system}.anyrun
   ];
 
+  # force brave to run under wayland
+  nixpkgs.overlays = [
+    (self: super: {
+      brave = super.brave.override {
+        commandLineArgs =
+          "--enable-features=UseOzonePlatform --ozone-platform=wayland";
+      };
+    })
+  ];
+
   # Virtualizacija
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ "david" ];
