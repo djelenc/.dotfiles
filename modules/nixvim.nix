@@ -12,7 +12,7 @@
 
     globals.mapleader = " ";
 
-    options = {
+    opts = {
       number = true;
       relativenumber = true;
       shiftwidth = 2;
@@ -27,10 +27,11 @@
       surround.enable = true;
       telescope = {
         enable = true;
+
         keymaps = {
           "<leader><leader>" = {
             action = "git_files";
-            desc = "Telescope Git Files";
+            options.desc = "Telescope Git Files";
           };
           "<leader>fg" = "live_grep";
           "<leader>ff" = "find_files";
@@ -40,7 +41,7 @@
 
     colorschemes.tokyonight = {
       enable = true;
-      transparent = true;
+      settings = { transparent = true; };
     };
 
     # colorschemes.gruvbox = {

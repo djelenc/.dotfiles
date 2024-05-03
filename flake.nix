@@ -15,7 +15,8 @@
     };
 
     hyprland-virtual-desktops = {
-      url = "github:levnikmyskin/hyprland-virtual-desktops";
+      url = "github:djelenc/hyprland-virtual-desktops";
+      # url = "github:levnikmyskin/hyprland-virtual-desktops";
     };
 
     nixvim = {
