@@ -121,6 +121,7 @@
     vlc
     fontpreview
     wlsunset
+    inputs.anyrun.packages.${system}.anyrun
   ];
 
   # Virtualizacija
