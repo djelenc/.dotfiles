@@ -305,15 +305,15 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1714752495,
+        "lastModified": 1714758623,
         "narHash": "sha256-Wr5frxLRSKxopRwfDdHiZnEQGcKR9uprcWrHwumvum4=",
-        "owner": "djelenc",
+        "owner": "levnikmyskin",
         "repo": "hyprland-virtual-desktops",
-        "rev": "c04fa1fe26778e3e1f7672d866b596ecf5152f40",
+        "rev": "e75765316f427368e4c2c1ef62ebf8944ccb507c",
         "type": "github"
       },
       "original": {
-        "owner": "djelenc",
+        "owner": "levnikmyskin",
         "repo": "hyprland-virtual-desktops",
         "type": "github"
       }
