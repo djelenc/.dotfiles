@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, lib, anyrun, ... }: {
+{ config, inputs, pkgs, lib, ... }: {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
@@ -121,19 +121,7 @@
     vlc
     fontpreview
     wlsunset
-
-    # emacs
-    # emacs-git
-    # emacs29
-    #
-    # anyrun.packages.${system}.anyrun
   ];
-  # nixpkgs.overlays = [
-  #   (import (builtins.fetchTarball {
-  #     url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz;
-  #     sha256 = "1c75fn31jvz74iq1a4vgiszy68rk5hh1l07cycj12hpir05xqwj0";
-  #   }))
-  # ];
 
   # Virtualizacija
   virtualisation.virtualbox.host.enable = true;
@@ -142,8 +130,7 @@
   programs.mtr.enable = true;
 
   # terminal greeter
-  # programs.regreet.enable = true; # GUI login -- dela le,
-  # ce rocno vpises sejo
+  # programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
   services.greetd = {
     enable = true;
     settings = {
