@@ -1,5 +1,4 @@
-{ config, inputs, pkgs, lib, ... }:
-{
+{ config, inputs, pkgs, lib, anyrun, ... }: {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
@@ -8,9 +7,9 @@
     ../modules/fish.nix
   ];
 
-  dotFilesRoot = ''/home/david/.dotfiles'';
+  dotFilesRoot = "/home/david/.dotfiles";
 
-  # Bootloader.
+  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -52,16 +51,14 @@
     isNormalUser = true;
     description = "David";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
   };
 
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
-    users = {
-      "david" = import ./home.nix;
-    };
+    users = { "david" = import ./home.nix; };
   };
 
   # Allow unfree packages
@@ -69,7 +66,7 @@
 
   # Allow installation of unfree corefonts package
   nixpkgs.config.allowUnfreePredicate = pkg:
-  builtins.elem (lib.getName pkg) [ "corefonts" ];
+    builtins.elem (lib.getName pkg) [ "corefonts" ];
 
   fonts.packages = with pkgs; [
     corefonts
@@ -89,12 +86,20 @@
     lf
     nix-index
     python3
-    libreoffice-qt onlyoffice-bin
-    hunspell hunspellDicts.en_US-large
-    htop tree mtr dig wget curl
+    libreoffice-qt
+    onlyoffice-bin
+    hunspell
+    hunspellDicts.en_US-large
+    htop
+    tree
+    mtr
+    dig
+    wget
+    curl
     rio
     fuzzel
-    rofi-wayland rofi-power-menu
+    rofi-wayland
+    rofi-power-menu
     brave
     jetbrains.pycharm-community-bin
     git
@@ -105,7 +110,8 @@
     dunst
     libnotify
     wireplumber # part of pipewire suite
-    swww networkmanagerapplet
+    swww
+    networkmanagerapplet
     xarchiver
     pavucontrol
     gsimplecal
@@ -119,6 +125,8 @@
     # emacs
     # emacs-git
     # emacs29
+    #
+    # anyrun.packages.${system}.anyrun
   ];
   # nixpkgs.overlays = [
   #   (import (builtins.fetchTarball {
@@ -135,12 +143,13 @@
 
   # terminal greeter
   # programs.regreet.enable = true; # GUI login -- dela le,
-                                    # ce rocno vpises sejo
+  # ce rocno vpises sejo
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+        command =
+          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "david";
       };
     };
@@ -185,9 +194,7 @@
   };
 
   # opengl
-  hardware = {
-    opengl.enable = true;
-  };
+  hardware = { opengl.enable = true; };
 
   # power management
   powerManagement.enable = true;
@@ -198,12 +205,8 @@
   services.blueman.enable = true;
 
   # flakes
-  nix.settings.experimental-features = [
-    "nix-command" "flakes"
-  ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # swaylock
-  security.pam.services.swaylock = {
-    text = "auth include login";
-  };
+  security.pam.services.swaylock = { text = "auth include login"; };
 }

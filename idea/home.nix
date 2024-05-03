@@ -1,5 +1,4 @@
-{ config, inputs, pkgs, lib, ... } :
-{
+{ config, inputs, pkgs, lib, ... }: {
   home.username = "david";
   home.homeDirectory = "/home/david";
 
@@ -24,22 +23,15 @@
     pandoc
   ];
 
-  imports = [
-    ../modules/hyprland.nix
-  ];
+  imports = [ ../modules/hyprland.nix ];
 
   # emacs and doom
   programs = {
     emacs = {
       enable = true;
       package = pkgs.emacs29-pgtk; # emacs29;
-      extraPackages = (epkgs: [
-        pkgs.mu.mu4e
-        epkgs.mu4e
-      ]);
-      overrides = self: super: {
-        org = self.elpaPackages.org;
-      };
+      extraPackages = (epkgs: [ pkgs.mu.mu4e epkgs.mu4e ]);
+      overrides = self: super: { org = self.elpaPackages.org; };
     };
     mu.enable = true;
     msmtp.enable = true;
@@ -55,17 +47,11 @@
     enable = true;
     userName = "David Jelenc";
     userEmail = "david.jelenc@fri.uni-lj.si";
-    extraConfig = {
-      init = {
-        defaultBranch = "main";
-      };
-    };
+    extraConfig = { init = { defaultBranch = "main"; }; };
   };
 
   # ENV
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
+  home.sessionVariables = { EDITOR = "nvim"; };
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage

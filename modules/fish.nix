@@ -1,5 +1,4 @@
-{ inputs, pkgs, lib, config, ... } :
-{
+{ inputs, pkgs, lib, config, ... }: {
   options = {
     dotFilesRoot = lib.mkOption {
       # default = ''/home/david/.dotfiles'';
@@ -24,11 +23,15 @@
         gdf = "git diff";
         gco = "git checkout";
 
-        cswitch = "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}/flake.nix";
-        ctest = "sudo nixos-rebuild test --flake ${config.dotFilesRoot}/flake.nix";
-        cedit = "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}/flake.nix";
+        cswitch =
+          "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}/flake.nix";
+        ctest =
+          "sudo nixos-rebuild test --flake ${config.dotFilesRoot}/flake.nix";
+        cedit =
+          "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}/flake.nix";
         cdiff = "git -C ${config.dotFilesRoot} diff";
-        csave = ''git -C ${config.dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
+        csave = ''
+          git -C ${config.dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
         cpush = "git -C ${config.dotFilesRoot} push origin main";
         cpull = "git -C ${config.dotFilesRoot} pull origin main";
         cst = "git -C ${config.dotFilesRoot} status";

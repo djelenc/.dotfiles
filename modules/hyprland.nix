@@ -1,5 +1,4 @@
-{ inputs, pkgs, ... } :
-{
+{ inputs, pkgs, ... }: {
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -13,9 +12,7 @@
     settings = {
       monitor = ",preferred,auto,1.25";
 
-      xwayland = {
-        force_zero_scaling = true;
-      };
+      xwayland = { force_zero_scaling = true; };
 
       exec-once = [
         "swww init"
@@ -26,19 +23,14 @@
         "nextcloud"
       ];
 
-      env = [
-        "XCURSOR_SIZE,24"
-        "GDK_SCALE,1.33"
-      ];
+      env = [ "XCURSOR_SIZE,24" "GDK_SCALE,1.33" ];
 
       input = {
         kb_layout = "us,si";
         kb_options = "grp:win_space_toggle,ctrl:nocaps";
         follow_mouse = 2;
 
-        touchpad = {
-          natural_scroll = "no";
-        };
+        touchpad = { natural_scroll = "no"; };
 
         sensitivity = 0;
         repeat_rate = 50; # 25
@@ -86,17 +78,11 @@
         preserve_split = "yes";
       };
 
-      master = {
-        new_is_master = true;
-      };
+      master = { new_is_master = true; };
 
-      gestures = {
-        workspace_swipe = "on";
-      };
+      gestures = { workspace_swipe = "on"; };
 
-      misc = {
-        force_default_wallpaper = -1;
-      };
+      misc = { force_default_wallpaper = -1; };
 
       "$mainMod" = "SUPER";
 

@@ -2,9 +2,7 @@
   description = "Davidov NixOS";
 
   inputs = {
-    nixpkgs = {
-      url = "nixpkgs/nixos-unstable";
-    };
+    nixpkgs = { url = "nixpkgs/nixos-unstable"; };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -24,22 +22,26 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # anyrun = {
+    #   url = "github:Kirottu/anyrun";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs :
-  let
-    lib = nixpkgs.lib;
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-  in {
-    nixosConfigurations = {
-      idea = lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./idea/configuration.nix
-          inputs.home-manager.nixosModules.default
-        ];
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+    let
+      lib = nixpkgs.lib;
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      nixosConfigurations = {
+        idea = lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./idea/configuration.nix
+            inputs.home-manager.nixosModules.default
+          ];
+        };
       };
     };
-  };
 }

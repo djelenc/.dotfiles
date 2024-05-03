@@ -1,9 +1,8 @@
-{ inputs, pkgs, ... } :
-{
-
-  environment.systemPackages = with pkgs; [
-    ripgrep # req: telescope
-  ];
+{ inputs, pkgs, ... }: {
+  environment.systemPackages = with pkgs;
+    [
+      ripgrep # req: telescope
+    ];
 
   programs.nixvim = {
     enable = true;
@@ -51,14 +50,12 @@
     #   };
     # };
 
-    autoCmd = [
-      {
-        # Delete trailing whitespace on save
-        event = [ "BufWritePre"];
-        pattern = [ "*" ];
-        command = '':%s/\s\+$//e'';
-      }
-    ];
+    autoCmd = [{
+      # Delete trailing whitespace on save
+      event = [ "BufWritePre" ];
+      pattern = [ "*" ];
+      command = ":%s/\\s\\+$//e";
+    }];
     keymaps = [
       {
         key = "<A-x>";
