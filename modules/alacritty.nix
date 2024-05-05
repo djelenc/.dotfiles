@@ -10,6 +10,9 @@
     padding = { x = 5, y = 5 }
     dynamic_padding = true
 
+    [env]
+    TERM = "xterm-256color"
+
     [scrolling]
     history = 100000
 
