@@ -23,7 +23,7 @@
     pandoc
   ];
 
-  imports = [ ../modules/hyprland.nix ];
+  imports = [ ../modules/hyprland.nix ../modules/alacritty.nix ];
 
   # emacs and doom
   programs = {

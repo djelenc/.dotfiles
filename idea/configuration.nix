@@ -188,6 +188,7 @@
   # useful envs
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
+    TERM = "xterm-256color";
     # NIXOS_OZONE_WL = "1";
   };
 

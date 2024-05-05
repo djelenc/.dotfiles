@@ -87,7 +87,7 @@
       "$mainMod" = "SUPER";
 
       bind = [
-        "$mainMod, T, exec, rio"
+        "$mainMod, T, exec, alacritty"
         "$mainMod, Q, killactive, "
         "$mainMod, M, fullscreen, 1"
         "$mainMod SHIFT, Q, exit, "
