@@ -123,7 +123,8 @@
       ];
 
       # "bindr" = "$mainMod, SUPER_L, exec, /home/david/.config/rofi/launchers/type-2/launcher.sh";
-      "bindr" = "$mainMod, SUPER_L, exec, fuzzel -D yes -f 'Hurmit Nerd Font'";
+      "bindr" =
+        "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
 
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"

@@ -1,6 +1,5 @@
 { inputs, pkgs, ... }: {
-  # install
-  # home.packages = with pkgs; [ alacritty zellij ];
+  # https://hugoreeves.com/posts/2019/nix-home/
   programs.alacritty = {
     enable = true;
     settings = {
