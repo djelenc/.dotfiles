@@ -16,6 +16,7 @@
       env = { TERM = "xterm-256color"; };
 
       scrolling.history = 100000;
+      selection.save_to_clipboard = true;
 
       font = {
         normal = {
@@ -24,6 +25,8 @@
         };
         size = 17.0;
       };
+
+      colors.draw_bold_text_with_bright_colors = true;
     };
   };
 }

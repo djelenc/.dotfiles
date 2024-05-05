@@ -27,7 +27,7 @@
 
       input = {
         kb_layout = "us,si";
-        kb_options = "grp:win_space_toggle,ctrl:nocaps";
+        kb_options = "grp:win_space_toggle";
         follow_mouse = 2;
 
         touchpad = { natural_scroll = "no"; };

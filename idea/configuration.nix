@@ -2,12 +2,31 @@
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
+    inputs.xremap-flake.nixosModules.default
     inputs.nixvim.nixosModules.nixvim
     ../modules/nixvim.nix
     ../modules/fish.nix
   ];
 
   dotFilesRoot = "/home/david/.dotfiles";
+
+  # rebinds caps to ctrl and esc
+  services.xremap = {
+    withWlroots = true;
+    userName = "david";
+    config = {
+      modmap = [{
+        name = "main remaps";
+        remap = {
+          CapsLock = {
+            held = "leftctrl";
+            alone = "esc";
+            alone_timeout_milis = 150;
+          };
+        };
+      }];
+    };
+  };
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
@@ -121,7 +140,7 @@
     vlc
     fontpreview
     wlsunset
-    inputs.anyrun.packages.${system}.anyrun
+    # inputs.anyrun.packages.${system}.anyrun
   ];
 
   # force brave to run under wayland
