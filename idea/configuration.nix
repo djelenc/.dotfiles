@@ -126,7 +126,6 @@
     cinnamon.nemo-with-extensions
     fzf
     brightnessctl
-    waybar
     dunst
     libnotify
     wireplumber # part of pipewire suite
