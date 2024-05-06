@@ -34,6 +34,7 @@
   imports = [
     ../modules/hyprland.nix
     ../modules/alacritty.nix
+    ../modules/waybar.nix
     # inputs.stylix.homeManagerModules.stylix
   ];
 

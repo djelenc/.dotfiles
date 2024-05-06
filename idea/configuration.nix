@@ -113,7 +113,7 @@
     hunspellDicts.en_US-large
     htop
     tree
-    mtr
+    jq
     dig
     wget
     curl
