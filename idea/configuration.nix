@@ -117,7 +117,6 @@
     dig
     wget
     curl
-    rio
     fuzzel
     rofi-wayland
     rofi-power-menu
@@ -132,12 +131,8 @@
     libnotify
     wireplumber # part of pipewire suite
     swww
-    networkmanagerapplet
     xarchiver
     pavucontrol
-    gsimplecal
-    # swaylock
-    hyprlock
     vscodium.fhs
     vlc
     fontpreview

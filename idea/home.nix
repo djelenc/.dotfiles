@@ -22,8 +22,13 @@
     imagemagick
     pandoc
 
-    # stylix
-    dconf
+    # desktop related
+    networkmanagerapplet
+    gsimplecal
+    hyprlock
+    # swaylock
+
+    dconf # stylix won't run without it
   ];
 
   imports = [
@@ -40,6 +45,7 @@
   #   };
 
   #   # polarity = "dark";
+  #   targets.hyprland.enable = true;
   # };
 
   # emacs and doom

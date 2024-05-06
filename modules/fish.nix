@@ -23,12 +23,9 @@
         gdf = "git diff";
         gco = "git checkout";
 
-        cswitch =
-          "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}/flake.nix";
-        ctest =
-          "sudo nixos-rebuild test --flake ${config.dotFilesRoot}/flake.nix";
-        cedit =
-          "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}/flake.nix";
+        cswitch = "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}";
+        ctest = "sudo nixos-rebuild test --flake ${config.dotFilesRoot}";
+        cedit = "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}";
         cdiff = "git -C ${config.dotFilesRoot} diff";
         csave = ''
           git -C ${config.dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
