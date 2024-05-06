@@ -86,105 +86,106 @@
         on-click = "pavucontrol";
       };
 
-      style = ''
-        * {
-            border: none;
-            border-radius: 0;
-            font-family: "Ubuntu Nerd Font";
-            font-size: 17px;
-            min-height: 0;
-        }
+    };
 
-        window#waybar {
-            background: transparent;
-            color: white;
-        }
+    style = ''
+      * {
+          border: none;
+          border-radius: 0;
+          font-family: "Ubuntu Nerd Font";
+          font-size: 17px;
+          min-height: 0;
+      }
 
-        #window {
-            font-weight: bold;
-            font-family: "Ubuntu";
-        }
+      window#waybar {
+          background: transparent;
+          color: white;
+      }
 
-        #workspaces button {
-            padding: 0 2px;
-            background: transparent;
-            color: white;
-            border-top: 2px solid transparent;
-        }
+      #window {
+          font-weight: bold;
+          font-family: "Ubuntu";
+      }
 
-        #workspaces button.focused {
-            color: #c9545d;
-            border-top: 2px solid #c9545d;
-        }
+      #workspaces button {
+          padding: 0 2px;
+          background: transparent;
+          color: white;
+          border-top: 2px solid transparent;
+      }
 
-        #mode {
-            background: #64727D;
-            border-bottom: 2px solid white;
-        }
+      #workspaces button.focused {
+          color: #c9545d;
+          border-top: 2px solid #c9545d;
+      }
 
-        #clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray, #mode {
-            padding-left: 5px;
-            padding-right: 5px;
-        }
+      #mode {
+          background: #64727D;
+          border-bottom: 2px solid white;
+      }
 
-        #language  {
-          font-family: monospace;
+      #clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray, #mode {
           padding-left: 5px;
           padding-right: 5px;
-        }
+      }
 
-        #clock {
-            font-weight: bold;
-        }
+      #language  {
+        font-family: monospace;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
 
-        #battery {
-        }
+      #clock {
+          font-weight: bold;
+      }
 
-        #battery icon {
-            color: red;
-        }
+      #battery {
+      }
 
-        #battery.charging {
-        }
+      #battery icon {
+          color: red;
+      }
 
-        @keyframes blink {
-            to {
-                background-color: #ffffff;
-                color: black;
-            }
-        }
+      #battery.charging {
+      }
 
-        #battery.warning:not(.charging) {
-            color: white;
-            animation-name: blink;
-            animation-duration: 0.5s;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-            animation-direction: alternate;
-        }
+      @keyframes blink {
+          to {
+              background-color: #ffffff;
+              color: black;
+          }
+      }
 
-        #cpu {
-        }
+      #battery.warning:not(.charging) {
+          color: white;
+          animation-name: blink;
+          animation-duration: 0.5s;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          animation-direction: alternate;
+      }
 
-        #memory {
-        }
+      #cpu {
+      }
 
-        #network {
-        }
+      #memory {
+      }
 
-        #network.disconnected {
-            background: #f53c3c;
-        }
+      #network {
+      }
 
-        #pulseaudio {
-        }
+      #network.disconnected {
+          background: #f53c3c;
+      }
 
-        #pulseaudio.muted {
-        }
+      #pulseaudio {
+      }
 
-        #tray {
-        }
-      '';
-    };
+      #pulseaudio.muted {
+      }
+
+      #tray {
+      }
+    '';
   };
 }
