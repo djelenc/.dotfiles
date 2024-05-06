@@ -32,7 +32,7 @@
 
     firefox
     brave
-    okular
+    kdePackages.okular
     libreoffice-qt
 
     fuzzel

@@ -102,7 +102,7 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
-    nixfmt
+    nixfmt-classic
     lf
     nix-index
     python3
@@ -147,22 +147,25 @@
       };
     };
   };
-  # izgleda brez efekta na nextcloud
-  security.pam.services.greetd.enableGnomeKeyring = true;
+
+  # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
   services.gnome.gnome-keyring.enable = true;
-  programs.seahorse.enable = true;
+  # programs.seahorse.enable = true;
+  # security.pam.services.greetd.enableGnomeKeyring = true;
 
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
-  # systemd.services.greetd.serviceConfig = {
-  #   Type = "idle";
-  #   StandardInput = "tty";
-  #   StandardOutput = "tty";
-  #   StandardError = "journal";
-  #   # Without these bootlogs will spam on screen
-  #   TTYReset = true;
-  #   TTYVHangup = true;
-  #   TTYVTDisallocate = true;
-  # };
+  # Keeps the screen clean during terminal login
+  systemd.services.greetd.serviceConfig = {
+    Type = "idle";
+    StandardInput = "tty";
+    StandardOutput = "tty";
+    StandardError = "journal";
+
+    # Without these bootlogs will spam on screen
+    TTYReset = true;
+    TTYVHangup = true;
+    TTYVTDisallocate = true;
+  };
 
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
