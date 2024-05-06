@@ -103,40 +103,20 @@
   environment.systemPackages = with pkgs; [
     bat
     nixfmt
-    firefox
     lf
     nix-index
     python3
-    libreoffice-qt
-    onlyoffice-bin
-    hunspell
-    hunspellDicts.en_US-large
     htop
     tree
     jq
     dig
     wget
     curl
-    fuzzel
-    rofi-wayland
-    rofi-power-menu
-    brave
-    jetbrains.pycharm-community-bin
+
+    # brave
     git
-    cinnamon.nemo-with-extensions
     fzf
-    brightnessctl
-    dunst
-    libnotify
     wireplumber # part of pipewire suite
-    swww
-    xarchiver
-    pavucontrol
-    vscodium.fhs
-    vlc
-    fontpreview
-    wlsunset
-    # inputs.anyrun.packages.${system}.anyrun
   ];
 
   # force brave to run under wayland

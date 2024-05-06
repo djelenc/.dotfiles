@@ -27,8 +27,36 @@
     gsimplecal
     hyprlock
     # swaylock
-
     dconf # stylix won't run without it
+    cinnamon.nemo-with-extensions
+
+    firefox
+    brave
+    okular
+    libreoffice-qt
+
+    fuzzel
+    rofi-wayland
+    rofi-power-menu
+
+    jetbrains.pycharm-community-bin
+
+    brightnessctl
+    dunst
+    libnotify
+
+    swww
+    xarchiver
+    pavucontrol
+    vscodium.fhs
+    vlc
+    fontpreview
+    wlsunset
+    # inputs.anyrun.packages.${system}.anyrun
+
+    # dictionaries
+    hunspell
+    hunspellDicts.en_US-large
   ];
 
   imports = [
