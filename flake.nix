@@ -25,6 +25,7 @@
     };
 
     xremap-flake.url = "github:xremap/nix-flake";
+    stylix.url = "github:danth/stylix";
 
     # anyrun = {
     #   url = "github:Kirottu/anyrun";

@@ -1,10 +1,10 @@
-{ inputs, pkgs, ... }: {
+{ inputs, pkgs, lib, ... }: {
   # https://hugoreeves.com/posts/2019/nix-home/
   programs.alacritty = {
     enable = true;
     settings = {
       window = {
-        opacity = 0.75;
+        opacity = lib.mkDefault 0.75;
         blur = true;
         padding = {
           x = 5;
@@ -20,10 +20,10 @@
 
       font = {
         normal = {
-          family = "CaskaydiaMono Nerd Font";
-          style = "Regular";
+          family = lib.mkDefault "CaskaydiaMono Nerd Font";
+          style = lib.mkDefault "Regular";
         };
-        size = 17.0;
+        size = lib.mkDefault 17.0;
       };
 
       colors.draw_bold_text_with_bright_colors = true;

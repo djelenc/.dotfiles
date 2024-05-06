@@ -10,6 +10,8 @@
 
   dotFilesRoot = "/home/david/.dotfiles";
 
+  home-manager.backupFileExtension = "backup";
+
   # rebinds caps to ctrl and esc
   services.xremap = {
     withWlroots = true;
