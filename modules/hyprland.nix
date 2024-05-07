@@ -1,4 +1,10 @@
 { inputs, pkgs, lib, ... }: {
+  xdg.portal = {
+    config.common.default = "*";
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;

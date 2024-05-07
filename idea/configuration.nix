@@ -79,7 +79,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
-    users = { "david" = import ./home.nix; };
+    users.david = import ./home.nix;
   };
 
   # Allow unfree packages

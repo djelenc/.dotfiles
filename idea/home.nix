@@ -1,8 +1,11 @@
 { config, inputs, pkgs, lib, ... }: {
+  programs.home-manager.enable = true;
+
   home.username = "david";
   home.homeDirectory = "/home/david";
+  home.sessionVariables = { EDITOR = "nvim"; };
+  home.stateVersion = "23.11";
 
-  # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # FM
     pcmanfm
@@ -29,30 +32,29 @@
     # swaylock
     dconf # stylix won't run without it
     cinnamon.nemo-with-extensions
+    swww
+    xarchiver
+    pavucontrol
+    wlsunset
 
     firefox
     brave
     kdePackages.okular
     libreoffice-qt
+    jetbrains.pycharm-community-bin
+    vscodium.fhs
+    vlc
+    fontpreview
 
+    # app launchers
     fuzzel
     rofi-wayland
     rofi-power-menu
-
-    jetbrains.pycharm-community-bin
+    # inputs.anyrun.packages.${system}.anyrun
 
     brightnessctl
     dunst
     libnotify
-
-    swww
-    xarchiver
-    pavucontrol
-    vscodium.fhs
-    vlc
-    fontpreview
-    wlsunset
-    # inputs.anyrun.packages.${system}.anyrun
 
     # dictionaries
     hunspell
@@ -88,32 +90,19 @@
     mu.enable = true;
     msmtp.enable = true;
     mbsync.enable = true;
+
+    git = {
+      enable = true;
+      userName = "David Jelenc";
+      userEmail = "david.jelenc@fri.uni-lj.si";
+      extraConfig = { init = { defaultBranch = "main"; }; };
+    };
   };
 
-  xdg.portal.config.common.default = "*";
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-
-  # git
-  programs.git = {
+  gtk = {
     enable = true;
-    userName = "David Jelenc";
-    userEmail = "david.jelenc@fri.uni-lj.si";
-    extraConfig = { init = { defaultBranch = "main"; }; };
+    theme.name = "adw-gtk3";
+    cursorTheme.name = "Bibata-Modern-Ice";
+    iconTheme.name = "GruvboxPlus";
   };
-
-  # ENV
-  home.sessionVariables = { EDITOR = "nvim"; };
-
-  # This value determines the home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new home Manager release introduces backwards
-  # incompatible changes.
-  # You can update home Manager without changing this value. See
-  # the home Manager release notes for a list of state version
-  # changes in each release.
-  home.stateVersion = "23.11";
-
-  # Let home Manager install and manage itself.
-  programs.home-manager.enable = true;
 }
