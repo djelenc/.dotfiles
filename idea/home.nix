@@ -1,4 +1,18 @@
-{ config, inputs, pkgs, lib, ... }: {
+{ config, inputs, pkgs, lib, ... }:
+let
+  # Inspiration: https://github.com/NixOS/nixpkgs/issues/108480#issuecomment-1115108802
+  isync-oauth2 = with pkgs;
+    buildEnv {
+      name = "isync-oauth2";
+      paths = [ isync ];
+      pathsToLink = [ "/bin" ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/mbsync" \
+          --prefix SASL_PATH : "${cyrus_sasl}/lib/sasl2:${cyrus-sasl-xoauth2}/lib/sasl2"
+      '';
+    };
+in {
   programs.home-manager.enable = true;
 
   home.username = "david";
@@ -24,6 +38,12 @@
     shfmt
     imagemagick
     pandoc
+
+    # mbsync requries xoauth2
+    oauth2ms
+    cyrus_sasl
+    cyrus-sasl-xoauth2
+    isync-oauth2
 
     # desktop related
     networkmanagerapplet
@@ -87,9 +107,11 @@
       extraPackages = (epkgs: [ pkgs.mu.mu4e epkgs.mu4e ]);
       overrides = self: super: { org = self.elpaPackages.org; };
     };
+
     mu.enable = true;
     msmtp.enable = true;
     mbsync.enable = true;
+    mbsync.package = isync-oauth2;
 
     git = {
       enable = true;
@@ -104,5 +126,33 @@
     theme.name = "adw-gtk3";
     cursorTheme.name = "Bibata-Modern-Ice";
     iconTheme.name = "GruvboxPlus";
+  };
+
+  accounts.email = {
+    accounts.fri = {
+      realName = "David Jelenc";
+      userName = "davidjelenc@fri1.uni-lj.si";
+      address = "david.jelenc@fri.uni-lj.si";
+      passwordCommand = "oauth2ms";
+      primary = true;
+      flavor = "outlook.office365.com";
+      # imap.host = "outlook.office365.com";
+      # imap.port = 993;
+      # imap.tls.enable = true;
+      # smtp.host = "smtp.office365.com";
+      # smtp.port = 587;
+      # smtp.tls.enable = true;
+      # smtp.tls.useStartTls = true;
+      mbsync.extraConfig.account = {
+        AuthMechs = "XOAUTH2";
+        SSLType = "IMAPS";
+      };
+
+      mbsync.enable = true;
+      mbsync.create = "maildir";
+
+      msmtp.enable = true;
+      mu.enable = true;
+    };
   };
 }
