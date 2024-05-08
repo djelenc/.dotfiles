@@ -13,6 +13,21 @@ let
       '';
     };
 in {
+
+  # untested yet
+  nixpkgs.overlays = [
+    (final: prev: {
+      msmtp = prev.msmtp.overrideAttrs (old: {
+        src = prev.fetchFromGitHub {
+          wner = "marlam";
+          repo = "msmtp-mirror";
+          rev = "msmtp-1.8.26";
+          hash = "";
+        };
+      });
+    })
+  ];
+
   programs.home-manager.enable = true;
 
   home.username = "david";
@@ -139,10 +154,16 @@ in {
 
       mbsync = {
         enable = true;
-        create = "maildir";
-        # create = "both";
-        # expunge = "both";
-        # patterns = [ "*" ];
+        create = "both";
+        expunge = "both";
+        patterns = [
+          "Archive"
+          "Drafts"
+          "Deleted Items"
+          "Inbox"
+          "Junk Email"
+          "Sent Email"
+        ];
         extraConfig.account.AuthMechs = "XOAUTH2";
       };
 
