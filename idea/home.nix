@@ -130,28 +130,28 @@ in {
 
   accounts.email = {
     accounts.fri = {
+      primary = true;
+      flavor = "outlook.office365.com";
       realName = "David Jelenc";
       userName = "davidjelenc@fri1.uni-lj.si";
       address = "david.jelenc@fri.uni-lj.si";
       passwordCommand = "oauth2ms";
-      primary = true;
-      flavor = "outlook.office365.com";
-      # imap.host = "outlook.office365.com";
-      # imap.port = 993;
-      # imap.tls.enable = true;
-      # smtp.host = "smtp.office365.com";
-      # smtp.port = 587;
-      # smtp.tls.enable = true;
-      # smtp.tls.useStartTls = true;
-      mbsync.extraConfig.account = {
-        AuthMechs = "XOAUTH2";
-        SSLType = "IMAPS";
+
+      mbsync = {
+        enable = true;
+        create = "maildir";
+        # create = "both";
+        # expunge = "both";
+        # patterns = [ "*" ];
+        extraConfig.account.AuthMechs = "XOAUTH2";
       };
 
-      mbsync.enable = true;
-      mbsync.create = "maildir";
+      msmtp = {
+        enable = true;
+        extraConfig.auth = "xoauth2";
+        extraConfig.passwordeval = "oauth2ms";
+      };
 
-      msmtp.enable = true;
       mu.enable = true;
     };
   };
