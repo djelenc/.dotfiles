@@ -6,7 +6,7 @@
         version = "1.8.26";
         src = prev.fetchFromGitHub {
           owner = "marlam";
-          repo = "msmtp-mirror";
+          repo = "msmtp";
           rev = "msmtp-${version}";
           hash = "sha256-MV3fzjjyr7qZw/BbKgsSObX+cxDDivI+0ZlulrPFiWM=";
         };
