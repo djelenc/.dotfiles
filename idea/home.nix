@@ -13,21 +13,6 @@ let
       '';
     };
 in {
-
-  # untested yet
-  nixpkgs.overlays = [
-    (final: prev: {
-      msmtp = prev.msmtp.overrideAttrs (old: {
-        src = prev.fetchFromGitHub {
-          wner = "marlam";
-          repo = "msmtp-mirror";
-          rev = "msmtp-1.8.26";
-          hash = "";
-        };
-      });
-    })
-  ];
-
   programs.home-manager.enable = true;
 
   home.username = "david";
@@ -125,6 +110,7 @@ in {
 
     mu.enable = true;
     msmtp.enable = true;
+    # msmtp.package = pkgs.msmtp;
     mbsync.enable = true;
     mbsync.package = isync-oauth2;
 

@@ -10,7 +10,8 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      # url = "github:hyprwm/Hyprland";
       follows = "hyprland-virtual-desktops/hyprland";
     };
 
@@ -38,7 +39,16 @@
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = nixpkgs.legacyPackages.${system}; # .extend (final: prev: {
+      #   msmtp = prev.msmtp.overrideAttrs (old: {
+      #     src = prev.fetchFromGitHub {
+      #       wner = "marlam";
+      #       repo = "msmtp-mirror";
+      #       rev = "msmtp-1.8.26";
+      #       hash = "";
+      #     };
+      #   });
+      # });
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
