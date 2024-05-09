@@ -102,31 +102,14 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
-    nixfmt-classic
     lf
-    nix-index
-    python3
     htop
     tree
     jq
     dig
     wget
     curl
-
-    # brave
     git
-    fzf
-    wireplumber # part of pipewire suite
-  ];
-
-  # force brave to run under wayland
-  nixpkgs.overlays = [
-    (self: super: {
-      brave = super.brave.override {
-        commandLineArgs =
-          "--enable-features=UseOzonePlatform --ozone-platform=wayland";
-      };
-    })
   ];
 
   # Virtualizacija
@@ -167,8 +150,6 @@
     TTYVTDisallocate = true;
   };
 
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 
   # sound

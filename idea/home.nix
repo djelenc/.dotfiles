@@ -39,7 +39,7 @@ in {
     imagemagick
     pandoc
 
-    # mbsync requries xoauth2
+    # mbsync dependencies
     oauth2ms
     cyrus_sasl
     cyrus-sasl-xoauth2
@@ -49,14 +49,14 @@ in {
     networkmanagerapplet
     gsimplecal
     hyprlock
-    # swaylock
-    dconf # stylix won't run without it
+    # dconf # stylix won't run without it
     cinnamon.nemo-with-extensions
     swww
     xarchiver
     pavucontrol
     wlsunset
 
+    # user programs
     firefox
     brave
     kdePackages.okular
@@ -70,7 +70,6 @@ in {
     fuzzel
     rofi-wayland
     rofi-power-menu
-    # inputs.anyrun.packages.${system}.anyrun
 
     brightnessctl
     dunst
@@ -79,25 +78,17 @@ in {
     # dictionaries
     hunspell
     hunspellDicts.en_US-large
+
+    # misc
+    fzf
+    wireplumber
+    nix-index
+    nixfmt-classic
+    python3
   ];
 
-  imports = [
-    ../modules/hyprland.nix
-    ../modules/alacritty.nix
-    ../modules/waybar.nix
-    # inputs.stylix.homeManagerModules.stylix
-  ];
-
-  # stylix = {
-  #   image = pkgs.fetchurl {
-  #     url =
-  #       "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
-  #     sha256 = "enQo3wqhgf0FEPHj2coOCvo7DuZv+x5rL/WIo4qPI50=";
-  #   };
-
-  #   # polarity = "dark";
-  #   targets.hyprland.enable = true;
-  # };
+  imports =
+    [ ../modules/hyprland.nix ../modules/alacritty.nix ../modules/waybar.nix ];
 
   # emacs and doom
   programs = {
@@ -130,7 +121,7 @@ in {
   };
 
   accounts.email = {
-    accounts.fri = {
+    accounts.fri = rec {
       primary = true;
       flavor = "outlook.office365.com";
       realName = "David Jelenc";

@@ -47,6 +47,7 @@
           modules = [
             ./idea/configuration.nix
             inputs.home-manager.nixosModules.default
+
             (import ./overlays)
           ];
         };
