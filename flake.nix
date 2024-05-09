@@ -39,16 +39,7 @@
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system}; # .extend (final: prev: {
-      #   msmtp = prev.msmtp.overrideAttrs (old: {
-      #     src = prev.fetchFromGitHub {
-      #       wner = "marlam";
-      #       repo = "msmtp-mirror";
-      #       rev = "msmtp-1.8.26";
-      #       hash = "";
-      #     };
-      #   });
-      # });
+      pkgs = nixpkgs.legacyPackages.${system};
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
@@ -56,6 +47,7 @@
           modules = [
             ./idea/configuration.nix
             inputs.home-manager.nixosModules.default
+            (import ./overlays)
           ];
         };
       };
