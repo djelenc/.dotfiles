@@ -47,35 +47,40 @@ in {
     mbsync.package = isync-oauth2;
   };
 
-  accounts.email.accounts.fri = rec {
-    primary = true;
-    flavor = "outlook.office365.com";
-    realName = "David Jelenc";
-    userName = "davidjelenc@fri1.uni-lj.si";
-    address = "david.jelenc@fri.uni-lj.si";
-    passwordCommand = "oauth2ms";
+  accounts.email = {
 
-    mbsync = {
-      enable = true;
-      create = "both";
-      expunge = "both";
-      patterns = [
-        "Archive"
-        "Drafts"
-        "Deleted Items"
-        "Inbox"
-        "Junk Email"
-        "Sent Email"
-      ];
-      extraConfig.account.AuthMechs = "XOAUTH2";
+    maildirBasePath = ".mail";
+
+    accounts.fri = rec {
+      primary = true;
+      flavor = "outlook.office365.com";
+      realName = "David Jelenc";
+      userName = "davidjelenc@fri1.uni-lj.si";
+      address = "david.jelenc@fri.uni-lj.si";
+      passwordCommand = "oauth2ms";
+
+      mbsync = {
+        enable = true;
+        # create = "both";
+        # expunge = "both";
+        patterns = [
+          "Archive"
+          "Drafts"
+          "Deleted Items"
+          "Inbox"
+          "Junk Email"
+          "Sent Email"
+        ];
+        extraConfig.account.AuthMechs = "XOAUTH2";
+      };
+
+      msmtp = {
+        enable = true;
+        extraConfig.auth = "xoauth2";
+        extraConfig.passwordeval = "oauth2ms";
+      };
+
+      mu.enable = true;
     };
-
-    msmtp = {
-      enable = true;
-      extraConfig.auth = "xoauth2";
-      extraConfig.passwordeval = "oauth2ms";
-    };
-
-    mu.enable = true;
   };
 }
