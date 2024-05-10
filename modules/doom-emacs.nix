@@ -43,7 +43,6 @@ in {
 
     mu.enable = true;
     msmtp.enable = true;
-    msmtp.package = pkgs.msmtp;
     mbsync.enable = true;
     mbsync.package = isync-oauth2;
   };
