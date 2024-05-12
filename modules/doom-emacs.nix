@@ -61,15 +61,18 @@ in {
 
       mbsync = {
         enable = true;
-        # create = "both";
-        # expunge = "both";
+        create = "both";
+        expunge = "both";
         patterns = [
-          "Archive"
-          "Drafts"
-          "Deleted Items"
-          "Inbox"
-          "Junk Email"
-          "Sent Email"
+          "*"
+          "!Calendar"
+          "!Calendar/*"
+          "!Contacts"
+          "!Conversation*"
+          "!Journal"
+          "!Notes"
+          "!Outbox"
+          "!Tasks"
         ];
         extraConfig.account.AuthMechs = "XOAUTH2";
       };
