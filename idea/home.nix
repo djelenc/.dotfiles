@@ -13,27 +13,36 @@
     hyprlock
     dconf
     cinnamon.nemo-with-extensions
+    pcmanfm
+    gnome.nautilus
     swww
     xarchiver
     pavucontrol
     wlsunset
-    pcmanfm
     nextcloud-client
     brightnessctl
     dunst
     libnotify
 
-    # user programs
+    # browsers
     firefox
     brave
-    kdePackages.okular
+
+    # utils
     libreoffice-qt
+    kdePackages.okular
+    zathura
+    vlc
+
+    # images
+    nsxiv
+    shotwell
+
+    # programming
+    python3
     jetbrains.pycharm-community-bin
     vscodium.fhs
-    vlc
-    fontpreview
-    zoom-us
-    python3
+    gedit
 
     # app launchers
     fuzzel
@@ -49,6 +58,9 @@
     wireplumber
     nix-index
     nixfmt-classic
+    fontpreview
+    zoom-us
+
   ];
 
   imports = [
@@ -70,5 +82,29 @@
     theme.name = "adw-gtk3";
     cursorTheme.name = "Bibata-Modern-Ice";
     iconTheme.name = "GruvboxPlus";
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/plain" = [ "emacs.desktop" ];
+      "application/pdf" =
+        [ "org.pwmt.zathura-pdf-mupdf.desktop" "okular.desktop" ];
+      "image/jpeg" = [ "nsxiv.desktop" "shotwell.desktop" ];
+      "image/jpg" = [ "nsxiv.desktop" "shotwell.desktop" ];
+      "image/png" = [ "nsxiv.desktop" "shotwell.desktop" ];
+      "video/*" = [ "vlc.desktop" ];
+
+      # old
+      "x-scheme-handler/http" = [ "brave-browser.desktop" ];
+      "x-scheme-handler/https" = [ "brave-browser.desktop" ];
+
+      # x-scheme-handler/https=brave-browser.desktop
+      # text/html=brave-browser.desktop
+      # x-scheme-handler/http=brave-browser.desktop
+      # x-scheme-handler/https=brave-browser.desktop
+      # x-scheme-handler/about=brave-browser.desktop
+      # x-scheme-handler/unknown=brave-browser.desktop
+    };
   };
 }

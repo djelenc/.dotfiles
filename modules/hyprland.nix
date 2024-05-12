@@ -101,7 +101,7 @@
         "$mainMod, Q, killactive, "
         "$mainMod, M, fullscreen, 1"
         "$mainMod SHIFT, Q, exit, "
-        "$mainMod, F, exec, pcmanfm"
+        "$mainMod, F, exec, nautilus"
         "$mainMod, G, togglefloating, "
         "$mainMod, P, exec, rofi -show power-menu -modi power-menu:rofi-power-menu -font 'MonaspiceKr Nerd Font 17'"
         "$mainMod, O, togglesplit, # dwindle"
