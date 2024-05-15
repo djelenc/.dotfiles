@@ -75,6 +75,7 @@ in {
           "!Tasks"
         ];
         extraConfig.account.AuthMechs = "XOAUTH2";
+        extraConfig.channel.CopyArrivalDate = "yes";
       };
 
       msmtp = {
