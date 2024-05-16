@@ -31,6 +31,7 @@ in {
     cyrus_sasl
     cyrus-sasl-xoauth2
     isync-oauth2
+    (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
   ];
 
   programs = {
@@ -64,7 +65,9 @@ in {
         create = "both";
         expunge = "both";
         patterns = [
-          "*"
+          "Archive*"
+          # "*"
+          #
           "!Calendar"
           "!Calendar/*"
           "!Contacts"
@@ -76,6 +79,7 @@ in {
         ];
         extraConfig.account.AuthMechs = "XOAUTH2";
         extraConfig.channel.CopyArrivalDate = "yes";
+        extraConfig.account.PipelineDepth = 1;
       };
 
       msmtp = {
