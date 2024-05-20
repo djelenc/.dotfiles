@@ -80,7 +80,6 @@ in {
           "INBOX"
           "Junk Email"
           "Sent Items"
-          "Starred"
           # "*"
           # "!Calendar"
           # "!Calendar/*"
