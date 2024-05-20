@@ -69,16 +69,16 @@ do
     # We compute a touch-compatible timestamp as well as the real timestamp
     TIMESTAMP=$(date --date="$DATE" +%s)
     DATE=$(date --date="$DATE" +%Y%m%d%H%M)
+
+    # touch the file with the correct timestamp
+    touch -t $DATE $i
     
     if [ ${i%%.*} = $TIMESTAMP ]
     then
         continue
         # skip this file, already updated
     fi
-    
-    # touch the file with the correct timestamp
-    touch -t $DATE $i
-    
+
     # We rename the file with preprending timestamp
     newfilename="$TIMESTAMP.${i#*.}"
     mv -v "$i" "$newfilename"

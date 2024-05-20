@@ -32,6 +32,13 @@ in {
     cyrus-sasl-xoauth2
     isync-oauth2
     (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
+
+    # dictionaries
+    aspell
+    aspellDicts.sl
+    aspellDicts.en
+    aspellDicts.en-computers
+    aspellDicts.en-science
   ];
 
   programs = {
@@ -65,21 +72,28 @@ in {
         create = "both";
         expunge = "both";
         patterns = [
-          "Archive*"
+          # type `mbsync -l <account>` eg. fri
+          # to see which folders sync
+          "Archive"
+          "Deleted Items"
+          "Drafts"
+          "INBOX"
+          "Junk Email"
+          "Sent Items"
+          "Starred"
           # "*"
-          #
-          "!Calendar"
-          "!Calendar/*"
-          "!Contacts"
-          "!Conversation*"
-          "!Journal"
-          "!Notes"
-          "!Outbox"
-          "!Tasks"
+          # "!Calendar"
+          # "!Calendar/*"
+          # "!Contacts"
+          # "!Conversation*"
+          # "!Journal"
+          # "!Notes"
+          # "!Outbox"
+          # "!Tasks"
         ];
         extraConfig.account.AuthMechs = "XOAUTH2";
         extraConfig.channel.CopyArrivalDate = "yes";
-        extraConfig.account.PipelineDepth = 1;
+        # extraConfig.account.PipelineDepth = 1;
       };
 
       msmtp = {
@@ -90,5 +104,25 @@ in {
 
       mu.enable = true;
     };
+
+    # accounts.gmail = rec {
+    #   flavor = "gmail.com";
+    #   realName = "David Jelenc";
+    #   userName = "djelenc.fri";
+    #   address = "djelenc.fri@gmail.com";
+    #   passwordCommand = "cat /home/david/.certs/gmail.pass";
+
+    #   mbsync = {
+    #     enable = true;
+    #     create = "maildir";
+    #     expunge = "maildir";
+    #     patterns = [ "*" ];
+    #     extraConfig.account.AuthMechs = "LOGIN";
+    #     extraConfig.channel.CopyArrivalDate = "yes";
+    #   };
+
+    #   msmtp.enable = true;
+    #   mu.enable = true;
+    # };
   };
 }

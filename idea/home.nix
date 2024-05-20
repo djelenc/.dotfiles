@@ -49,10 +49,6 @@
     rofi-wayland
     rofi-power-menu
 
-    # dictionaries
-    hunspell
-    hunspellDicts.en_US-large
-
     # misc
     fzf
     wireplumber
