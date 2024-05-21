@@ -10,8 +10,8 @@
     # desktop related
     networkmanagerapplet
     gsimplecal
-    hyprlock
     dconf
+    swaylock-effects
     cinnamon.nemo-with-extensions
     pcmanfm
     gnome.nautilus

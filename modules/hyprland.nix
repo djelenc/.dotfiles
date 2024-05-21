@@ -1,4 +1,4 @@
-{ inputs, pkgs, lib, ... }: {
+{ inputs, pkgs, lib, xdg, ... }: {
   xdg.portal = {
     config.common.default = "*";
     enable = true;
@@ -15,6 +15,11 @@
       defaultCursor = "Adwaita";
     };
   };
+
+  xdg.configFile."swaylock/config".source = ../configs/swaylock.config;
+  # home.file.".gdbinit".text = ''
+  #   set auto-load safe-path /nix/store
+  # '';
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -137,8 +142,7 @@
         ", xf86audioraisevolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
         ", xf86audiolowervolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
         ", xf86audiomute, exec, wpctl set-mute @DEFAULT_SINK@ toggle"
-        "$mainMod, escape, exec, hyprlock"
-        # "$mainMod, escape, exec, swaylock -f --color 1e1e2eFF"
+        "$mainMod, escape, exec, swaylock"
       ];
 
       bindm = [
