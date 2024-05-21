@@ -5,6 +5,17 @@
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
+  # set cursor
+  home.pointerCursor = {
+    name = "Adwaita";
+    package = pkgs.gnome.adwaita-icon-theme;
+    size = 24;
+    x11 = {
+      enable = true;
+      defaultCursor = "Adwaita";
+    };
+  };
+
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -12,7 +23,7 @@
     systemd.enable = false;
 
     plugins = [
-      inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
+      # inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
     ];
 
     settings = {
@@ -109,15 +120,18 @@
         "$mainMod, l, movefocus, r"
         "$mainMod, k, movefocus, u"
         "$mainMod, j, movefocus, d"
+        "$mainMod CONTROL, j, workspace, +1"
+        "$mainMod CONTROL, k, workspace, -1"
+        "$mainMod SHIFT, j, movetoworkspace, +1"
+        "$mainMod SHIFT, k, movetoworkspace, -1"
         # Assumes the monitors are side by side (horizontal)
-        "$mainMod CONTROL, j, nextdesk, "
-        "$mainMod CONTROL, k, prevdesk, "
-        "$mainMod SHIFT, j, movetonextdesk, "
-        "$mainMod SHIFT, k, movetoprevdesk, "
         "$mainMod SHIFT, h, movewindow, l"
         "$mainMod SHIFT, l, movewindow, r"
+
+        # TODO
         "LALT,Tab,cyclenext,"
         "LALT,Tab,bringactivetotop,"
+
         ", xf86monbrightnessup, exec, brightnessctl set 10%+"
         ", xf86monbrightnessdown, exec, brightnessctl set 10%-"
         ", xf86audioraisevolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
@@ -132,7 +146,6 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      # "bindr" = "$mainMod, SUPER_L, exec, /home/david/.config/rofi/launchers/type-2/launcher.sh";
       "bindr" =
         "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
 
@@ -144,14 +157,14 @@
       ];
     };
 
-    extraConfig = ''
-      plugin {
-        virtual-desktops {
-          cycleworkspaces = 0
-          rememberlayout = size
-          notifyinit = 0
-          verbose_logging = 0
-        }
-      }'';
+    # extraConfig = ''
+    #   plugin {
+    #     virtual-desktops {
+    #       cycleworkspaces = 0
+    #       rememberlayout = size
+    #       notifyinit = 0
+    #       verbose_logging = 0
+    #     }
+    #   }'';
   };
 }

@@ -11,11 +11,11 @@
 
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-      follows = "hyprland-virtual-desktops/hyprland";
+      # follows = "hyprland-virtual-desktops/hyprland";
     };
 
-    hyprland-virtual-desktops.url =
-      "github:levnikmyskin/hyprland-virtual-desktops";
+    # hyprland-virtual-desktops.url =
+    #   "github:levnikmyskin/hyprland-virtual-desktops";
 
     nixvim = {
       url = "github:nix-community/nixvim";

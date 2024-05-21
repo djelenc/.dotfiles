@@ -76,8 +76,9 @@
   gtk = {
     enable = true;
     theme.name = "adw-gtk3";
-    cursorTheme.name = "Bibata-Modern-Ice";
-    iconTheme.name = "GruvboxPlus";
+    cursorTheme.name = "Adwaita";
+    # cursorTheme.name = "Bibata-Modern-Ice";
+    # iconTheme.name = "GruvboxPlus";
   };
 
   xdg.mimeApps = {
