@@ -26,6 +26,11 @@ in {
     imagemagick
     pandoc
 
+    # doom-web module
+    html-tidy
+    stylelint
+    jsbeautifier
+
     # email related
     oauth2ms
     cyrus_sasl
@@ -34,11 +39,17 @@ in {
     (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
 
     # dictionaries
-    aspell
-    aspellDicts.sl
-    aspellDicts.en
-    aspellDicts.en-computers
-    aspellDicts.en-science
+    (aspellWithDicts (dicts: with dicts; [ sl en en-computers en-science ]))
+    # enchant
+    # hunspell
+    # hunspellDicts.en-us
+    # (import ../packages/hunspell-dicts.nix { inherit pkgs; }).sl-sl
+
+    # aspell
+    # aspellDicts.sl
+    # aspellDicts.en
+    # aspellDicts.en-computers
+    # aspellDicts.en-science
   ];
 
   programs = {

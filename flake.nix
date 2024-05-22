@@ -9,10 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-      # follows = "hyprland-virtual-desktops/hyprland";
-    };
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
 
     # hyprland-virtual-desktops.url =
     #   "github:levnikmyskin/hyprland-virtual-desktops";
@@ -37,6 +34,7 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./idea/configuration.nix
+            inputs.stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.default
 
             (import ./overlays)

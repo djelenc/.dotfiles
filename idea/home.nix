@@ -56,7 +56,6 @@
     nixfmt-classic
     fontpreview
     zoom-us
-
   ];
 
   imports = [
@@ -73,13 +72,7 @@
     extraConfig.init.defaultBranch = "main";
   };
 
-  gtk = {
-    enable = true;
-    theme.name = "adw-gtk3";
-    cursorTheme.name = "Adwaita";
-    # cursorTheme.name = "Bibata-Modern-Ice";
-    # iconTheme.name = "GruvboxPlus";
-  };
+  gtk.enable = true;
 
   xdg.mimeApps = {
     enable = true;

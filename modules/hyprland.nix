@@ -5,21 +5,8 @@
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
-  # set cursor
-  home.pointerCursor = {
-    name = "Adwaita";
-    package = pkgs.gnome.adwaita-icon-theme;
-    size = 24;
-    x11 = {
-      enable = true;
-      defaultCursor = "Adwaita";
-    };
-  };
-
+  # swaylock-effects
   xdg.configFile."swaylock/config".source = ../configs/swaylock.config;
-  # home.file.".gdbinit".text = ''
-  #   set auto-load safe-path /nix/store
-  # '';
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -45,7 +32,10 @@
         "nextcloud"
       ];
 
-      env = [ "XCURSOR_SIZE,24" "GDK_SCALE,1.25" ];
+      env = [
+        # "XCURSOR_SIZE,24"
+        # "GDK_SCALE,1.25"
+      ];
 
       input = {
         kb_layout = "us,si";
