@@ -15,7 +15,7 @@
     cinnamon.nemo-with-extensions
     pcmanfm
     gnome.nautilus
-    swww
+    # swww
     xarchiver
     pavucontrol
     wlsunset
@@ -72,17 +72,37 @@
     extraConfig.init.defaultBranch = "main";
   };
 
+  programs.eza = {
+    enable = true;
+    enableFishIntegration = true;
+    git = true;
+    icons = true;
+  };
+
   gtk.enable = true;
+  qt.enable = true;
 
   xdg.mimeApps = {
     enable = true;
+    # installed apps
+    # user:
+    #   exa /etc/profiles/per-user/david/share/applications/
+    # system:
+    #   exa /run/current-system/sw/share/applications
+    #
     defaultApplications = {
       "text/plain" = [ "emacs.desktop" ];
-      "application/pdf" =
-        [ "org.pwmt.zathura-pdf-mupdf.desktop" "okular.desktop" ];
-      "image/jpeg" = [ "nsxiv.desktop" "shotwell.desktop" ];
-      "image/jpg" = [ "nsxiv.desktop" "shotwell.desktop" ];
-      "image/png" = [ "nsxiv.desktop" "shotwell.desktop" ];
+      "text/org" = [ "emacs.desktop" ];
+      "application/pdf" = [ "org.pwmt.zathura-pdf-mupdf.desktop" ];
+      "image/jpeg" = [ "nsxiv.desktop" ];
+      "image/jpg" = [ "nsxiv.desktop" ];
+      "image/png" = [ "nsxiv.desktop" ];
+      "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
+
+      "application/zip" = [ "xarchiver.desktop" ];
+      "application/x-zip" = [ "xarchiver.desktop" ];
+      "application/x-zip-compressed" = [ "xarchiver.desktop" ];
+
       "video/*" = [ "vlc.desktop" ];
 
       # old
@@ -97,4 +117,10 @@
       # x-scheme-handler/unknown=brave-browser.desktop
     };
   };
+
+  # testiram stylix
+  # home.file."test.txt".text = ''
+  #   barva = rgb(${config.stylix.polarity})
+  #   barva = rgb(${config.scheme})
+  # '';
 }

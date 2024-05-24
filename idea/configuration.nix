@@ -13,6 +13,7 @@
   # stylix
 
   stylix = {
+    autoEnable = true;
     image = pkgs.fetchurl {
       url =
         "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
@@ -20,8 +21,8 @@
     };
 
     # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-dark.yaml";
-    # base16Scheme = ${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
+    # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
     polarity = "dark";
 
     cursor = {
@@ -51,7 +52,11 @@
 
     targets = {
       nixvim.enable = false;
-      # gtk.enable = true;
+      gtk.enable = true;
+      gnome.enable = true;
+      # plymouth.enable = true;
+      # plymouth.logo = true;
+      # plymouth.logoAnimated = true;
     };
   };
 

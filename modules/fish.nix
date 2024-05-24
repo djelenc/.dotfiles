@@ -17,7 +17,9 @@
 
     programs.fish = {
       enable = true;
-      shellAbbrs = {
+      shellAliases = {
+        l = "exa --hyperlink --icons";
+        ll = "exa -la --icons --hyperlink --header";
         glg = "git log --oneline";
         gst = "git status";
         gdf = "git diff";
@@ -25,6 +27,7 @@
 
         cswitch = "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}";
         ctest = "sudo nixos-rebuild test --flake ${config.dotFilesRoot}";
+        cboot = "sudo nixos-rebuild boot --flake ${config.dotFilesRoot}";
         cedit = "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}";
         cdiff = "git -C ${config.dotFilesRoot} diff";
         csave = ''

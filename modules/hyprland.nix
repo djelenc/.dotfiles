@@ -1,4 +1,4 @@
-{ inputs, pkgs, lib, xdg, ... }: {
+{ inputs, pkgs, lib, xdg, config, ... }: {
   xdg.portal = {
     config.common.default = "*";
     enable = true;
@@ -24,7 +24,6 @@
       xwayland = { force_zero_scaling = true; };
 
       exec-once = [
-        "swww init"
         "nm-applet --indicator"
         "waybar"
         "blueman-applet"
@@ -32,10 +31,7 @@
         "nextcloud"
       ];
 
-      env = [
-        # "XCURSOR_SIZE,24"
-        # "GDK_SCALE,1.25"
-      ];
+      env = [ "XCURSOR_SIZE,24" "GDK_SCALE,1.25" ];
 
       input = {
         kb_layout = "us,si";
@@ -141,6 +137,7 @@
       ];
 
       "bindr" =
+        # "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20' -b '${config.stylix.base16Scheme.base0E}'";
         "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
 
       windowrulev2 = [
