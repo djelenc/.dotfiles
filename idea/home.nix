@@ -120,7 +120,14 @@
 
   # testiram stylix
   # home.file."test.txt".text = ''
-  #   barva = rgb(${config.stylix.polarity})
-  #   barva = rgb(${config.scheme})
+  #   barva = rgb(${config.lib.stylix.colors.base00})
+  #   barva = rgb(${config.lib.stylix.colors.base01})
+  #   barva = rgb(${config.lib.stylix.colors.base02})
+  #   barva = rgb(${config.lib.stylix.colors.base03})
+  #   barva = rgb(${config.lib.stylix.colors.base04})
+  #   barva = rgb(${config.lib.stylix.colors.base05})
+  #   barva = rgb(${config.lib.stylix.colors.base06})
+  #   barva = rgb(${config.lib.stylix.colors.base07})
+  #   barva = rgb(${config.lib.stylix.colors.base08})
   # '';
 }
