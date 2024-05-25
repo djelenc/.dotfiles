@@ -5,9 +5,6 @@
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
-  # swaylock-effects
-  xdg.configFile."swaylock/config".source = ../configs/swaylock.config;
-
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -138,7 +135,8 @@
 
       "bindr" =
         # "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20' -b '${config.stylix.base16Scheme.base0E}'";
-        "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
+        "$mainMod, SUPER_L, exec, fuzzel";
+      # "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
 
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"

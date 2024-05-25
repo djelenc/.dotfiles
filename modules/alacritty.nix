@@ -7,8 +7,8 @@
         opacity = lib.mkDefault 0.75;
         blur = true;
         padding = {
-          x = 5;
-          y = 5;
+          x = 10;
+          y = 10;
         };
         dynamic_padding = true;
       };

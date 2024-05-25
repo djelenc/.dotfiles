@@ -54,9 +54,6 @@
       nixvim.enable = false;
       gtk.enable = true;
       gnome.enable = true;
-      # plymouth.enable = true;
-      # plymouth.logo = true;
-      # plymouth.logoAnimated = true;
     };
   };
 
@@ -152,7 +149,6 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
-    lf
     htop
     tree
     jq
@@ -163,8 +159,8 @@
   ];
 
   # Virtualizacija
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "david" ];
+  # virtualisation.virtualbox.host.enable = true;
+  # users.extraGroups.vboxusers.members = [ "david" ];
 
   programs.mtr.enable = true;
 
