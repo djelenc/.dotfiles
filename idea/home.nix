@@ -11,15 +11,12 @@
     networkmanagerapplet
     gsimplecal
     dconf
-    cinnamon.nemo-with-extensions
-    pcmanfm
     gnome.nautilus
     xarchiver
     pavucontrol
     wlsunset
     nextcloud-client
     brightnessctl
-    dunst
     libnotify
 
     # browsers
@@ -61,6 +58,20 @@
     ../modules/waybar.nix
     ../modules/doom-emacs.nix
   ];
+
+  services.dunst = {
+    enable = true;
+    settings = {
+      global = {
+        width = 300;
+        height = 300;
+        offset = "30x50";
+        origin = "top-right";
+        transparency = 10;
+        font = lib.mkForce "CaskaydiaMono Nerd Font";
+      };
+    };
+  };
 
   programs.git = {
     enable = true;
