@@ -28,6 +28,7 @@
     kdePackages.okular
     zathura
     vlc
+    wl-clipboard
 
     # images
     nsxiv
@@ -104,7 +105,11 @@
     };
   };
 
-  stylix.targets.swaylock.enable = false;
+  stylix.targets = {
+    swaylock.enable = false;
+    emacs.enable = true;
+    nixvim.enable = false;
+  };
 
   programs.swaylock = {
     enable = true;

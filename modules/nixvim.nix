@@ -12,6 +12,9 @@
 
     globals.mapleader = " ";
 
+    # use system clipboard
+    clipboard.register = "unnamedplus";
+
     opts = {
       number = true;
       relativenumber = true;
@@ -39,17 +42,15 @@
       };
     };
 
-    colorschemes.tokyonight = {
-      enable = true;
-      settings = { transparent = true; };
-    };
-
-    # colorschemes.gruvbox = {
+    # colorschemes.tokyonight = {
     #   enable = true;
-    #   settings = {
-    #     transparent_mode = true;
-    #   };
+    #   settings = { transparent = true; };
     # };
+
+    colorschemes.gruvbox = {
+      enable = true;
+      settings = { transparent_mode = true; };
+    };
 
     autoCmd = [{
       # Delete trailing whitespace on save

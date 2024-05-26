@@ -48,12 +48,15 @@
         package = pkgs.nerdfonts;
         name = "CaskaydiaMono Nerd Font";
       };
-    };
 
-    targets = {
-      nixvim.enable = false;
-      gtk.enable = true;
-      gnome.enable = true;
+      sansSerif = {
+        package = pkgs.dejavu_fonts;
+        name = "DejaVuSansM Nerd Font";
+      };
+      serif = {
+        package = pkgs.dejavu_fonts;
+        name = "DejaVu Serif";
+      };
     };
   };
 
