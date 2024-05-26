@@ -11,9 +11,9 @@
   dotFilesRoot = "/home/david/.dotfiles";
 
   # stylix
-
   stylix = {
     autoEnable = true;
+    # required, but does not work?!
     image = pkgs.fetchurl {
       url =
         "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
@@ -21,8 +21,8 @@
     };
 
     # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-dark.yaml";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     polarity = "dark";
 
     cursor = {
@@ -44,15 +44,19 @@
         desktop = 12;
         popups = 12;
       };
+
       monospace = {
         package = pkgs.nerdfonts;
         name = "CaskaydiaMono Nerd Font";
       };
 
       sansSerif = {
-        package = pkgs.dejavu_fonts;
-        name = "DejaVuSansM Nerd Font";
+        package = pkgs.nerdfonts;
+        name = "NotoSans NF Reg";
+        # package = pkgs.dejavu_fonts;
+        # name = "DejaVuSansM Nerd Font";
       };
+
       serif = {
         package = pkgs.dejavu_fonts;
         name = "DejaVu Serif";
