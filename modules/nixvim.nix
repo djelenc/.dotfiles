@@ -28,6 +28,13 @@
       treesitter.enable = true;
       nix.enable = true;
       surround.enable = true;
+
+      neo-tree = {
+        enable = true;
+        enableGitStatus = true;
+        enableModifiedMarkers = true;
+      };
+
       telescope = {
         enable = true;
 
@@ -93,6 +100,11 @@
         key = "<leader>qq";
         action = ":qa<CR>";
         options.desc = "Quit";
+      }
+      {
+        key = "<leader>op";
+        action = ":Neotree toggle<CR>";
+        options.desc = "Neotree";
       }
     ];
   };
