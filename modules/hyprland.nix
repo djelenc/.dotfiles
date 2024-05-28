@@ -21,10 +21,10 @@
       xwayland = { force_zero_scaling = true; };
 
       exec-once = [
-        "nm-applet --indicator"
         "waybar"
-        "blueman-applet"
         "wlsunset -l 46 -L 14.5"
+        "nm-applet --indicator"
+        "blueman-applet"
         "nextcloud"
       ];
 

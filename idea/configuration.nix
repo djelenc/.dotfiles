@@ -125,18 +125,10 @@
   # Regreet login-manager
   programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
 
-  # hyprland -- to make it show in the login-manager
-  # programs.hyprland.enable = true;
-  # programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-
-  # SDDM display login
-  # services.xserver.enable = true;
-  # services.displayManager = {
-  #   sddm.enable = true;
-  #   sddm.wayland.enable = true;
-  #   sddm.autoNumlock = true;
-  #   defaultSession = "hyprland";
-  # };
+  # hyprland -- actually managed with HM
+  # here only to make it show in the login-manager
+  programs.hyprland.enable = true;
+  programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
   # terminal greeter
   # services.greetd = {
@@ -151,7 +143,6 @@
   #     };
   #   };
   # };
-
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   # Keeps the screen clean during terminal login
   # systemd.services.greetd.serviceConfig = {
@@ -159,7 +150,6 @@
   #   StandardInput = "tty";
   #   StandardOutput = "tty";
   #   StandardError = "journal";
-
   #   # Without these bootlogs will spam on screen
   #   TTYReset = true;
   #   TTYVHangup = true;

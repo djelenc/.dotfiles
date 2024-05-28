@@ -28,7 +28,7 @@
         cswitch = "sudo nixos-rebuild switch --flake ${config.dotFilesRoot}";
         ctest = "sudo nixos-rebuild test --flake ${config.dotFilesRoot}";
         cboot = "sudo nixos-rebuild boot --flake ${config.dotFilesRoot}";
-        cbuilt = "sudo nixos-rebuild build --flake ${config.dotFilesRoot}";
+        cbuild = "sudo nixos-rebuild build --flake ${config.dotFilesRoot}";
         cedit = "nvim -c 'cd ${config.dotFilesRoot}' ${config.dotFilesRoot}";
         cdiff = "git -C ${config.dotFilesRoot} diff";
         csave = ''
