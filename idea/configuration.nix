@@ -171,8 +171,24 @@
 
   programs.mtr.enable = true;
 
+  # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
+  services.gnome.gnome-keyring.enable = true;
+
+  # hyprland -- to make it show in the login-manager
+  # programs.hyprland.enable = true;
+  # programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+
+  # SDDM display login
+  # services.xserver.enable = true;
+  # services.displayManager = {
+  #   sddm.enable = true;
+  #   sddm.wayland.enable = true;
+  #   sddm.autoNumlock = true;
+  #   defaultSession = "hyprland";
+  # };
   # terminal greeter
   # programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
+  # services.cage.enable = true;
   services.greetd = {
     enable = true;
     settings = {
@@ -180,14 +196,11 @@
         command =
           "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
         user = "david";
+        # command = "${pkgs.cage}/bin/cage -s -- regreet";
+        # user = "greeter";
       };
     };
   };
-
-  # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
-  services.gnome.gnome-keyring.enable = true;
-  # programs.seahorse.enable = true;
-  # security.pam.services.greetd.enableGnomeKeyring = true;
 
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   # Keeps the screen clean during terminal login
