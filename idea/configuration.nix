@@ -1,70 +1,17 @@
 { config, inputs, pkgs, lib, ... }: {
   imports = [
     ./hardware-configuration.nix
+
     inputs.home-manager.nixosModules.default
     inputs.xremap-flake.nixosModules.default
     inputs.nixvim.nixosModules.nixvim
+
     ../modules/nixvim.nix
     ../modules/fish.nix
+    ../modules/stylix.nix
   ];
 
   dotFilesRoot = "/home/david/.dotfiles";
-
-  # stylix
-  stylix = {
-    autoEnable = true;
-    # required, but does not work?!
-    image = pkgs.fetchurl {
-      url =
-        "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
-      sha256 = "enQo3wqhgf0FEPHj2coOCvo7DuZv+x5rL/WIo4qPI50=";
-    };
-
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-dark.yaml";
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
-    polarity = "dark";
-
-    cursor = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Ice";
-    };
-
-    opacity = {
-      applications = 1.0;
-      terminal = 0.85;
-      desktop = 1.0;
-      popups = 1.0;
-    };
-
-    fonts = {
-      sizes = {
-        applications = 12;
-        terminal = 17;
-        desktop = 12;
-        popups = 12;
-      };
-
-      monospace = {
-        package = pkgs.nerdfonts;
-        name = "CaskaydiaMono Nerd Font";
-      };
-
-      sansSerif = {
-        package = pkgs.nerdfonts;
-        name = "NotoSans NF Reg";
-        # package = pkgs.dejavu_fonts;
-        # name = "DejaVuSansM Nerd Font";
-      };
-
-      serif = {
-        package = pkgs.dejavu_fonts;
-        name = "DejaVu Serif";
-      };
-    };
-  };
-
-  home-manager.backupFileExtension = "backup";
 
   # rebinds caps to ctrl and esc
   services.xremap = {
@@ -132,6 +79,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "backup";
     extraSpecialArgs = { inherit inputs; };
     users.david = import ./home.nix;
   };
@@ -174,6 +122,9 @@
   # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
   services.gnome.gnome-keyring.enable = true;
 
+  # Regreet login-manager
+  programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
+
   # hyprland -- to make it show in the login-manager
   # programs.hyprland.enable = true;
   # programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -186,35 +137,34 @@
   #   sddm.autoNumlock = true;
   #   defaultSession = "hyprland";
   # };
+
   # terminal greeter
-  # programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
-  # services.cage.enable = true;
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command =
-          "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
-        user = "david";
-        # command = "${pkgs.cage}/bin/cage -s -- regreet";
-        # user = "greeter";
-      };
-    };
-  };
+  # services.greetd = {
+  #   enable = true;
+  #   settings = {
+  #     default_session = {
+  #       command =
+  #         "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+  #       user = "david";
+  #       # command = "${pkgs.cage}/bin/cage -s -- regreet";
+  #       # user = "greeter";
+  #     };
+  #   };
+  # };
 
   # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
   # Keeps the screen clean during terminal login
-  systemd.services.greetd.serviceConfig = {
-    Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
-    StandardError = "journal";
+  # systemd.services.greetd.serviceConfig = {
+  #   Type = "idle";
+  #   StandardInput = "tty";
+  #   StandardOutput = "tty";
+  #   StandardError = "journal";
 
-    # Without these bootlogs will spam on screen
-    TTYReset = true;
-    TTYVHangup = true;
-    TTYVTDisallocate = true;
-  };
+  #   # Without these bootlogs will spam on screen
+  #   TTYReset = true;
+  #   TTYVHangup = true;
+  #   TTYVTDisallocate = true;
+  # };
 
   system.stateVersion = "24.05"; # Did you read the comment?
 

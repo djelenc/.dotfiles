@@ -4,7 +4,6 @@
     enable = true;
     settings = {
       window = {
-        opacity = lib.mkDefault 0.75;
         blur = true;
         padding = {
           x = 10;
@@ -17,15 +16,6 @@
 
       scrolling.history = 100000;
       selection.save_to_clipboard = true;
-
-      font = {
-        normal = {
-          family = lib.mkDefault "CaskaydiaMono Nerd Font";
-          style = lib.mkDefault "Regular";
-        };
-        size = lib.mkDefault 17.0;
-      };
-
       colors.draw_bold_text_with_bright_colors = true;
     };
   };

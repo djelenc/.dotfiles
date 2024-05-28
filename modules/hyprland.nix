@@ -9,7 +9,7 @@
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     xwayland.enable = true;
-    systemd.enable = false;
+    systemd.enable = true;
 
     plugins = [
       # inputs.hyprland-virtual-desktops.packages.${pkgs.system}.virtual-desktops
@@ -133,10 +133,7 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      "bindr" =
-        # "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20' -b '${config.stylix.base16Scheme.base0E}'";
-        "$mainMod, SUPER_L, exec, fuzzel";
-      # "$mainMod, SUPER_L, exec, fuzzel -f 'CaskaydiaMono Nerd Font:size=20'";
+      "bindr" = "$mainMod, SUPER_L, exec, fuzzel";
 
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
