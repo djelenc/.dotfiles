@@ -130,8 +130,18 @@
     };
   };
 
-  gtk.enable = true;
-  qt.enable = true;
+  gtk = {
+    enable = true;
+    iconTheme.name = "Adwaita";
+    cursorTheme.name = "Bibata-Modern-Ice";
+    theme.name = "adw-gtk3";
+  };
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style.name = "adwaita-dark";
+  };
 
   xdg.mimeApps = {
     enable = true;
@@ -140,8 +150,7 @@
     #   exa /etc/profiles/per-user/david/share/applications/
     # system:
     #   exa /run/current-system/sw/share/applications
-    #
-    # barva = rgb(${config.lib.stylix.colors.base00})
+    # example: ${config.lib.stylix.colors.base00}
     defaultApplications = {
       "text/plain" = [ "emacs.desktop" ];
       "text/org" = [ "emacs.desktop" ];

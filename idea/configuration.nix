@@ -104,6 +104,7 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     bat
+    nh
     htop
     tree
     jq
@@ -123,47 +124,24 @@
   services.gnome.gnome-keyring.enable = true;
 
   # Regreet login-manager
-  programs.regreet.enable = true; # GUI login -- dela le, ce rocno vpises sejo
+  programs.regreet.enable = true;
 
-  # hyprland -- actually managed with HM
-  # here only to make it show in the login-manager
+  # hyprland -- configured by HM (only to make it show in the login-manager)
   programs.hyprland.enable = true;
   programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
-  # terminal greeter
-  # services.greetd = {
-  #   enable = true;
-  #   settings = {
-  #     default_session = {
-  #       command =
-  #         "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
-  #       user = "david";
-  #       # command = "${pkgs.cage}/bin/cage -s -- regreet";
-  #       # user = "greeter";
-  #     };
-  #   };
-  # };
-  # https://www.reddit.com/r/NixOS/comments/u0cdpi/tuigreet_with_xmonad_how/
-  # Keeps the screen clean during terminal login
-  # systemd.services.greetd.serviceConfig = {
-  #   Type = "idle";
-  #   StandardInput = "tty";
-  #   StandardOutput = "tty";
-  #   StandardError = "journal";
-  #   # Without these bootlogs will spam on screen
-  #   TTYReset = true;
-  #   TTYVHangup = true;
-  #   TTYVTDisallocate = true;
-  # };
+  # yet another nix helper
+  programs.nh.enable = true;
+  programs.nh.flake = config.dotFilesRoot;
 
-  system.stateVersion = "24.05"; # Did you read the comment?
+  # Did you read the comment?
+  system.stateVersion = "24.05";
 
   # sound
   sound.enable = true;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
-    # maybe disable if VBOX has issues
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
