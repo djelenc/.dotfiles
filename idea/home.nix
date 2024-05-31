@@ -12,6 +12,8 @@
     gsimplecal
     dconf
     gnome.nautilus
+    gnome.adwaita-icon-theme
+
     xarchiver
     pavucontrol
     wlsunset
@@ -130,18 +132,8 @@
     };
   };
 
-  gtk = {
-    enable = true;
-    iconTheme.name = "Adwaita";
-    cursorTheme.name = "Bibata-Modern-Ice";
-    theme.name = "adw-gtk3";
-  };
-
-  qt = {
-    enable = true;
-    platformTheme = "gtk";
-    style.name = "adwaita-dark";
-  };
+  gtk.enable = true;
+  qt.enable = true;
 
   xdg.mimeApps = {
     enable = true;
