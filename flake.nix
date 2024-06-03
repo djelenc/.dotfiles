@@ -3,6 +3,7 @@
 
   inputs = {
     # nixpkgs.url = "nixpkgs/nixos-unstable";
+    unstable-nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
 
     home-manager = {
@@ -24,7 +25,7 @@
     stylix.url = "github:danth/stylix";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, unstable-nixpkgs, home-manager, ... }@inputs:
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
@@ -32,7 +33,17 @@
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = {
+            inherit inputs;
+            pkgs = import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            };
+            unstable-pkgs = import unstable-nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            };
+          };
           modules = [
             ./idea/configuration.nix
             inputs.stylix.nixosModules.stylix

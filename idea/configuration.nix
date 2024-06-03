@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, lib, ... }: {
+{ config, inputs, pkgs, lib, unstable-pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
 
@@ -38,7 +38,8 @@
   # Use latest kernel
   # pkgs.linuxPackages_6_8
   # pkgs.linuxPackages_6_8_hardened
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_6_8;
 
   networking.hostName = "idea";
   networking.wireless.userControlled.enable = true;
@@ -117,8 +118,9 @@
   ];
 
   # Virtualizacija
-  # virtualisation.virtualbox.host.enable = true;
-  # users.extraGroups.vboxusers.members = [ "david" ];
+  virtualisation.virtualbox.host.enable = true;
+  virtualisation.virtualbox.host.package = unstable-pkgs.virtualbox;
+  users.extraGroups.vboxusers.members = [ "david" ];
 
   programs.mtr.enable = true;
 
