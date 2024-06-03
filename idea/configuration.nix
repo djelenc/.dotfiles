@@ -36,6 +36,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Use latest kernel
+  # pkgs.linuxPackages_6_8
+  # pkgs.linuxPackages_6_8_hardened
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "idea";
