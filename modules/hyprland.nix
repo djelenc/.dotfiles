@@ -140,6 +140,7 @@
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
         "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
+        "float,class:(blueman)"
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };

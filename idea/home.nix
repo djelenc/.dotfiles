@@ -83,6 +83,12 @@
 
   programs.java.enable = true;
 
+  programs.zellij = {
+    enable = true;
+    enableFishIntegration = true;
+    enableBashIntegration = true;
+  };
+
   programs.git = {
     enable = true;
     userName = "David Jelenc";
