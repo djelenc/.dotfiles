@@ -39,6 +39,8 @@
     # programming
     python3
     jetbrains.pycharm-community-bin
+    jetbrains.idea-community-src
+    maven
     vscodium.fhs
     gedit
 
@@ -77,6 +79,8 @@
       };
     };
   };
+
+  programs.java.enable = true;
 
   programs.git = {
     enable = true;
