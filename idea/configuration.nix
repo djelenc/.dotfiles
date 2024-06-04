@@ -115,11 +115,20 @@
     wget
     curl
     git
+    mesa
   ];
 
   # Virtualizacija
   virtualisation.virtualbox.host.enable = true;
   virtualisation.virtualbox.host.package = unstable-pkgs.virtualbox;
+  virtualisation.virtualbox.host.enableExtensionPack = true;
+  virtualisation.virtualbox.host.enableKvm = true;
+  virtualisation.virtualbox.host.enableHardening = false;
+  virtualisation.virtualbox.host.addNetworkInterface = false;
+  virtualisation.virtualbox.guest.enable = true;
+  virtualisation.virtualbox.guest.draganddrop = true;
+  virtualisation.virtualbox.guest.clipboard = true;
+
   users.extraGroups.vboxusers.members = [ "david" ];
 
   programs.mtr.enable = true;
