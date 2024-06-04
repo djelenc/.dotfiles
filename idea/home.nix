@@ -62,6 +62,8 @@
     ../modules/doom-emacs.nix
   ];
 
+  services.swayosd.enable = true;
+
   services.dunst = {
     enable = true;
     settings = {

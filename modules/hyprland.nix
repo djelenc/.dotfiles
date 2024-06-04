@@ -120,11 +120,12 @@
         "LALT,Tab,cyclenext,"
         "LALT,Tab,bringactivetotop,"
 
-        ", xf86monbrightnessup, exec, brightnessctl set 10%+"
-        ", xf86monbrightnessdown, exec, brightnessctl set 10%-"
-        ", xf86audioraisevolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
-        ", xf86audiolowervolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
-        ", xf86audiomute, exec, wpctl set-mute @DEFAULT_SINK@ toggle"
+        ", xf86monbrightnessup, exec, swayosd-client --brightness raise"
+        ", xf86monbrightnessdown, exec, swayosd-client --brightness lower"
+        ", xf86audioraisevolume, exec, swayosd-client --output-volume raise"
+        ", xf86audiolowervolume, exec, swayosd-client --output-volume lower"
+        ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
+        ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
         "$mainMod, escape, exec, swaylock"
       ];
 
