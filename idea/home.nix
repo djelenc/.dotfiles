@@ -40,6 +40,7 @@
     python3
     jetbrains.pycharm-community-bin
     jetbrains.idea-community-src
+    android-studio
     maven
     vscodium.fhs
     gedit
