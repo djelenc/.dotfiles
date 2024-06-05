@@ -39,10 +39,10 @@
       };
 
       sansSerif = {
-        package = pkgs.nerdfonts;
-        name = "NotoSans NF Reg";
         # package = pkgs.dejavu_fonts;
+        package = pkgs.nerdfonts;
         # name = "DejaVuSansM Nerd Font";
+        name = "NotoSans NF Reg";
       };
 
       serif = {

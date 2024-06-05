@@ -63,6 +63,9 @@
     ../modules/alacritty.nix
     ../modules/waybar.nix
     ../modules/doom-emacs.nix
+
+    inputs.nixvim.homeManagerModules.nixvim
+    ../modules/nixvim.nix
   ];
 
   services.swayosd.enable = true;
@@ -119,8 +122,6 @@
       };
     };
   };
-
-  stylix.targets = { nixvim.enable = false; };
 
   programs.swaylock = {
     enable = true;

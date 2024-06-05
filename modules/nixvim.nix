@@ -1,5 +1,5 @@
 { inputs, pkgs, ... }: {
-  environment.systemPackages = with pkgs;
+  home.packages = with pkgs;
     [
       ripgrep # req: telescope
     ];
@@ -24,6 +24,7 @@
     plugins = {
       which-key.enable = true;
       lightline.enable = true;
+      commentary.enable = true;
       autoclose.enable = true;
       treesitter.enable = true;
       nix.enable = true;
@@ -56,7 +57,7 @@
 
     colorschemes.gruvbox = {
       enable = true;
-      settings = { transparent_mode = true; };
+      settings.transparent_mode = true;
     };
 
     autoCmd = [{
@@ -70,6 +71,25 @@
         key = "<A-x>";
         action = ":";
         options.desc = "Open command line";
+      }
+      # moving (selected) lines up/down
+      {
+        key = "<M-k>";
+        action = ":move-2<CR>==";
+      }
+      {
+        key = "<M-k>";
+        mode = [ "v" ];
+        action = ":move'<-2<CR>gv=gv";
+      }
+      {
+        key = "<M-j>";
+        action = ":move+<CR>==";
+      }
+      {
+        key = "<M-j>";
+        mode = [ "v" ];
+        action = ":move'>+1<CR>gv=gv";
       }
       {
         key = "<leader>j";

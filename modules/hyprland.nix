@@ -141,6 +141,7 @@
         "float,class:^(pavucontrol)$"
         "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
         "float,class:(blueman)"
+        "float,class:^(xdg-desktop-portal-gtk)$"
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };

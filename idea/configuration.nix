@@ -4,9 +4,7 @@
 
     inputs.home-manager.nixosModules.default
     inputs.xremap-flake.nixosModules.default
-    inputs.nixvim.nixosModules.nixvim
 
-    ../modules/nixvim.nix
     ../modules/fish.nix
     ../modules/stylix.nix
   ];
