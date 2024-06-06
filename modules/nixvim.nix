@@ -48,12 +48,41 @@
           "<leader>ff" = "find_files";
         };
       };
-    };
 
-    # colorschemes.tokyonight = {
-    #   enable = true;
-    #   settings = { transparent = true; };
-    # };
+      cmp = {
+        enable = true;
+        autoEnableSources = true;
+        settings.sources = [
+          { name = "nvim_lsp"; }
+          { name = "path"; }
+          { name = "buffer"; }
+          { name = "luasnip"; }
+        ];
+        settings.mapping = {
+          "<C-Space>" = "cmp.mapping.complete()";
+          "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+          "<C-e>" = "cmp.mapping.close()";
+          "<C-f>" = "cmp.mapping.scroll_docs(4)";
+          "<CR>" = "cmp.mapping.confirm({ select = true })";
+          "<C-p>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+          "<C-n>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+        };
+
+        settings.preselect = "cmp.PreselectMode.Item";
+      };
+
+      lsp = {
+        enable = true;
+        servers = { pyright.enable = true; };
+        keymaps.lspBuf = {
+          K = "hover";
+          gD = "references";
+          gd = "definition";
+          gi = "implementation";
+          gt = "type_definition";
+        };
+      };
+    };
 
     colorschemes.gruvbox = {
       enable = true;
