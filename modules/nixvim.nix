@@ -21,12 +21,20 @@
       shiftwidth = 2;
     };
 
+    colorschemes.gruvbox = {
+      enable = true;
+      settings.transparent_mode = true;
+    };
+
     plugins = {
       which-key.enable = true;
       lightline.enable = true;
       commentary.enable = true;
       autoclose.enable = true;
-      treesitter.enable = true;
+      treesitter = {
+        enable = true;
+        incrementalSelection.enable = true; # gnn: grn | grm
+      };
       nix.enable = true;
       surround.enable = true;
 
@@ -67,8 +75,6 @@
           "<C-p>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
           "<C-n>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
         };
-
-        settings.preselect = "cmp.PreselectMode.Item";
       };
 
       lsp = {
@@ -82,26 +88,69 @@
           gt = "type_definition";
         };
       };
+
+      refactoring = {
+        enable = true;
+        # enableTelescope = true;
+      };
     };
 
-    colorschemes.gruvbox = {
-      enable = true;
-      settings.transparent_mode = true;
-    };
-
-    autoCmd = [{
-      # Delete trailing whitespace on save
-      event = [ "BufWritePre" ];
-      pattern = [ "*" ];
-      command = ":%s/\\s\\+$//e";
-    }];
     keymaps = [
       {
         key = "<A-x>";
         action = ":";
         options.desc = "Open command line";
       }
-      # moving (selected) lines up/down
+      # code refactoring
+      {
+        key = "<leader>cr";
+        action = "<cmd>lua vim.lsp.buf.rename()<CR>";
+        mode = [ "n" ];
+        options.desc = "Rename variable";
+      }
+      {
+        key = "<leader>ce";
+        action = ":Refactor extract";
+        mode = [ "v" ];
+        options.desc = "Extract function";
+      }
+      {
+        key = "<leader>cf";
+        mode = [ "v" ];
+        action = ":Refactor extract_to_file";
+        options.desc = "Extract function to file";
+      }
+      {
+        key = "<leader>cv";
+        mode = [ "v" ];
+        action = ":Refactor extract_var";
+        options.desc = "Extract variable";
+      }
+      {
+        key = "<leader>ci";
+        action = ":Refactor inline_var";
+        mode = [ "n" "v" ];
+        options.desc = "Inline variable";
+      }
+      {
+        key = "<leader>cI";
+        mode = [ "n" ];
+        action = ":Refactor inline_func";
+        options.desc = "Inline function";
+      }
+      {
+        key = "<leader>cb";
+        mode = [ "n" ];
+        action = ":Refactor extract_block";
+        options.desc = "Extract block";
+      }
+      {
+        key = "<leader>cbf";
+        mode = [ "n" ];
+        action = ":Refactor extract_block_to_file";
+        options.desc = "Extract block to file";
+      }
+      # moving lines
       {
         key = "<M-k>";
         action = ":move-2<CR>==";
@@ -156,5 +205,12 @@
         options.desc = "Neotree";
       }
     ];
+
+    autoCmd = [{
+      # Delete trailing whitespace on save
+      event = [ "BufWritePre" ];
+      pattern = [ "*" ];
+      command = ":%s/\\s\\+$//e";
+    }];
   };
 }
