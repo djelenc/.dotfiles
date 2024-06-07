@@ -37,7 +37,6 @@
 
             inputs.stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.default
-            inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.default
             inputs.xremap-flake.nixosModules.default
 

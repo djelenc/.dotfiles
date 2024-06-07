@@ -66,6 +66,7 @@
 
     inputs.nixvim.homeManagerModules.nixvim
     ../modules/nixvim.nix
+    ../modules/sops-nix.nix
   ];
 
   services.swayosd.enable = true;
