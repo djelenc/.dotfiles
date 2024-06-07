@@ -1,8 +1,7 @@
 { inputs, pkgs, ... }: {
-  home.packages = with pkgs;
-    [
-      ripgrep # req: telescope
-    ];
+  home.packages = with pkgs; [ ripgrep ]; # required by telescope
+
+  imports = [ inputs.nixvim.homeManagerModules.nixvim ];
 
   programs.nixvim = {
     enable = true;

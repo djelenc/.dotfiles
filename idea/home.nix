@@ -63,8 +63,6 @@
     ../modules/alacritty.nix
     ../modules/waybar.nix
     ../modules/doom-emacs.nix
-
-    inputs.nixvim.homeManagerModules.nixvim
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
   ];
