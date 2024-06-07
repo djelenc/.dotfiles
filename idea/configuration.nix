@@ -1,13 +1,6 @@
 { config, inputs, pkgs, pkgs-unstable, lib, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-
-    inputs.home-manager.nixosModules.default
-    inputs.xremap-flake.nixosModules.default
-
-    ../modules/fish.nix
-    ../modules/stylix.nix
-  ];
+  imports =
+    [ ./hardware-configuration.nix ../modules/fish.nix ../modules/stylix.nix ];
 
   dotFilesRoot = "/home/david/.dotfiles";
 
@@ -111,6 +104,9 @@
     wget
     curl
     git
+    sops
+    age
+    ssh-to-age
   ];
 
   # Virt
@@ -185,4 +181,21 @@
 
   # swaylock
   security.pam.services.swaylock = { text = "auth include login"; };
+
+  # secrets
+  sops = {
+    defaultSopsFile = ../secrets/secrets.yaml;
+    defaultSopsFormat = "yaml";
+
+    age = {
+      # sshKeyPaths = [ "/home/david/.ssh/id_ed25519" ];
+      keyFile = "/home/david/.config/sops/age/keys.txt";
+      generateKey = true;
+    };
+
+    secrets = {
+      example_key = { };
+      # example_array = { };
+    };
+  };
 }
