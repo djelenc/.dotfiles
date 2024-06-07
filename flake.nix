@@ -33,17 +33,7 @@
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = {
-            inherit inputs;
-            pkgs = import nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-            };
-            unstable-pkgs = import unstable-nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-            };
-          };
+          specialArgs = { inherit inputs; };
           modules = [
             ./idea/configuration.nix
             inputs.stylix.nixosModules.stylix
