@@ -30,10 +30,11 @@
       lib = nixpkgs.lib;
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      pkgs-unstable = unstable-nixpkgs.legacyPackages.${system};
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs pkgs-unstable; };
           modules = [
             ./idea/configuration.nix
             inputs.stylix.nixosModules.stylix
