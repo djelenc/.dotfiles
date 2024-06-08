@@ -15,9 +15,7 @@ in {
     '';
 
     # TODO: does not work for removals
-    cleanupConfigFile = lib.hm.dag.entryAfter [ "cleanup" ] ''
-      rm -rf ${path}
-    '';
+    cleanupConfigFile = lib.hm.dag.entryAfter [ "cleanup" ] "rm -rf ${path}";
   };
 
   # secrets
