@@ -32,7 +32,6 @@ in {
     jsbeautifier
 
     # email related
-    oauth2ms
     cyrus_sasl
     cyrus-sasl-xoauth2
     isync-oauth2
@@ -40,17 +39,9 @@ in {
 
     # dictionaries
     (aspellWithDicts (dicts: with dicts; [ sl en en-computers en-science ]))
-    # enchant
-    # hunspell
-    # hunspellDicts.en-us
-    # (import ../packages/hunspell-dicts.nix { inherit pkgs; }).sl-sl
-
-    # aspell
-    # aspellDicts.sl
-    # aspellDicts.en
-    # aspellDicts.en-computers
-    # aspellDicts.en-science
   ];
+
+  imports = [ ./oauth2ms.nix ];
 
   programs = {
     emacs = {
@@ -83,27 +74,16 @@ in {
         create = "both";
         expunge = "both";
         patterns = [
-          # type `mbsync -l <account>` eg. fri
-          # to see which folders sync
+          # `mbsync -l <account>` to see which folders sync
           "Archive"
           "Deleted Items"
           "Drafts"
           "INBOX"
           "Junk Email"
           "Sent Items"
-          # "*"
-          # "!Calendar"
-          # "!Calendar/*"
-          # "!Contacts"
-          # "!Conversation*"
-          # "!Journal"
-          # "!Notes"
-          # "!Outbox"
-          # "!Tasks"
         ];
         extraConfig.account.AuthMechs = "XOAUTH2";
         extraConfig.channel.CopyArrivalDate = "yes";
-        # extraConfig.account.PipelineDepth = 1;
       };
 
       msmtp = {
