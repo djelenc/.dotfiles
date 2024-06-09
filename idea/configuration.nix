@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, pkgs-unstable, lib, ... }: {
+{ config, inputs, pkgs, pkgs-24_05, lib, ... }: {
   imports =
     [ ./hardware-configuration.nix ../modules/fish.nix ../modules/stylix.nix ];
 
@@ -107,24 +107,12 @@
   ];
 
   # Virt
-  # https://github.com/NixOS/nixpkgs/issues/35440#issuecomment-389321234
-  # nixpkgs.config = {
-  #   packageOverrides = pkgs: {
-  #     virtualbox =
-  #       pkgs-unstable.virtualbox.override { inherit (config.boot) kernel; };
-  #     virtualboxExtpack = pkgs-unstable.virtualboxExtpack.override {
-  #       inherit (config.boot) kernel;
-  #     };
-  #   };
-  # };
-  # virtualisation.virtualbox.host.enable = true;
-  # virtualisation.virtualbox.host.package = pkgs-unstable.virtualbox;
-  # users.extraGroups.vboxusers.members = [ "david" ];
-  #
-  # virtualisation.virtualbox.host.enableExtensionPack = true;
-  # virtualisation.virtualbox.guest.enable = true;
-  # virtualisation.virtualbox.guest.draganddrop = true;
-  # virtualisation.virtualbox.guest.clipboard = true;
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "david" ];
+  virtualisation.virtualbox.host.enableExtensionPack = true;
+  virtualisation.virtualbox.guest.enable = true;
+  virtualisation.virtualbox.guest.draganddrop = true;
+  virtualisation.virtualbox.guest.clipboard = true;
 
   programs.mtr.enable = true;
 

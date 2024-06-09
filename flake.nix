@@ -2,9 +2,9 @@
   description = "Davidov NixOS";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    unstable-nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -22,16 +22,16 @@
     stylix.url = "github:danth/stylix";
   };
 
-  outputs = { self, nixpkgs, unstable-nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-24_05, home-manager, ... }@inputs:
     let
       lib = nixpkgs.lib;
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-unstable = unstable-nixpkgs.legacyPackages.${system};
+      pkgs-24_05 = nixpkgs-24_05.legacyPackages.${system};
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = { inherit inputs pkgs-unstable; };
+          specialArgs = { inherit inputs pkgs-24_05; };
           modules = [
             ./idea/configuration.nix
 
