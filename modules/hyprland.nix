@@ -120,13 +120,17 @@
         "LALT,Tab,cyclenext,"
         "LALT,Tab,bringactivetotop,"
 
-        ", xf86monbrightnessup, exec, swayosd-client --brightness raise"
-        ", xf86monbrightnessdown, exec, swayosd-client --brightness lower"
-        ", xf86audioraisevolume, exec, swayosd-client --output-volume raise"
-        ", xf86audiolowervolume, exec, swayosd-client --output-volume lower"
         ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
         ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
         "$mainMod, escape, exec, swaylock"
+      ];
+
+      # when pressed, repeat
+      binde = [
+        ", xf86audioraisevolume, exec, swayosd-client --output-volume raise"
+        ", xf86audiolowervolume, exec, swayosd-client --output-volume lower"
+        ", xf86monbrightnessup, exec, swayosd-client --brightness raise"
+        ", xf86monbrightnessdown, exec, swayosd-client --brightness lower"
       ];
 
       bindm = [
@@ -134,14 +138,17 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      "bindr" = "$mainMod, SUPER_L, exec, fuzzel";
+      # on release
+      bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
 
       windowrulev2 = [
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
         "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
         "float,class:(blueman)"
-        "float,class:^(xdg-desktop-portal-gtk)$"
+        "float,initialTitle:(Save|Open File)"
+        # initialClass: brave
+        # initialTitle: Save File
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };
