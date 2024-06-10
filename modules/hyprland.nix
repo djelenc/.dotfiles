@@ -34,6 +34,7 @@
         kb_layout = "us,si";
         kb_options = "grp:win_space_toggle";
         follow_mouse = 2;
+        numlock_by_default = true;
 
         touchpad = { natural_scroll = "no"; };
 
@@ -138,7 +139,10 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      # on release
+      # lock on lid-open
+      bindl = [ ",switch:off:Lid Switch, exec, swaylock" ];
+
+      # execute on release
       bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
 
       windowrulev2 = [
@@ -147,8 +151,6 @@
         "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
         "float,class:(blueman)"
         "float,initialTitle:(Save|Open File)"
-        # initialClass: brave
-        # initialTitle: Save File
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];
     };

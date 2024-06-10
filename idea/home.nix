@@ -131,7 +131,7 @@
       clock = true;
       timestr = "%R";
       datestr = "%A, %e. %B";
-      grace = 2;
+      # grace = 2;
       screenshots = true;
       fade-in = 0.2;
       effect-blur = "20x2";
