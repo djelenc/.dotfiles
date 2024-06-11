@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... }: {
   stylix = {
+    enable = true;
     autoEnable = true;
     # required, but does not work?!
     image = pkgs.fetchurl {
