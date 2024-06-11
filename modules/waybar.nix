@@ -1,18 +1,25 @@
-{ inputs, pkgs, lib, ... }: {
+{ config, inputs, pkgs, lib, ... }:
+let
+  # converts points to pixels
+  ptToPx = pt: builtins.toString (pt * 96 / 72) + "px";
+in {
+
+  stylix.targets.waybar.enable = false;
+
   programs.waybar = {
     enable = true;
     settings.mainBar = {
       layer = "top";
       position = "top";
-      height = 24;
+      height = 26;
 
-      modules-left = [ "hyprland/workspaces" "hyprland/submap" ];
+      modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
       modules-right = [
         "pulseaudio"
         "network"
-        "cpu"
-        "memory"
+        # "cpu"
+        # "memory"
         "battery"
         "hyprland/language"
         "tray"
@@ -27,20 +34,22 @@
         warp-on-scroll = true;
         on-click = "activate";
         format-icons = {
-          urgent = "";
-          active = ""; # "";
-          default = "🞅";
+          urgent = "⧈";
+          active = "▣";
+          default = "□";
         };
       };
 
-      "hyprland/submap" = { format = ''<span style="italic">{}</span>''; };
-
-      tray = { spacing = 10; };
+      tray = {
+        icon-size = 20;
+        spacing = 10;
+      };
 
       "hyprland/language" = {
         format = "{}";
-        format-en = " EN ";
-        format-sl = " SL ";
+        format-en = "EN";
+        format-sl = "SL";
+        min-length = 4;
         on-click = "hyprctl switchxkblayout at-translated-set-2-keyboard next";
       };
 
@@ -48,8 +57,7 @@
         format = "{:%H:%M 󰃭 %d/%m}";
         on-click = "gsimplecal";
       };
-      "cpu" = { format = "{usage}% "; };
-      "memory" = { format = "{}% "; };
+
       "battery" = {
         bat = "BAT0";
         states = {
@@ -57,66 +65,72 @@
           warning = 30;
           critical = 15;
         };
+        min-length = 6;
         format = "{capacity}% {icon}";
-        # format-good = ""; # An empty format will hide the module
-        # format-full = "";
         format-icons = [ "" "" "" "" "" ];
       };
 
       "network" = {
-        # interface = "wlp2s0"; # (Optional) To force the use of this interface
         format-wifi = "{essid} ({signalStrength}%) ";
         format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
         format-disconnected = "Disconnected ⚠";
+        min-length = 17;
       };
       "pulseaudio" = {
         # scroll-step = 1;
         format = "{volume}% {icon}";
-        format-bluetooth = "{volume}% {icon}";
+        format-bluetooth = "{volume}% {icon} ";
         format-muted = "";
         format-icons = {
-          headphones = "";
-          handsfree = "";
-          headset = "";
+          # headphones = ""; #
+          # handsfree = "";
+          # headset = "";
+          headphones = "🎧";
+          handsfree = "🎧";
+          headset = "🎧";
           phone = "";
           portable = "";
           car = "";
           default = [ "" "" ];
         };
         on-click = "pavucontrol";
+        min-length = 8;
       };
 
     };
 
-    style = ''
+    # example: ${config.lib.stylix.colors.base00}
+    style = with config.stylix; ''
       * {
           border: none;
           border-radius: 0;
-          font-family: "Ubuntu Nerd Font";
-          font-size: 17px;
+          font-family: ${fonts.sansSerif.name};
+          font-size: ${ptToPx fonts.sizes.desktop};
           min-height: 0;
       }
 
       window#waybar {
-          background: transparent;
+          background: shade(alpha(@borders, 0.2), 1.0);
           color: white;
       }
 
       #window {
           font-weight: bold;
-          font-family: "Ubuntu";
+          font-family: ${fonts.sansSerif.name};
+      }
+
+      #workspaces {
+          font-family: ${fonts.monospace.name};
       }
 
       #workspaces button {
-          padding: 0 2px;
-          background: transparent;
+          padding: 2px 2px 2px 2px;
           color: white;
-          border-top: 2px solid transparent;
       }
 
       #workspaces button.focused {
+          padding: 2px 2px 2px 2px;
           color: #c9545d;
-          border-top: 2px solid #c9545d;
       }
 
       #mode {
@@ -130,13 +144,13 @@
       }
 
       #language  {
-        font-family: monospace;
+        font-family: ${fonts.monospace.name};
         padding-left: 5px;
         padding-right: 5px;
       }
 
       #clock {
-          font-weight: bold;
+          /* font-weight: bold; */
       }
 
       #battery {

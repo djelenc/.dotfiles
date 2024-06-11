@@ -65,6 +65,7 @@
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
+    # ../modules/lorri.nix
   ];
 
   services.swayosd.enable = true;
