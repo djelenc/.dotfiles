@@ -1,9 +1,4 @@
-{ config, inputs, pkgs, lib, ... }:
-let
-  # converts points to pixels
-  ptToPx = pt: builtins.toString (pt * 96 / 72) + "px";
-in {
-
+{ config, inputs, pkgs, lib, ... }: {
   stylix.targets.waybar.enable = false;
 
   programs.waybar = {
@@ -65,33 +60,52 @@ in {
           warning = 30;
           critical = 15;
         };
-        min-length = 6;
-        format = "{capacity}% {icon}";
-        format-icons = [ "" "" "" "" "" ];
+        min-length = 8;
+        interval = 10;
+
+        # full or not charging
+        format = "🔌 {icon} {capacity} %";
+        tooltip-format = "Full, not charging";
+
+        # on battery
+        format-discharging = "{icon} {capacity} %";
+        tooltip-format-discharging = "{timeTo}";
+
+        # charging
+        format-charging = "⚡ {icon} {capacity} %";
+        tooltip-format-charging = "{timeTo}";
+
+        # unknown
+        format-unknown = "⚠️ Battery";
+        tooltip-format-unknown = "Unkown battery status, investigate";
+
+        format-icons = [ "🪫" "🔋" ];
+        # format-icons = [ "" "" "" "" "" ];
       };
 
       "network" = {
-        format-wifi = "{essid} ({signalStrength}%) ";
+        format-wifi = "{bandwidthDownBits}   {bandwidthUpBits}";
+        tooltip-format-wifi =
+          "{ipaddr} @ {essid} {frequency} GHz [{signalStrength} %]";
         format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
         format-disconnected = "Disconnected ⚠";
-        min-length = 17;
+        min-length = 23;
+        max-length = 23;
+        interval = 10;
       };
       "pulseaudio" = {
         # scroll-step = 1;
-        format = "{volume}% {icon}";
-        format-bluetooth = "{volume}% {icon} ";
-        format-muted = "";
+        format = "{volume} % {icon}";
+        format-bluetooth = "{volume} % {icon} ";
+        format-muted = "🔇";
         format-icons = {
-          # headphones = ""; #
-          # handsfree = "";
-          # headset = "";
           headphones = "🎧";
           handsfree = "🎧";
           headset = "🎧";
-          phone = "";
-          portable = "";
-          car = "";
-          default = [ "" "" ];
+          phone = "📞";
+          portable = "📞";
+          car = "🚗";
+          default = [ "🔈" "🔉" "🔊" ];
         };
         on-click = "pavucontrol";
         min-length = 8;
@@ -105,7 +119,7 @@ in {
           border: none;
           border-radius: 0;
           font-family: ${fonts.sansSerif.name};
-          font-size: ${ptToPx fonts.sizes.desktop};
+          font-size: ${(builtins.toString fonts.sizes.terminal) + "px"};
           min-height: 0;
       }
 
@@ -116,11 +130,9 @@ in {
 
       #window {
           font-weight: bold;
-          font-family: ${fonts.sansSerif.name};
       }
 
       #workspaces {
-          font-family: ${fonts.monospace.name};
       }
 
       #workspaces button {
@@ -144,9 +156,9 @@ in {
       }
 
       #language  {
-        font-family: ${fonts.monospace.name};
         padding-left: 5px;
         padding-right: 5px;
+        font-family: ${fonts.monospace.name};
       }
 
       #clock {
