@@ -69,7 +69,6 @@
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
     ../modules/fish.nix
-    ../modules/lorri.nix
   ];
 
   services.swayosd.enable = true;
