@@ -1,8 +1,8 @@
 { config, inputs, pkgs, pkgs-24_05, lib, ... }: {
-  imports =
-    [ ./hardware-configuration.nix ../modules/fish.nix ../modules/stylix.nix ];
+  imports = [ ./hardware-configuration.nix ../modules/stylix.nix ];
 
-  dotFilesRoot = "/home/david/.dotfiles";
+  # to enable all completitions
+  programs.fish.enable = true;
 
   # rebinds caps to ctrl and esc
   services.xremap = {
@@ -128,7 +128,7 @@
 
   # yet another nix helper
   programs.nh.enable = true;
-  programs.nh.flake = config.dotFilesRoot;
+  programs.nh.flake = "/home/david/.dotfiles"; # config.dotFilesRoot;
 
   # Did you read the comment?
   system.stateVersion = "24.05";

@@ -64,7 +64,7 @@
         interval = 10;
 
         # full or not charging
-        format = "🔌 {icon} {capacity} %";
+        format = "🔌 {capacity} %";
         tooltip-format = "Full, not charging";
 
         # on battery
@@ -72,7 +72,7 @@
         tooltip-format-discharging = "{timeTo}";
 
         # charging
-        format-charging = "⚡ {icon} {capacity} %";
+        format-charging = "⚡ {capacity} %";
         tooltip-format-charging = "{timeTo}";
 
         # unknown
@@ -97,7 +97,7 @@
         # scroll-step = 1;
         format = "{volume} % {icon}";
         format-bluetooth = "{volume} % {icon} ";
-        format-muted = "🔇";
+        format-muted = "{volume} % 🔇";
         format-icons = {
           headphones = "🎧";
           handsfree = "🎧";
@@ -150,15 +150,16 @@
           border-bottom: 2px solid white;
       }
 
-      #clock, #battery, #cpu, #memory, #network, #pulseaudio, #tray, #mode {
+      #clock, #battery, #cpu, #memory, #pulseaudio, #tray, #mode {
           padding-left: 5px;
           padding-right: 5px;
       }
 
-      #language  {
+      #language, #network  {
         padding-left: 5px;
         padding-right: 5px;
         font-family: ${fonts.monospace.name};
+        font-weight: bold;
       }
 
       #clock {

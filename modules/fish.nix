@@ -9,7 +9,7 @@
   };
 
   config = {
-    environment.systemPackages = with pkgs; [
+    home.packages = with pkgs; [
       fishPlugins.bobthefisher
       fishPlugins.plugin-git
       fishPlugins.fzf-fish
@@ -34,8 +34,11 @@
         cst = "git -C ${config.dotFilesRoot} status";
         clg = "git -C ${config.dotFilesRoot} log --oneline";
       };
-    };
 
-    users.users.david.shell = pkgs.fish;
+      shellInit = ''
+        set -g direnv_fish_mode eval_on_arrow
+        direnv hook fish | source
+      '';
+    };
   };
 }

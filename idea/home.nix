@@ -6,6 +6,9 @@
   home.sessionVariables = { EDITOR = "nvim"; };
   home.stateVersion = "23.11";
 
+  # dotfiles location
+  dotFilesRoot = "/home/david/.dotfiles";
+
   home.packages = with pkgs; [
     # desktop related
     networkmanagerapplet
@@ -65,7 +68,8 @@
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
-    # ../modules/lorri.nix
+    ../modules/fish.nix
+    ../modules/lorri.nix
   ];
 
   services.swayosd.enable = true;
@@ -86,11 +90,11 @@
 
   programs.java.enable = true;
 
-  programs.zellij = {
-    enable = true;
-    enableFishIntegration = true;
-    enableBashIntegration = true;
-  };
+  # programs.zellij = {
+  #   enable = true;
+  #   enableFishIntegration = true;
+  #   enableBashIntegration = true;
+  # };
 
   programs.git = {
     enable = true;
