@@ -34,11 +34,6 @@
         cst = "git -C ${config.dotFilesRoot} status";
         clg = "git -C ${config.dotFilesRoot} log --oneline";
       };
-
-      shellInit = ''
-        set -g direnv_fish_mode eval_on_arrow
-        direnv hook fish | source
-      '';
     };
   };
 }
