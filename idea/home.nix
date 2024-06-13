@@ -149,6 +149,16 @@ in {
         vertical-pad = 8;
         inner-pad = 10;
       };
+
+      colors = with config.lib.stylix.colors; {
+        background = lib.mkForce "${base00}C0";
+        text = lib.mkForce "${base05}FF";
+        match = lib.mkForce "${base04}FF";
+        selection = lib.mkForce "${base02}40";
+        selection-text = lib.mkForce "${base0A}FF";
+        selection-match = lib.mkForce "${base09}FF";
+        border = lib.mkForce "${base0D}FF";
+      };
     };
   };
 
@@ -157,15 +167,15 @@ in {
     package = pkgs.swaylock-effects;
     settings = {
       ignore-empty-password = true;
-      font = "CaskaydiaMono Nerd Font";
+      font = config.stylix.fonts.monospace.name;
       clock = true;
       timestr = "%R";
       datestr = "%A, %e. %B";
       # grace = 2;
       screenshots = true;
-      fade-in = 0.2;
+      # fade-in = 0.2;
       effect-blur = "20x2";
-      effect-greyscale = true;
+      # effect-greyscale = true;
       effect-scale = 0.3;
       indicator = true;
       indicator-radius = 400;
