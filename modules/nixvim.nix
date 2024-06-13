@@ -1,5 +1,8 @@
 { inputs, pkgs, ... }: {
-  home.packages = with pkgs; [ ripgrep ]; # required by telescope
+  home.packages = with pkgs; [
+    ripgrep # required by telescope
+    jdt-language-server # nvim jdtls
+  ];
 
   imports = [ inputs.nixvim.homeManagerModules.nixvim ];
 
@@ -26,6 +29,21 @@
     };
 
     plugins = {
+      nvim-jdtls = {
+        enable = true;
+        cmd = [ "${pkgs.jdt-language-server}/bin/jdtls" ];
+        settings = {
+          java = {
+            signatureHelp = true;
+            completion = true;
+          };
+        };
+        # WIP
+        # https://github.com/mfussenegger/nvim-jdtls?tab=readme-ov-file
+        # https://github.com/redyf/Neve/blob/main/config/languages/nvim-jdtls.nix
+        # https://search.nixos.org/packages?channel=unstable&show=vscode-extensions.vscjava.vscode-java-pack&from=0&size=50&sort=relevance&type=packages&query=vscjava
+      };
+
       which-key.enable = true;
       lightline.enable = true;
       commentary.enable = true;

@@ -1,9 +1,6 @@
 { config, inputs, pkgs, pkgs-24_05, lib, ... }: {
   imports = [ ./hardware-configuration.nix ../modules/stylix.nix ];
 
-  # to enable all completitions
-  programs.fish.enable = true;
-
   # rebinds caps to ctrl and esc
   services.xremap = {
     withWlroots = true;
@@ -115,6 +112,10 @@
   virtualisation.virtualbox.guest.clipboard = true;
 
   programs.mtr.enable = true;
+  # TODO: improve colors
+  # https://github.com/akinomyoga/ble.sh#26-highlight-colors
+  # https://github.com/akinomyoga/ble.sh/blob/master/blerc.template
+  # programs.bash.blesh.enable = true;
 
   # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
   services.gnome.gnome-keyring.enable = true;

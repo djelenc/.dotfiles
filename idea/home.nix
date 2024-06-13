@@ -1,13 +1,12 @@
-{ config, inputs, pkgs, lib, ... }: {
+{ config, inputs, pkgs, lib, ... }:
+let dotFilesRoot = "/home/david/.dotfiles";
+in {
   programs.home-manager.enable = true;
 
   home.username = "david";
   home.homeDirectory = "/home/david";
   home.sessionVariables = { EDITOR = "nvim"; };
   home.stateVersion = "23.11";
-
-  # dotfiles location
-  dotFilesRoot = "/home/david/.dotfiles";
 
   home.packages = with pkgs; [
     # desktop related
@@ -53,7 +52,6 @@
     rofi-power-menu
 
     # misc
-    fzf
     wireplumber
     nix-index
     nixfmt-classic
@@ -68,8 +66,33 @@
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
-    ../modules/fish.nix
+    # ../modules/fish.nix
   ];
+
+  # terminal-related
+  programs.starship.enable = true;
+  programs.bash = {
+    enable = true;
+
+    shellAliases = {
+      l = "exa --hyperlink --icons";
+      ll = "exa -la --icons --hyperlink --header";
+      glg = "git log --oneline";
+      gst = "git status";
+      gdf = "git diff";
+      gco = "git checkout";
+
+      cedit = "nvim -c 'cd ${dotFilesRoot}' ${dotFilesRoot}";
+      cdiff = "git -C ${dotFilesRoot} diff";
+      csave = ''
+        git -C ${dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
+      cpush = "git -C ${dotFilesRoot} push origin main";
+      cpull = "git -C ${dotFilesRoot} pull origin main";
+      cst = "git -C ${dotFilesRoot} status";
+      clg = "git -C ${dotFilesRoot} log --oneline";
+    };
+  };
+  programs.fzf.enable = true;
 
   services.swayosd.enable = true;
 
@@ -91,7 +114,6 @@
 
   # programs.zellij = {
   #   enable = true;
-  #   enableFishIntegration = true;
   #   enableBashIntegration = true;
   # };
 
