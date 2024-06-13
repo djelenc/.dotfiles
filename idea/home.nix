@@ -75,13 +75,18 @@ in {
     enable = true;
 
     shellAliases = {
-      l = "exa --hyperlink --icons";
-      ll = "exa -la --icons --hyperlink --header";
+      # ls
+      l = "exa --icons --hyperlink";
+      ll = "exa -la --icons --hyperlink --git --header";
+      lt = "exa --icons --tree --hyperlink";
+
+      # git
       glg = "git log --oneline";
       gst = "git status";
       gdf = "git diff";
       gco = "git checkout";
 
+      # nixos configuration
       cedit = "nvim -c 'cd ${dotFilesRoot}' ${dotFilesRoot}";
       cdiff = "git -C ${dotFilesRoot} diff";
       csave = ''
