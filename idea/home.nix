@@ -126,7 +126,6 @@ in {
 
   programs.eza = {
     enable = true;
-    enableFishIntegration = true;
     git = true;
     icons = true;
   };
@@ -139,8 +138,8 @@ in {
         dpi-aware = lib.mkForce "yes";
         icon-theme = "hicolor";
         icons-enabled = "yes";
-        lines = 25;
-        width = 70;
+        lines = 10;
+        width = 35;
         horizontal-pad = 40;
         vertical-pad = 8;
         inner-pad = 10;
