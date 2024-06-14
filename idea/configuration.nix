@@ -112,6 +112,12 @@
   virtualisation.virtualbox.guest.clipboard = true;
 
   programs.mtr.enable = true;
+
+  # ZSH
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+  environment.shells = with pkgs; [ zsh ];
+
   # TODO: improve colors
   # https://github.com/akinomyoga/ble.sh#26-highlight-colors
   # https://github.com/akinomyoga/ble.sh/blob/master/blerc.template

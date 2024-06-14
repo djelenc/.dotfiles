@@ -66,19 +66,31 @@ in {
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
-    # ../modules/fish.nix
   ];
 
   # terminal-related
   programs.starship.enable = true;
-  programs.bash = {
+  programs.zsh = {
     enable = true;
+    autocd = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    enableCompletion = true;
+    defaultKeymap = "emacs";
+
+    completionInit = ''
+      autoload -U compinit && compinit
+      # case-insensitive tab-completion
+      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+      # zstyle ':completion:*' matcher-list '''''' 'm:{a-zA-Z}={A-Za-z}'
+      # zstyle ':completion:*' matcher-list ''''' 'm:{a-zA-Z}={A-Za-z}'
+    '';
 
     shellAliases = {
-      # ls
-      l = "exa --icons --hyperlink";
-      ll = "exa -la --icons --hyperlink --git --header";
-      lt = "exa --icons --tree --hyperlink";
+      # commong ls-ing with exa
+      l = "exa --icons --hyperlink"; # basic
+      ll = "exa -la --icons --hyperlink --git --header"; # details
+      lt = "exa --icons --tree --hyperlink"; # tree
 
       # git
       glg = "git log --oneline";
