@@ -79,15 +79,22 @@ in {
     defaultKeymap = "emacs";
 
     completionInit = ''
+      # default
       autoload -U compinit && compinit
+
+      # C-w and M-d delete only to the first /
+      autoload -U select-word-style
+      select-word-style bash
+
       # case-insensitive tab-completion
       zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-      # zstyle ':completion:*' matcher-list '''''' 'm:{a-zA-Z}={A-Za-z}'
-      # zstyle ':completion:*' matcher-list ''''' 'm:{a-zA-Z}={A-Za-z}'
+
+      # highlight tab-completed entry
+      zstyle ':completion:*' menu select
     '';
 
     shellAliases = {
-      # commong ls-ing with exa
+      # the usual ls-ing with exa
       l = "exa --icons --hyperlink"; # basic
       ll = "exa -la --icons --hyperlink --git --header"; # details
       lt = "exa --icons --tree --hyperlink"; # tree
@@ -98,7 +105,7 @@ in {
       gdf = "git diff";
       gco = "git checkout";
 
-      # nixos configuration
+      # managing nixos configuration
       cedit = "nvim -c 'cd ${dotFilesRoot}' ${dotFilesRoot}";
       cdiff = "git -C ${dotFilesRoot} diff";
       csave = ''

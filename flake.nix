@@ -37,7 +37,6 @@
 
             inputs.stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.default
-            inputs.home-manager.nixosModules.default
             inputs.xremap-flake.nixosModules.default
 
             (import ./overlays)
