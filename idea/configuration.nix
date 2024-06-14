@@ -113,6 +113,10 @@
 
   programs.mtr.enable = true;
 
+  # Boot logo screen
+  boot.initrd.systemd.enable = true;
+  boot.plymouth.enable = true;
+
   # ZSH
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
