@@ -9,6 +9,9 @@ in {
   home.stateVersion = "23.11";
 
   home.packages = with pkgs; [
+    # disks
+    gnome.gnome-disk-utility
+
     # desktop related
     networkmanagerapplet
     gsimplecal
