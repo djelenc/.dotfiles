@@ -1,0 +1,552 @@
+
+* Basic information
+#+begin_src emacs-lisp
+(doom/set-frame-opacity 65)
+(setq user-mail-address "david.jelenc@fri.uni-lj.si"
+      user-full-name "David Jelenc")
+; because of fish
+(setq shell-file-name (executable-find "bash"))
+(setq-default vterm-shell (executable-find "fish"))
+(setq-default explicit-shell-file-name (executable-find "fish"))
+#+end_src
+* Look & Feel
+Nice looking fonts, requires =nerdfonts=
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "CaskaydiaMono Nerd Font" :size 23 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "CaskaydiaMono Nerd Font" :size 21))
+#+end_src
+
+Sets the theme
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-gruvbox)
+#+end_src
+
+Line numbers
+#+begin_src emacs-lisp
+(setq display-line-numbers-type 'visual)
+#+end_src
+
+Navigation: =j= and =k= work across wrapped lines, but commands work across whole lines
+#+begin_src emacs-lisp
+(map! :nv "j" #'evil-next-visual-line
+      :nv "k" #'evil-previous-visual-line)
+#+end_src
+
+Update buffers when changed by other programs
+#+begin_src emacs-lisp
+(global-auto-revert-mode)
+#+end_src
+* Org Mode
+#+begin_src emacs-lisp
+(after! org
+  ; (require 'org-mu4e) ;; required to have working links to mail
+  (require 'org-checklist) ;; required for automatic deselection of checkboxes for recurrent tasks
+  (add-hook 'org-checkbox-statistics-hook 'dj/org-checkbox-todo)  ;; toggle task state when checkboxes are ticked
+  (add-hook 'org-after-todo-statistics-hook 'dj/org-summary-todo) ;; toggle task state when subtask states are changed
+
+  (setq org_notes "~/nextcloud/org/"
+        org_journal "~/nextcloud/journal/"
+        org-cite-global-bibliography '("/home/david/Documents/Zotero/zotero.bib")
+        org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/")
+        ;; org-cite-export-processors '((latex . biblatex)
+        ;;                              (t . ("ieee.csl"))
+        ;;                              )
+        org-attach-id-dir "org-attachments"
+        org-id-link-to-org-use-id 'create-if-interactive
+        org-agenda-files '("~/nextcloud/org/")
+        ivy-use-selectable-prompt t
+        org-directory org_notes
+        org-default-notes-file (concat org_notes "/refile.org")
+        org-startup-folded t
+        evil-want-Y-yank-to-eol nil
+        org-log-into-drawer t
+        org-hierarchical-todo-statistics nil
+        vc-follow-symlinks t
+
+        ;; org-file-apps (quote
+        ;;                ((auto-mode . emacs)
+        ;;                 ("\\.mm\\'" . default)
+        ;;                 ("\\.x?html?\\'" . "flatpak run com.brave.Browser %s")
+        ;;                 ("\\.pdf\\'" . default)))
+        org-refile-targets '(("~/nextcloud/org/active.org" :maxlevel . 1)
+                             ("~/nextcloud/org/inactive.org" :maxlevel . 1)
+                             ("~/nextcloud/org/toread.org" :maxlevel . 1)
+                             ("~/nextcloud/org/someday.org" :maxlevel . 2)
+                             ("~/nextcloud/org/reka.org" :maxlevel . 2)
+                             ("~/nextcloud/org/zasebno.org" :maxlevel . 2)
+                             ("~/nextcloud/org/tickler.org" :maxlevel . 1))
+
+        org-capture-templates '(("n" "Todo" entry (file "refile.org") "* TODO %i%?")
+                                ("j" "Linked Todo" entry (file "refile.org") "* TODO %? %a\n\n")
+                                ("p" "Protocol" entry (file "refile.org")
+                                 "* TODO [[%:link][%:description]]\n%U\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?" :immediate-finish t)
+                                ("L" "Protocol Link" entry (file "refile.org")
+                                 "* TODO [[%:link][%:description]]\n%U\n\n" :immediate-finish t))
+
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "|" "DONE(d!)" "CANCELLED(c@/!)"))
+        org-todo-keyword-faces '(("TODO" . "SlateGray")
+                                 ("WAITING" . "Firebrick")
+                                 ("DONE" . "ForestGreen")
+                                 ("CANCELLED" .  "SlateBlue"))
+        )
+  ;; (add-hook 'after-init-hook 'org-html--format-image) ;; inline images with org export to HTML
+                                        ; to solve issuse with ORG mode in capture buffer
+                                        ; https://github.com/doomemacs/doomemacs/issues/5714
+  (add-hook! 'org-capture-after-finalize-hook (org-element-cache-reset t))
+  (defadvice! dan/+org--restart-mode-h-careful-restart (fn &rest args)
+    :around #'+org--restart-mode-h
+    (let ((old-org-capture-current-plist (and (bound-and-true-p org-capture-mode)
+                                              (bound-and-true-p org-capture-current-plist))))
+      (apply fn args)
+      (when old-org-capture-current-plist
+        (setq-local org-capture-current-plist old-org-capture-current-plist)
+        (org-capture-mode +1))))
+  )
+
+(defun org-html--format-image (source attributes info)
+  (format "<img src=\"data:image/%s;base64,%s\"%s />"
+          (or (file-name-extension source) "")
+          (base64-encode-string
+           (with-temp-buffer
+             (insert-file-contents-literally source)
+             (buffer-string)))
+          (file-name-nondirectory source)))
+(defun dj/org-checkbox-todo()
+  "Switch header todo state:
+- to DONE when all checkboxes are checked;
+- to NEXT otherwise."
+  (let ((todo-state (org-get-todo-state)) beg end)
+    (unless (not todo-state)
+      (save-excursion
+        (org-back-to-heading t)
+        (setq beg (point))
+        (end-of-line)
+        (setq end (point))
+        (goto-char beg)
+        (if (re-search-forward "\\[\\([0-9]*%\\)\\]\\|\\[\\([0-9]*\\)/\\([0-9]*\\)\\]" end t)
+            (if (match-end 1)
+                (if (equal (match-string 1) "100%")
+                    (unless (string-equal todo-state "DONE")
+                      (org-todo 'done))
+                  (when (string-equal todo-state "DONE")
+                    (org-todo "NEXT"))) ;; default to NEXT when unchecking
+              (if (and (> (match-end 2) (match-beginning 2))
+                       (equal (match-string 2) (match-string 3)))
+                  (unless (string-equal todo-state "DONE")
+                    (org-todo 'done))
+                (when (string-equal todo-state "DONE")
+                  (org-todo "NEXT"))))))))) ;; default to NEXT when unchecking
+(defun dj/org-summary-todo (n-done n-not-done)
+  "Switch header todo state (if it has one):
+- to DONE when all subentries are set to DONE;
+- leave it unchanged otherwise."
+  (if (org-entry-is-todo-p)
+      (let ((todo-state (org-get-todo-state)))
+        (org-todo (if (= n-not-done 0) "DONE" todo-state)))))
+#+end_src
+** Force deterministic generated anchor links
+#+begin_src emacs-lisp
+(after! org
+  (defun org-export-deterministic-reference (references)
+    (let ((new 0))
+      (while (rassq new references) (setq new (+ new 1)))
+      new))
+  (advice-add #'org-export-new-reference :override #'org-export-deterministic-reference))
+#+end_src
+* Projectile
+#+begin_src emacs-lisp
+(after! projectile
+  (add-to-list 'projectile-globally-ignored-directories "*org-attachments"))
+#+end_src
+* Mu4e
+#+begin_src emacs-lisp
+(after! mu4e
+  (require 'mu4e-compat)
+  (mu4e-compat-define-aliases-backwards)
+  (require 'mu4e-org)
+  (add-to-list 'mm-discouraged-alternatives "text/html")
+  (add-to-list 'mm-discouraged-alternatives "text/richtext")
+  (setq sendmail-program (executable-find "msmtp")
+        ; https://github.com/djcb/mu/issues/2662#issuecomment-2147205731
+        rfc2047-quote-decoded-words-containing-tspecials t
+        mu4e-org-link-query-in-headers-mode t
+        send-mail-function #'smtpmail-send-it
+        message-sendmail-extra-arguments '("--read-envelope-from")
+        mu4e-compose-switch nil
+        mail-user-agent 'mu4e-user-agent
+        mu4e-change-filenames-when-moving t
+        mu4e-search-include-related nil
+        mu4e-sent-messages-behavior 'delete
+        mu4e-search-skip-duplicates nil ;; t
+        mu4e-attachment-dir  "~/Downloads"
+        mu4e-get-mail-command "mbsync -a"
+        mu4e-update-interval 60
+
+        ;; debugging stuff
+        ;; mu4e-alert-interesting-mail-query "flag:unread AND NOT flag:trashed AND NOT maildir:/Inbox/" ; to prevent duplicated unread mail count
+
+        mu4e-hide-index-messages t
+        mu4e-compose-format-flowed t
+        use-hard-newlines -1
+        message-kill-buffer-on-exit t
+        mu4e-compose--org-msg-toggle-next nil ; default to plaintext emails
+        message-sendmail-f-is-evil t
+        message-send-mail-function #'message-send-mail-with-sendmail
+        mu4e-bookmarks '(("maildir:/fri/Inbox" "Inbox" ?i)
+                         ("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+                         ("flag:attach" "Has attachment" ?a)
+                         ("date:today..now" "Today's messages" ?t)
+                         ("date:7d..now" "Last 7 days" ?w)
+                         ("date:1m..now" "Last month" ?m)))
+  (set-email-account! "FRI"
+                      '((mu4e-sent-folder       . "/fri/Sent Items")
+                        (mu4e-drafts-folder     . "/fri/Drafts")
+                        (mu4e-trash-folder      . "/fri/Deleted Items")
+                        (mu4e-refile-folder     . "/fri/Archive")
+                        (smtpmail-smtp-user     . "david.jelenc@fri.uni-lj.si"))
+                      t)
+  ;; (set-email-account! "Gmail"
+  ;;                     '((mu4e-sent-folder       . "/gmail/Sent Mail")
+  ;;                       (mu4e-drafts-folder     . "/gmail/Drafts")
+  ;;                       (mu4e-trash-folder      . "/gmail/Trash")
+  ;;                       (mu4e-refile-folder     . "/gmail/All Mail")
+  ;;                       (smtpmail-smtp-user     . "djelenc.fri@gmail.com"))
+  ;;                     t)
+
+  ;; finds duplicate emails
+  ;; https://emacs.stackexchange.com/questions/435/how-do-i-delete-duplicate-messages-in-mu4e
+  (defvar *my-mu4e-headers-bol-positions* nil)
+  (defun my-mu4e-headers-bol-positions ()
+    "Obtain a list of beginning of line positions for *mu4e-headers*.
+
+`*my-mu4e-headers-bol-positions*' is defined globally, as trying to use
+let binding and using add-to-list was unsuccessful."
+    ;; list-bol is nil, equivalent to an empty list.
+    (with-current-buffer (mu4e-get-headers-buffer)
+      (setq *my-mu4e-headers-bol-positions* nil)
+      (save-excursion
+        (goto-char (point-min))
+        (while (search-forward mu4e~headers-docid-pre nil t)
+          (add-to-list '*my-mu4e-headers-bol-positions* (line-beginning-position))
+          ;; Need to move to the end of the line to look for the next line
+          (end-of-line))
+        (reverse *my-mu4e-headers-bol-positions*))))
+  ;;
+  (defun my-mu4e-headers-sexps-with-bol ()
+    "Obtain the message s-expressions for the messages in *mu4e-headers* and extend with bol."
+    (let ((list-bol (my-mu4e-headers-bol-positions)))
+      (when list-bol
+        (with-current-buffer (mu4e-get-headers-buffer)
+          (seq-map (lambda (bol)
+                     (let ((msg (get-text-property bol 'msg)))
+                       (plist-put msg :bol bol)))
+                   list-bol)))))
+  ;;
+  (defun my-mu4e-headers-sexps-with-bol-dups ()
+    "Obtain the sexps for the messages in *mu4e-headers* with duplicated message-id."
+    ;; https://emacs.stackexchange.com/questions/31448/report-duplicates-in-a-list
+    (thread-last (my-mu4e-headers-sexps-with-bol)
+                 ;; Group by :message-id and :flags (to avoid marking messaged handled differently).
+                 (seq-group-by (lambda (sexp) (list (plist-get sexp :message-id)
+                                                    (plist-get sexp :flags))))
+                 (seq-filter (lambda (al) (> (length al) 2))))
+    ;;
+    (defun my-mu4e-headers-bol-dups ()
+      "Obtain the beginning of line positions for duplicated messages in *mu4e-headers*.
+
+The beginning of line position for the first of each duplicated messages set is retained."
+      (thread-last (my-mu4e-headers-sexps-with-bol-dups)
+                   ;; First of each duplicated messages set.
+                   (seq-map (lambda (al) (cadr al)))
+                   (seq-map (lambda (sexp) (plist-get sexp :bol)))
+                   (seq-sort #'<)))
+    ;;
+    (defun my-mu4e-header-mark-duplicated ()
+      "Mark the first of each duplicate messages set in *mu4e-headers* for an action."
+      (interactive)
+      (save-excursion
+        (mapc
+         (lambda (bol)
+           (goto-char bol)
+           (mu4e-headers-mark-for-something))
+         (my-mu4e-headers-bol-dups)))))
+  )
+#+end_src
+* Org-caldav sync
+For syncing calendars with Google
+#+begin_src emacs-lisp
+(setq org-caldav-url "https://cloud.lem.im/remote.php/dav/calendars/david" ;; the base address of your CalDAV server
+      org-caldav-calendar-id "orgmode" ;; the calendar-id of your new calendar:
+      org-caldav-inbox "~/nextcloud/org/tickler.org" ;; org filename where new entries from the calendar should be stored.
+      org-caldav-files '( ;; list of org files for sync (without org-caldav-inbox)
+                         )
+      org-icalendar-timezone "Europe/Ljubljana"
+      org-caldav-save-directory "~/nextcloud/org/sync-cal"
+      org-icalendar-alarm-time 15
+      org-icalendar-use-deadline '(event-if-not-todo todo-due event-if-todo)
+      org-icalendar-use-scheduled '(event-if-not-todo todo-start event-if-todo))
+#+end_src
+* Better navigation
+#+begin_src emacs-lisp
+(setq buffer-save-without-query t)
+(map!
+ :desc "Save all opened buffers" :leader "f S" (cmd! (save-some-buffers t))
+ :desc "Switch buffer" :leader "b b" 'switch-to-buffer
+ :desc "Next buffer" :leader "j" 'next-buffer
+ :desc "Prev buffer" :leader "k" 'previous-buffer
+ :desc "Go to any org headline" :leader "n SPC" 'counsel-org-goto-all
+ )
+#+end_src
+* Org-Super-Agenda
+#+begin_src emacs-lisp
+(use-package! org-super-agenda
+  :after org-agenda
+  :init
+  (setq org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-agenda-block-separator nil
+        org-agenda-compact-blocks t
+        org-agenda-start-day nil
+        org-super-agenda-header-map nil
+        org-agenda-span 7
+        org-agenda-start-on-weekday nil
+        ;; determines how tasks are prefixed in the agenda and todo views
+        org-agenda-prefix-format '((agenda  . "  %?-12t% s")
+                                   (todo  . "  "))
+        org-agenda-custom-commands '((" " "Work view"
+                                      ((agenda "" ((org-agenda-overriding-header "")
+                                                   (org-agenda-files '("~/nextcloud/org/")) ;; all on calendar
+                                                   (org-super-agenda-groups
+                                                    '(
+                                                      (:name none
+                                                       :time-grid t
+                                                       :not (:deadline future)
+                                                       :order 0)
+                                                      (:name "Upcoming"
+                                                       :deadline future
+                                                       :order 1)
+                                                      (:discard (:anything))
+                                                      ))))
+                                       (alltodo "" ((org-agenda-overriding-header "")
+                                                    (org-agenda-files '("~/nextcloud/org/refile.org"
+                                                                        "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/active.org"))
+                                                    (org-super-agenda-groups
+                                                     '((:discard (:tag "private"))
+                                                       (:name "Waiting"
+                                                        :and (:todo "WAITING"
+                                                              :not (:scheduled t :deadline t))
+                                                        :order 3)
+                                                       (:name "To refile"
+                                                        :file-path ".*refile\\.org"
+                                                        :order 1)
+                                                       (:discard (:not (:todo "NEXT")))
+                                                       (:discard (:file-path "tickler\\.org"))
+                                                       (:discard (:scheduled t :deadline t))
+                                                       (:auto-map (lambda (item) ;; name each project by its top-level heading
+                                                                    (re-search-backward "^\* " nil t)
+                                                                    (org-get-heading t t t t))
+                                                        :order 2)
+                                                       ))))))
+                                     ("f" "Private view"
+                                      ((agenda "" ((org-agenda-overriding-header "")
+                                                   (org-agenda-files '("~/nextcloud/org/")) ;; all on calendar
+                                                   (org-super-agenda-groups
+                                                    '(
+                                                      (:name none
+                                                       :time-grid t
+                                                       :not (:deadline future)
+                                                       :order 0)
+                                                      (:name "Upcoming"
+                                                       :deadline future
+                                                       :order 1)
+                                                      (:discard (:anything))
+                                                      ))))
+                                       (alltodo "" ((org-agenda-overriding-header "")
+                                                    (org-agenda-files '("~/nextcloud/org/refile.org"
+                                                                        "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/zasebno.org"))
+                                                    (org-super-agenda-groups
+                                                     '((:discard (:tag "work"))
+                                                       (:name "Waiting"
+                                                        :and (:todo "WAITING"
+                                                              :not (:scheduled t :deadline t))
+                                                        :order 3)
+                                                       (:name "To refile"
+                                                        :file-path ".*refile\\.org"
+                                                        :order 1)
+                                                       (:discard (:not (:todo "NEXT")))
+                                                       (:discard (:file-path "tickler\\.org"))
+                                                       (:discard (:scheduled t :deadline t))
+                                                       (:auto-map (lambda (item) ;; name each project by its top-level heading
+                                                                    (re-search-backward "^\* " nil t)
+                                                                    (org-get-heading t t t t))
+                                                        :order 2)
+                                                       ))))))
+                                     ("r" "Reka view"
+                                      ((agenda "" ((org-agenda-overriding-header "")
+                                                   (org-agenda-files '("~/nextcloud/org/")) ;; all on calendar
+                                                   (org-super-agenda-groups
+                                                    '(
+                                                      (:name none
+                                                       :time-grid t
+                                                       :not (:deadline future)
+                                                       :order 0)
+                                                      (:name "Upcoming"
+                                                       :deadline future
+                                                       :order 1)
+                                                      (:discard (:anything))
+                                                      ))))
+                                       (alltodo "" ((org-agenda-overriding-header "")
+                                                    (org-agenda-files '("~/nextcloud/org/refile.org"
+                                                                        "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/reka.org"))
+                                                    (org-super-agenda-groups
+                                                     '(;(:discard (:tag "work"))
+                                                       (:name "Waiting"
+                                                        :and (:todo "WAITING"
+                                                              :not (:scheduled t :deadline t))
+                                                        :order 3)
+                                                       (:name "To refile"
+                                                        :file-path ".*refile\\.org"
+                                                        :order 1)
+                                                       (:discard (:not (:todo "NEXT")))
+                                                       (:discard (:file-path "tickler\\.org"))
+                                                       (:discard (:scheduled t :deadline t))
+                                                       (:auto-map (lambda (item) ;; name each project by its top-level heading
+                                                                    (re-search-backward "^\* " nil t)
+                                                                    (org-get-heading t t t t))
+                                                        :order 2)
+                                                       ))))))
+                                     ("s" "Stuck Projects"
+                                      ((org-ql-block '(and (not (done))
+                                                           (not "NEXT")
+                                                           (path "active" "zasebno" "reka")
+                                                           (level 1)
+                                                           (not (descendants (todo "NEXT")))
+                                                           (not (descendants (scheduled))))
+                                                     ((org-ql-block-header "Stuck Projects")))))
+                                     ("w" "Waiting-for list"
+                                      ((alltodo "" ((org-agenda-overriding-header "")
+                                                    (org-agenda-files '("~/nextcloud/org/refile.org"
+                                                                        "~/nextcloud/org/zasebno.org"
+                                                                        "~/nextcloud/org/reka.org"
+                                                                        "~/nextcloud/org/inactive.org"
+                                                                        "~/nextcloud/org/someday.org"
+                                                                        "~/nextcloud/org/active.org"))
+                                                    (org-super-agenda-groups
+                                                     '((:discard (:not (:todo "WAITING")))
+                                                       (:auto-map (lambda (item) ;; name each project by its top-level heading
+                                                                    (re-search-backward "^\* " nil t)
+                                                                    (org-get-heading t t t t))
+                                                        :order 0)
+                                                       ))))))
+                                     )
+        )
+  :config
+  (org-super-agenda-mode))
+#+end_src
+* Spelling
+** Set default dictionary
+#+begin_src emacs-lisp
+(setq ispell-local-dictionary "sl"
+      ispell-dictionary "sl")
+#+end_src
+** Disable spell check by default in text buffers
+#+begin_src emacs-lisp
+(after! org (add-hook! org-mode :append (flyspell-mode -1)))
+#+end_src
+** Save abbreviations to local dictionary
+#+begin_src emacs-lisp
+(setq save-abbrevs 'silently)
+(setq-default abbrev-mode t)
+#+end_src
+** Bring up spell checker with =C-x C-i=
+#+begin_src emacs-lisp
+(map! "C-x C-i" 'endless/flyspell-word-then-abbrev)
+
+(defun endless/flyspell-word-then-abbrev (p)
+  "Call `ispell-word', then create an abbrev for it.
+With prefix P, create local abbrev. Otherwise it will
+be global."
+  (interactive "P")
+  (save-excursion
+    (if (flyspell-goto-previous-word (point))
+        (let ((bef (downcase (or (thing-at-point 'word)
+                                 "")))
+              aft)
+          (call-interactively 'ispell-word)
+          (setq aft (downcase
+                     (or (thing-at-point 'word) "")))
+          (unless (or (string= aft bef)
+                      (string= aft "")
+                      (string= bef ""))
+            (message "\"%s\" now expands to \"%s\" %sally"
+                     bef aft (if p "loc" "glob"))
+            (define-abbrev
+              (if p local-abbrev-table global-abbrev-table)
+              bef aft)))
+      (message "Cannot find a misspelled word"))))
+(defun flyspell-goto-previous-word (position)
+  "Go to the first misspelled word that occurs before point.
+But don't look beyond what's visible on the screen."
+  (interactive "d")
+  (let ((top (window-start))
+        (bot (window-end)))
+    (save-restriction
+      (narrow-to-region top bot)
+      (overlay-recenter (point))
+      (add-hook 'pre-command-hook
+                (function flyspell-auto-correct-previous-hook) t t)
+      (unless flyspell-auto-correct-previous-pos
+        ;; only reset if a new overlay exists
+        (setq flyspell-auto-correct-previous-pos nil)
+        (let ((overlay-list (overlays-in (point-min) position))
+              (new-overlay 'dummy-value))
+          ;; search for previous (new) flyspell overlay
+          (while (and new-overlay
+                      (or (not (flyspell-overlay-p new-overlay))
+                          ;; check if its face has changed
+                          (not (eq (get-char-property
+                                    (overlay-start new-overlay) 'face)
+                                   'flyspell-incorrect))))
+            (setq new-overlay (car-safe overlay-list))
+            (setq overlay-list (cdr-safe overlay-list)))
+          ;; if nothing new exits new-overlay should be nil
+          (if new-overlay ;; the length of the word may change so go to the start
+              (setq flyspell-auto-correct-previous-pos
+                    (overlay-start new-overlay)))))
+      (if (not flyspell-auto-correct-previous-pos)
+          nil
+        (goto-char flyspell-auto-correct-previous-pos)
+        t)))
+  )
+#+end_src
+** Switch language with =leader t j=
+#+begin_src emacs-lisp
+(map!
+ :desc "Toggle Slovene and English spelling" :leader "t j" (cmd! (toggle-ispell-language))
+ )
+
+(defun toggle-ispell-language ()
+  "Toggle spelling language between Slovenian and English"
+  (if (string= ispell-local-dictionary "english")
+        (ispell-change-dictionary "sl")
+    (ispell-change-dictionary "english"))
+  )
+#+end_src
+* Reveal.js
+#+begin_src emacs-lisp
+(after! org
+  (load-library "ox-reveal")
+  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
+#+end_src
+* Org-roam
+#+begin_src emacs-lisp
+; (after! org
+;   (setq org-roam-directory "~/nextcloud/roam/"
+;         org-roam-db-location "~/Documents/roam.db")
+;   (org-roam-db-autosync-mode)
+;   )
+#+end_src

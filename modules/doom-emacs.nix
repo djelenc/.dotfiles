@@ -14,6 +14,10 @@ let
       '';
     };
 in {
+  # links doom config; has to be absolute, otherwise it becomes read-only
+  home.file.".doom.d".source =
+    config.lib.file.mkOutOfStoreSymlink /home/david/.dotfiles/doom-emacs;
+
   home.packages = with pkgs; [
     # doom emacs utils
     ripgrep
