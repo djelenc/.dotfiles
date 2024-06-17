@@ -150,6 +150,7 @@
         "float,class:^(pavucontrol)$"
         "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
         "float,class:(blueman)"
+        "float,class:^(org.keepassxc.KeePassXC)$"
         "float,initialTitle:(Save|Open File)"
         "move 45% 2.9%,class:^(gsimplecal)$"
       ];

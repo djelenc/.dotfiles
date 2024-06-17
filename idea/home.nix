@@ -36,6 +36,7 @@ in {
     zathura
     vlc
     wl-clipboard
+    keepassxc
 
     # images
     nsxiv
