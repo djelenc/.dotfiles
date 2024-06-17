@@ -94,6 +94,11 @@ in {
 
       # highlight tab-completed entry
       zstyle ':completion:*' menu select
+
+      # key bindings
+      bindkey  "^[[H"   beginning-of-line
+      bindkey  "^[[F"   end-of-line
+      bindkey  "^[[3~"  delete-char
     '';
 
     shellAliases = {

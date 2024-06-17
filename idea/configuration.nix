@@ -1,5 +1,9 @@
 { config, inputs, pkgs, pkgs-24_05, lib, ... }: {
-  imports = [ ./hardware-configuration.nix ../modules/stylix.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ../modules/stylix.nix
+    ../modules/virtualbox.nix
+  ];
 
   # rebinds caps to ctrl and esc
   services.xremap = {
@@ -25,7 +29,9 @@
 
   # Use latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  # boot.kernelPackages = pkgs.linuxPackages_6_8;
+
+  # docker
+  virtualisation.docker.enable = true;
 
   networking.hostName = "idea";
   networking.wireless.userControlled.enable = true;
@@ -61,7 +67,7 @@
   users.users.david = {
     isNormalUser = true;
     description = "David";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [ ];
   };
 
@@ -102,14 +108,6 @@
     curl
     git
   ];
-
-  # Virt
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "david" ];
-  # virtualisation.virtualbox.host.enableExtensionPack = true;
-  virtualisation.virtualbox.guest.enable = true;
-  virtualisation.virtualbox.guest.draganddrop = true;
-  virtualisation.virtualbox.guest.clipboard = true;
 
   programs.mtr.enable = true;
 
