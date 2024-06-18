@@ -3,6 +3,7 @@
     ./hardware-configuration.nix
     ../modules/stylix.nix
     ../modules/virtualbox.nix
+    ../modules/regreet.nix
   ];
 
   # rebinds caps to ctrl and esc
@@ -122,9 +123,6 @@
 
   # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
   services.gnome.gnome-keyring.enable = true;
-
-  # Regreet login-manager
-  programs.regreet.enable = true;
 
   # hyprland -- configured by HM (only to make it show in the login-manager)
   programs.hyprland.enable = true;
