@@ -4,10 +4,6 @@
 (doom/set-frame-opacity 65)
 (setq user-mail-address "david.jelenc@fri.uni-lj.si"
       user-full-name "David Jelenc")
-; because of fish
-(setq shell-file-name (executable-find "bash"))
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name (executable-find "fish"))
 #+end_src
 * Look & Feel
 Nice looking fonts, requires =nerdfonts=

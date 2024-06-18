@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, lib, ... }:
+{ config, inputs, pkgs, pkgs-24_05, lib, ... }:
 let dotFilesRoot = "/home/david/.dotfiles";
 in {
   programs.home-manager.enable = true;
@@ -45,7 +45,7 @@ in {
     # programming
     python3
     jetbrains.pycharm-community-bin
-    jetbrains.idea-community-src
+    pkgs-24_05.jetbrains.idea-community-src
     android-studio
     maven
     vscodium.fhs

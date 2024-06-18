@@ -124,7 +124,8 @@
         }
 
         window#waybar {
-            background: shade(alpha(@borders, 0.2), 1.0);
+            background: alpha(#${base04}, 0.25);
+            /* background: shade(alpha(#${base04}, 0.2), 1.0); */
             color: #${base05};
         }
 
