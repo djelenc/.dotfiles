@@ -1,6 +1,4 @@
-{ config, inputs, pkgs, pkgs-24_05, lib, ... }:
-let dotFilesRoot = "/home/david/.dotfiles";
-in {
+{ config, inputs, pkgs, pkgs-24_05, lib, ... }: {
   programs.home-manager.enable = true;
 
   home.username = "david";
@@ -70,64 +68,14 @@ in {
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
+    ../modules/custom-terminal.nix
   ];
 
-  # terminal-related
-  programs.starship.enable = true;
-  programs.zsh = {
+  # SwayOSD: Indicators (sound, brightness)
+  services.swayosd = {
     enable = true;
-    autocd = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    enableCompletion = true;
-    defaultKeymap = "emacs";
-
-    completionInit = ''
-      # default
-      autoload -U compinit && compinit
-
-      # C-w and M-d delete only to the first /
-      autoload -U select-word-style
-      select-word-style bash
-
-      # case-insensitive tab-completion
-      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-
-      # highlight tab-completed entry
-      zstyle ':completion:*' menu select
-
-      # key bindings
-      bindkey  "^[[H"   beginning-of-line
-      bindkey  "^[[F"   end-of-line
-      bindkey  "^[[3~"  delete-char
-    '';
-
-    shellAliases = {
-      # the usual ls-ing with exa
-      l = "exa --icons --hyperlink"; # basic
-      ll = "exa -la --icons --hyperlink --git --header"; # details
-      lt = "exa --icons --tree --hyperlink"; # tree
-
-      # git
-      glg = "git log --oneline";
-      gst = "git status";
-      gdf = "git diff";
-      gco = "git checkout";
-
-      # managing nixos configuration
-      cedit = "nvim -c 'cd ${dotFilesRoot}' ${dotFilesRoot}";
-      cdiff = "git -C ${dotFilesRoot} diff";
-      csave = ''
-        git -C ${dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
-      cpush = "git -C ${dotFilesRoot} push origin main";
-      cpull = "git -C ${dotFilesRoot} pull origin main";
-      cst = "git -C ${dotFilesRoot} status";
-      clg = "git -C ${dotFilesRoot} log --oneline";
-    };
+    topMargin = 0.9;
   };
-  programs.fzf.enable = true;
-
-  services.swayosd.enable = true;
 
   services.dunst = {
     enable = true;
@@ -145,22 +93,11 @@ in {
 
   programs.java.enable = true;
 
-  # programs.zellij = {
-  #   enable = true;
-  #   enableBashIntegration = true;
-  # };
-
   programs.git = {
     enable = true;
     userName = "David Jelenc";
     userEmail = "david.jelenc@fri.uni-lj.si";
     extraConfig.init.defaultBranch = "main";
-  };
-
-  programs.eza = {
-    enable = true;
-    git = true;
-    icons = true;
   };
 
   programs.fuzzel = {

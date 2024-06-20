@@ -54,6 +54,7 @@
       };
       nix.enable = true;
       surround.enable = true;
+      tmux-navigator.enable = true;
 
       neo-tree = {
         enable = true;
