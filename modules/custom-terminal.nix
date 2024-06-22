@@ -38,6 +38,11 @@ in {
     '';
 
     shellAliases = {
+      # tmux
+      tm = " tmux new-session -A -s"; # create/attach
+      tk = "tmux kill-session -t"; # kill
+      tl = "tmux list-sessions"; # list all
+
       # the usual ls-ing with exa
       l = "exa --icons --hyperlink"; # basic
       ll = "exa -la --icons --hyperlink --git --header"; # details
