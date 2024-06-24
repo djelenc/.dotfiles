@@ -32,9 +32,9 @@ in {
       zstyle ':completion:*' menu select
 
       # key bindings
-      bindkey  "^[[H"   beginning-of-line
-      bindkey  "^[[F"   end-of-line
-      bindkey  "^[[3~"  delete-char
+      bindkey  '\e[H'   beginning-of-line
+      bindkey  '\e[F'   end-of-line
+      bindkey  '\e[3~'  delete-char
     '';
 
     shellAliases = {
@@ -70,14 +70,15 @@ in {
 
   programs.tmux = {
     enable = true;
+    escapeTime = 0;
     extraConfig = ''
       # remap prefix from 'C-b' to 'C-a'
-      unbind C-b
-      set-option -g prefix C-w
-      bind-key C-w send-prefix
+      # unbind C-b
+      # set-option -g prefix C-w
+      # bind-key C-w send-prefix
 
       # remove the default ESC delay
-      set -sg escape-time 2
+      # set -sg escape-time 2
 
       # split panes using | and -
       bind | split-window -h
@@ -108,6 +109,13 @@ in {
       setw -g pane-base-index 1
     '';
 
-    plugins = with pkgs.tmuxPlugins; [ yank vim-tmux-navigator ];
+    plugins = with pkgs.tmuxPlugins; [
+      yank
+      vim-tmux-navigator
+      better-mouse-mode
+    ];
   };
+
+  # powerline
+  home.packages = with pkgs; [ powerline python311Packages.psutil ];
 }
