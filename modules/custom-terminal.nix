@@ -70,42 +70,46 @@ in {
 
   programs.tmux = {
     enable = true;
+    mouse = true;
     escapeTime = 0;
+    baseIndex = 1;
     extraConfig = ''
-      # remap prefix from 'C-b' to 'C-a'
-      # unbind C-b
-      # set-option -g prefix C-w
-      # bind-key C-w send-prefix
-
-      # remove the default ESC delay
-      # set -sg escape-time 2
-
-      # split panes using | and -
+      # pane splitting
       bind | split-window -h
       bind - split-window -v
       unbind '"'
       unbind %
 
-      # vim-like pane resizing
-      bind -r C-k resize-pane -U
-      bind -r C-j resize-pane -D
-      bind -r C-h resize-pane -L
-      bind -r C-l resize-pane -R
+      # alt+hjkl moves focus between panes, including vim
+      is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
+      bind-key -n 'M-h' if-shell "$is_vim" 'send-keys M-h'  'select-pane -L'
+      bind-key -n 'M-j' if-shell "$is_vim" 'send-keys M-j'  'select-pane -D'
+      bind-key -n 'M-k' if-shell "$is_vim" 'send-keys M-k'  'select-pane -U'
+      bind-key -n 'M-l' if-shell "$is_vim" 'send-keys M-l'  'select-pane -R'
+      bind-key -n 'M-\' if-shell "$is_vim" 'send-keys M-\\'  'select-pane -l'
 
-      # vim-like pane switching
-      bind -r k select-pane -U
-      bind -r j select-pane -D
-      bind -r h select-pane -L
-      bind -r l select-pane -R
+      bind-key -T copy-mode-vi 'M-h' select-pane -L
+      bind-key -T copy-mode-vi 'M-j' select-pane -D
+      bind-key -T copy-mode-vi 'M-k' select-pane -U
+      bind-key -T copy-mode-vi 'M-l' select-pane -R
+      bind-key -T copy-mode-vi 'M-\' select-pane -l
 
-      # Enable mouse mode (tmux 2.1 and above)
-      set -g mouse on
+      # unbind old bindings
+      unbind-key -n 'C-h'
+      unbind-key -n 'C-j'
+      unbind-key -n 'C-k'
+      unbind-key -n 'C-l'
+
+      # pane resizing
+      bind -r M-k resize-pane -U
+      bind -r M-j resize-pane -D
+      bind -r M-h resize-pane -L
+      bind -r M-l resize-pane -R
 
       # don't rename windows automatically
       set-option -g allow-rename off
 
-      # Start windows and panes at 1, not 0
-      set -g base-index 1
+      # Start panes at 1, not 0
       setw -g pane-base-index 1
     '';
 

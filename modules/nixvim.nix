@@ -54,7 +54,34 @@
       };
       nix.enable = true;
       surround.enable = true;
-      tmux-navigator.enable = true;
+      tmux-navigator = {
+        enable = true;
+
+        # disable default mappings and provide custom
+        settings.no_mappings = true;
+        keymaps = [
+          {
+            action = "left";
+            key = "<M-h>";
+          }
+          {
+            action = "down";
+            key = "<M-j>";
+          }
+          {
+            action = "up";
+            key = "<M-k>";
+          }
+          {
+            action = "right";
+            key = "<M-l>";
+          }
+          {
+            action = "previous";
+            key = "<M-\\>";
+          }
+        ];
+      };
 
       neo-tree = {
         enable = true;
@@ -169,24 +196,24 @@
         options.desc = "Extract block to file";
       }
       # moving lines
-      {
-        key = "<M-k>";
-        action = ":move-2<CR>==";
-      }
-      {
-        key = "<M-k>";
-        mode = [ "v" ];
-        action = ":move'<-2<CR>gv=gv";
-      }
-      {
-        key = "<M-j>";
-        action = ":move+<CR>==";
-      }
-      {
-        key = "<M-j>";
-        mode = [ "v" ];
-        action = ":move'>+1<CR>gv=gv";
-      }
+      # {
+      #   key = "<M-k>";
+      #   action = ":move-2<CR>==";
+      # }
+      # {
+      #   key = "<M-k>";
+      #   mode = [ "v" ];
+      #   action = ":move'<-2<CR>gv=gv";
+      # }
+      # {
+      #   key = "<M-j>";
+      #   action = ":move+<CR>==";
+      # }
+      # {
+      #   key = "<M-j>";
+      #   mode = [ "v" ];
+      #   action = ":move'>+1<CR>gv=gv";
+      # }
       {
         key = "<leader>j";
         action = ":bn<CR>";
