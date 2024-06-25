@@ -111,6 +111,11 @@ in {
 
       # Start panes at 1, not 0
       setw -g pane-base-index 1
+
+      # powerline
+      set -g status-interval 1
+      set -g status-right '#(powerline tmux right)'
+      set -g status-left '#(powerline tmux left)'
     '';
 
     plugins = with pkgs.tmuxPlugins; [
