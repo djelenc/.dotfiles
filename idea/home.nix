@@ -43,7 +43,7 @@
     # programming
     python3
     jetbrains.pycharm-community-bin
-    pkgs-24_05.jetbrains.idea-community-src
+    jetbrains.idea-community-src
     android-studio
     maven
     vscodium.fhs
