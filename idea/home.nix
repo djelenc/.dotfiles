@@ -56,7 +56,11 @@
   };
 
   # GTK and QT config
-  gtk.enable = true;
+  gtk = {
+    enable = true;
+    # TODO missing icons in nautilus
+  };
+
   qt = {
     enable = true;
     style.name = "adwaita-dark"; # "adwaita-dark";
