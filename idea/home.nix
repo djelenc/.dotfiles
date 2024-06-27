@@ -40,12 +40,12 @@
   programs.java.enable = true;
 
   imports = [
-    ../modules/alacritty.nix
-    ../modules/hyprland.nix
-    ../modules/doom-emacs.nix
-    ../modules/nixvim.nix
-    ../modules/sops-nix.nix
+    ../modules/hyprland-desktop
     ../modules/custom-shell.nix
+    ../modules/alacritty.nix
+    ../modules/nixvim.nix
+    ../modules/doom-emacs.nix
+    ../modules/sops-nix.nix
   ];
 
   programs.git = {
