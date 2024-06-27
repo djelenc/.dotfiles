@@ -125,6 +125,19 @@ in {
     ];
   };
 
-  # powerline
-  home.packages = with pkgs; [ powerline python311Packages.psutil ];
+  # command line utilities
+  home.packages = with pkgs; [
+    bat
+    mtr
+    htop
+    tree
+    jq
+    dig
+    wget
+    curl
+
+    # powerline for tmux
+    powerline
+    python311Packages.psutil
+  ];
 }

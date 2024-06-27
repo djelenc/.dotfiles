@@ -7,91 +7,46 @@
   home.stateVersion = "23.11";
 
   home.packages = with pkgs; [
-    # disks
-    gnome.gnome-disk-utility
+    firefox # browses the webs
+    brave # browses the webs
+    libreoffice-qt # document manipulation
+    kdePackages.okular # PDF signing
+    keepassxc # storing passwords
+    nextcloud-client # remote file sync and backup
+    (zoom-us.overrideAttrs (old: {
+      # to allow screen sharing
+      postFixup = old.postFixup + ''
+        wrapProgram $out/bin/zoom --unset XDG_SESSION_TYPE
+        wrapProgram $out/bin/zoom-us --unset XDG_SESSION_TYPE
+      '';
+    }))
 
-    # desktop related
-    networkmanagerapplet
-    gsimplecal
-    dconf
-    gnome.nautilus
-    gnome.adwaita-icon-theme
-
-    xarchiver
-    pavucontrol
-    wlsunset
-    nextcloud-client
-    brightnessctl
-    libnotify
-
-    # browsers
-    firefox
-    brave
-
-    # utils
-    libreoffice-qt
-    kdePackages.okular
-    zathura
-    vlc
-    wl-clipboard
-    keepassxc
-
-    # images
-    nsxiv
-    shotwell
-
-    # programming
     python3
-    jetbrains.pycharm-community-bin
-    jetbrains.idea-community-src
-    android-studio
-    maven
-    vscodium.fhs
-    gedit
+    jetbrains.pycharm-community-bin # python ide
+    jetbrains.idea-community-src # java ide
+    android-studio # ide andorid dev
+    maven # java DM
+    vscodium.fhs # general editor
 
-    # app launchers
-    rofi-wayland
-    rofi-power-menu
+    vlc # videos
+    obs-studio # video taking
 
-    # misc
-    wireplumber
+    # nix-related
     nix-index
     nixfmt-classic
-    fontpreview
-    zoom-us
   ];
 
+  # Java
+  programs.java.enable = true;
+
   imports = [
-    ../modules/hyprland.nix
     ../modules/alacritty.nix
-    ../modules/waybar.nix
+    ../modules/hyprland.nix
     ../modules/doom-emacs.nix
     ../modules/nixvim.nix
     ../modules/sops-nix.nix
-    ../modules/custom-terminal.nix
+    ../modules/custom-shell.nix
   ];
-
-  # SwayOSD: Indicators (sound, brightness)
-  services.swayosd = {
-    enable = true;
-    topMargin = 0.9;
-  };
-
-  services.dunst = {
-    enable = true;
-    settings = {
-      global = {
-        width = 300;
-        height = 300;
-        offset = "30x50";
-        origin = "top-right";
-        transparency = 60;
-        font = lib.mkForce "CaskaydiaMono Nerd Font";
-      };
-    };
-  };
-
-  programs.java.enable = true;
 
   programs.git = {
     enable = true;
@@ -100,67 +55,19 @@
     extraConfig.init.defaultBranch = "main";
   };
 
-  programs.fuzzel = {
-    enable = true;
-    settings = {
-      main = {
-        font = lib.mkForce "CaskaydiaMono Nerd Font";
-        dpi-aware = lib.mkForce "yes";
-        icon-theme = "hicolor";
-        icons-enabled = "yes";
-        lines = 10;
-        width = 35;
-        horizontal-pad = 40;
-        vertical-pad = 8;
-        inner-pad = 10;
-      };
-
-      colors = with config.lib.stylix.colors; {
-        background = lib.mkForce "${base00}C0";
-        text = lib.mkForce "${base05}FF";
-        match = lib.mkForce "${base04}FF";
-        selection = lib.mkForce "${base02}40";
-        selection-text = lib.mkForce "${base0A}FF";
-        selection-match = lib.mkForce "${base09}FF";
-        border = lib.mkForce "${base0D}FF";
-      };
-    };
-  };
-
-  programs.swaylock = {
-    enable = true;
-    package = pkgs.swaylock-effects;
-    settings = {
-      ignore-empty-password = true;
-      font = config.stylix.fonts.monospace.name;
-      clock = true;
-      timestr = "%R";
-      datestr = "%A, %e. %B";
-      # grace = 2;
-      screenshots = true;
-      # fade-in = 0.2;
-      effect-blur = "20x2";
-      # effect-greyscale = true;
-      effect-scale = 0.3;
-      indicator = true;
-      indicator-radius = 400;
-      indicator-thickness = 20;
-      indicator-caps-lock = true;
-      disable-caps-lock-text = true;
-    };
-  };
-
+  # GTK and QT config
   gtk.enable = true;
-  qt.enable = true;
+  qt = {
+    enable = true;
+    style.name = "adwaita-dark"; # "adwaita-dark";
+    platformTheme = "gnome";
+  };
 
   xdg.mimeApps = {
     enable = true;
     # installed apps
-    # user:
     #   exa /etc/profiles/per-user/david/share/applications/
-    # system:
     #   exa /run/current-system/sw/share/applications
-    # example: ${config.lib.stylix.colors.base00}
     defaultApplications = {
       "text/plain" = [ "emacs.desktop" ];
       "text/org" = [ "emacs.desktop" ];

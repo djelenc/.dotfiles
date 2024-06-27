@@ -1,43 +1,21 @@
 { config, inputs, pkgs, pkgs-24_05, lib, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ../modules/stylix.nix
-    ../modules/virtualbox.nix
-    ../modules/regreet.nix
-  ];
-
-  # rebinds caps to ctrl and esc
-  services.xremap = {
-    withWlroots = true;
-    userName = "david";
-    config = {
-      modmap = [{
-        name = "main remaps";
-        remap = {
-          CapsLock = {
-            held = "leftctrl";
-            alone = "esc";
-            alone_timeout_milis = 150;
-          };
-        };
-      }];
-    };
-  };
-
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.initrd.systemd.enable = true;
+
+  # Plymouth logo
+  boot.plymouth.enable = true;
 
   # Use latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # docker
-  virtualisation.docker.enable = true;
-
+  # networking
   networking.hostName = "idea";
   networking.wireless.userControlled.enable = true;
   networking.networkmanager.enable = true;
 
+  # localization
   time.timeZone = "Europe/Ljubljana";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
@@ -52,24 +30,57 @@
     LC_TIME = "sl_SI.UTF-8";
   };
 
-  # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "us";
-    xkb.variant = "";
+  # Configure keymap
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
   };
 
-  # automount
+  # Caps as ctrl and esc
+  services.xremap = {
+    withWlroots = true;
+    userName = "david";
+    config.modmap = [{
+      name = "main remaps";
+      remap.CapsLock = {
+        held = "leftctrl";
+        alone = "esc";
+        alone_timeout_milis = 150;
+      };
+    }];
+  };
+
+  # automount USB and other removable media
   services.gvfs.enable = true;
 
-  # To allow routing all traffic through VPN
+  # Allow routing all traffic through VPN
   networking.firewall.checkReversePath = false;
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # docker
+  virtualisation.docker.enable = true;
+
+  # virtual box
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "david" ];
+  virtualisation.virtualbox.guest.enable = true;
+  virtualisation.virtualbox.guest.draganddrop = true;
+  virtualisation.virtualbox.guest.clipboard = true;
+
+  imports = [
+    ./hardware-configuration.nix
+    ../modules/stylix.nix
+    ../modules/regreet.nix
+  ];
 
   # user account
   users.users.david = {
     isNormalUser = true;
     description = "David";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [ ];
+    # packages = with pkgs; [ ];
   };
 
   home-manager = {
@@ -80,57 +91,24 @@
     users.david = import ./home.nix;
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Allow installation of unfree corefonts package
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "corefonts" ];
-
-  fonts.packages = with pkgs; [
-    corefonts
-    fantasque-sans-mono
-    powerline-fonts
-    nerdfonts
-    nerd-font-patcher
-    font-awesome
-  ];
-  fonts.fontDir.enable = true;
-
-  # List packages installed in system profile.
-  environment.systemPackages = with pkgs; [
-    bat
-    nh
-    htop
-    tree
-    jq
-    dig
-    wget
-    curl
-    git
-  ];
-
-  programs.mtr.enable = true;
-
-  # Boot logo screen
-  boot.initrd.systemd.enable = true;
-  boot.plymouth.enable = true;
+  # System packages
+  environment.systemPackages = with pkgs; [ nh ];
 
   # ZSH
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
   environment.shells = with pkgs; [ zsh ];
 
-  # Enables gnome-keyring: needed for remebering secrets (eg. nextcloud)
+  # Gnome-keyring: needed for remebering secrets (eg. nextcloud)
   services.gnome.gnome-keyring.enable = true;
 
-  # hyprland -- configured by HM (only to make it show in the login-manager)
+  # hyprland (configured by HM)
   programs.hyprland.enable = true;
   programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
 
   # yet another nix helper
   programs.nh.enable = true;
-  programs.nh.flake = "/home/david/.dotfiles"; # config.dotFilesRoot;
+  programs.nh.flake = "/home/david/.dotfiles";
 
   # Did you read the comment?
   system.stateVersion = "24.05";
@@ -144,16 +122,17 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+    wireplumber.enable = true;
   };
 
-  # useful envs
+  # envs
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
     # NIXOS_OZONE_WL = "1";
   };
 
   # opengl
-  hardware = { opengl.enable = true; };
+  hardware.opengl.enable = true;
 
   # power management
   powerManagement.enable = true;
@@ -168,4 +147,21 @@
 
   # swaylock
   security.pam.services.swaylock = { text = "auth include login"; };
+
+  # FONTS
+  # Allow installation of unfree corefonts package
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [ "corefonts" ];
+
+  fonts = {
+    fontDir.enable = true;
+    packages = with pkgs; [
+      corefonts
+      fantasque-sans-mono
+      powerline-fonts
+      nerdfonts
+      nerd-font-patcher
+      font-awesome
+    ];
+  };
 }
