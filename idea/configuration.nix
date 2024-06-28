@@ -39,7 +39,7 @@
   # Caps as ctrl and esc
   services.xremap = {
     withWlroots = true;
-    userName = userInfo.userName;
+    userName = userInfo.user;
     config.modmap = [{
       name = "main remaps";
       remap.CapsLock = {
@@ -64,7 +64,7 @@
 
   # virtual box
   virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ userInfo.userName ];
+  users.extraGroups.vboxusers.members = [ userInfo.user ];
   virtualisation.virtualbox.guest.enable = true;
   virtualisation.virtualbox.guest.draganddrop = true;
   virtualisation.virtualbox.guest.clipboard = true;
@@ -73,10 +73,13 @@
     ./hardware-configuration.nix
     ../modules/stylix.nix
     ../modules/regreet.nix
+    ../modules/sops-nix.nix
+
+    ../modules/oauth2ms-config.nix
   ];
 
   # user account
-  users.users.${userInfo.userName} = {
+  users.users.${userInfo.user} = {
     isNormalUser = true;
     description = userInfo.name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
@@ -88,7 +91,7 @@
     useUserPackages = true;
     backupFileExtension = "backup";
     extraSpecialArgs = { inherit inputs pkgs-24_05 userInfo; };
-    users.${userInfo.userName} = import ./home.nix;
+    users.${userInfo.user} = import ./home.nix;
   };
 
   # System packages

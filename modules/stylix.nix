@@ -47,8 +47,4 @@
       };
     };
   };
-
-  # environment.systemPackages = with pkgs; [ lolcat ];
-
-  # home-manager.users.${userInfo.userName}.home.packages = with pkgs; [ lolcat ];
 }

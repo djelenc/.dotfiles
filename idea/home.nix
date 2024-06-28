@@ -1,7 +1,7 @@
 { config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }: rec {
   programs.home-manager.enable = true;
 
-  home.username = userInfo.userName;
+  home.username = userInfo.user;
   home.homeDirectory = "/home/${home.username}";
   home.sessionVariables = { EDITOR = "nvim"; };
   home.stateVersion = "23.11";
@@ -46,7 +46,6 @@
     ../modules/alacritty.nix
     ../modules/nixvim.nix
     ../modules/doom-emacs.nix
-    ../modules/sops-nix.nix
   ];
 
   programs.git = {

@@ -39,13 +39,12 @@ in {
     cyrus_sasl
     cyrus-sasl-xoauth2
     isync-oauth2
+    oauth2ms
     (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
 
     # dictionaries
     (aspellWithDicts (dicts: with dicts; [ sl en en-computers en-science ]))
   ];
-
-  imports = [ ./oauth2ms.nix ];
 
   programs = {
     emacs = {

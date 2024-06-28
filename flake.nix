@@ -26,7 +26,7 @@
     let
       userInfo = {
         name = "David";
-        userName = "david";
+        user = "david";
         fullName = "David Jelenc";
         email = "david.jelenc@fri.uni-lj.si";
         dotFiles = "/home/david/.dotfiles";
