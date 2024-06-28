@@ -1,8 +1,8 @@
 { config, lib, pkgs, userInfo, ... }: {
   # Generates a ~/.config/oauth2ms/config.json file with secrets
   #
-  # Ideall, this would be a home-manager module not a nixOS module (as it is now).
-  # However, templates do not yet work in home manager:
+  # Ideally, this would be a home-manager module not a nixOS module (as it is now).
+  # However, templates do not yet work in home-manager:
   #   https://github.com/Mic92/sops-nix/issues/423
 
   # read secrets
