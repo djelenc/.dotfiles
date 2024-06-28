@@ -37,6 +37,10 @@
     nixfmt-classic
   ];
 
+  home.sessionPath = [
+   "/home/${userInfo.user}/.emacs.d/bin"
+  ];
+
   # Java
   programs.java.enable = true;
 
