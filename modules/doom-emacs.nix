@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, userInfo, ... }:
 let
   # mbsync with explicit XOATH2 support
   # https://github.com/NixOS/nixpkgs/issues/108480#issuecomment-1115108802
@@ -16,7 +16,7 @@ let
 in {
   # links doom config; has to be absolute, otherwise it becomes read-only
   home.file.".doom.d".source =
-    config.lib.file.mkOutOfStoreSymlink /home/david/.dotfiles/doom-emacs;
+    config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles + /doom-emacs;
 
   home.packages = with pkgs; [
     # doom emacs utils

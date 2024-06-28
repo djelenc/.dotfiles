@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, userInfo, ... }:
 let
   path = "${config.xdg.configHome}/sops/age";
   file = "keys.txt";
@@ -11,7 +11,7 @@ in {
     # Generates an AGE key from SSH ED25519 key
     generateConfigFile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       mkdir -p ${path}
-      ${pkgs.ssh-to-age}/bin/ssh-to-age -private-key -i /home/david/.ssh/id_ed25519 > ${path}/${file}
+      ${pkgs.ssh-to-age}/bin/ssh-to-age -private-key -i /home/${userInfo.userName}/.ssh/id_ed25519 > ${path}/${file}
     '';
 
     # TODO: does not work for removals

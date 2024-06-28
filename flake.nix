@@ -24,6 +24,13 @@
 
   outputs = { self, nixpkgs, nixpkgs-24_05, home-manager, ... }@inputs:
     let
+      userInfo = {
+        name = "David";
+        userName = "david";
+        fullName = "David Jelenc";
+        email = "david.jelenc@fri.uni-lj.si";
+        dotFiles = "/home/david/.dotfiles";
+      };
       lib = nixpkgs.lib;
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -31,7 +38,7 @@
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = { inherit inputs pkgs-24_05; };
+          specialArgs = { inherit inputs userInfo pkgs-24_05; };
           modules = [
             ./idea/configuration.nix
 

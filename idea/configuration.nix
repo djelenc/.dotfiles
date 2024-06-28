@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, pkgs-24_05, lib, ... }: {
+{ config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }: {
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -39,7 +39,7 @@
   # Caps as ctrl and esc
   services.xremap = {
     withWlroots = true;
-    userName = "david";
+    userName = userInfo.userName;
     config.modmap = [{
       name = "main remaps";
       remap.CapsLock = {
@@ -64,7 +64,7 @@
 
   # virtual box
   virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "david" ];
+  users.extraGroups.vboxusers.members = [ userInfo.userName ];
   virtualisation.virtualbox.guest.enable = true;
   virtualisation.virtualbox.guest.draganddrop = true;
   virtualisation.virtualbox.guest.clipboard = true;
@@ -76,9 +76,9 @@
   ];
 
   # user account
-  users.users.david = {
+  users.users.${userInfo.userName} = {
     isNormalUser = true;
-    description = "David";
+    description = userInfo.name;
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     # packages = with pkgs; [ ];
   };
@@ -87,8 +87,8 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    extraSpecialArgs = { inherit inputs pkgs-24_05; };
-    users.david = import ./home.nix;
+    extraSpecialArgs = { inherit inputs pkgs-24_05 userInfo; };
+    users.${userInfo.userName} = import ./home.nix;
   };
 
   # System packages
@@ -108,7 +108,7 @@
 
   # yet another nix helper
   programs.nh.enable = true;
-  programs.nh.flake = "/home/david/.dotfiles";
+  programs.nh.flake = userInfo.dotFiles;
 
   # Did you read the comment?
   system.stateVersion = "24.05";

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, userInfo, ... }: {
   stylix = {
     enable = true;
     autoEnable = true;
@@ -47,4 +47,8 @@
       };
     };
   };
+
+  # environment.systemPackages = with pkgs; [ lolcat ];
+
+  # home-manager.users.${userInfo.userName}.home.packages = with pkgs; [ lolcat ];
 }

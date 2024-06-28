@@ -1,8 +1,8 @@
-{ config, inputs, pkgs, pkgs-24_05, lib, ... }: {
+{ config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }: rec {
   programs.home-manager.enable = true;
 
-  home.username = "david";
-  home.homeDirectory = "/home/david";
+  home.username = userInfo.userName;
+  home.homeDirectory = "/home/${home.username}";
   home.sessionVariables = { EDITOR = "nvim"; };
   home.stateVersion = "23.11";
 
@@ -27,6 +27,7 @@
     android-studio # ide andorid dev
     maven # java DM
     vscodium.fhs # general editor
+    meld
 
     vlc # videos
     obs-studio # video taking
@@ -50,17 +51,13 @@
 
   programs.git = {
     enable = true;
-    userName = "David Jelenc";
-    userEmail = "david.jelenc@fri.uni-lj.si";
+    userName = userInfo.fullName;
+    userEmail = userInfo.email;
     extraConfig.init.defaultBranch = "main";
   };
 
   # GTK and QT config
-  gtk = {
-    enable = true;
-    # TODO missing icons in nautilus
-  };
-
+  gtk.enable = true;
   qt = {
     enable = true;
     style.name = "adwaita-dark"; # "adwaita-dark";

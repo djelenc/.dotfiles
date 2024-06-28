@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-let dotFilesRoot = "/home/david/.dotfiles";
-in {
+{ config, lib, pkgs, userInfo, ... }: {
   programs.eza = {
     enable = true;
     git = true;
@@ -55,14 +53,14 @@ in {
       gco = "git checkout";
 
       # managing nixos configuration
-      cedit = "nvim -c 'cd ${dotFilesRoot}' ${dotFilesRoot}";
-      cdiff = "git -C ${dotFilesRoot} diff";
+      cedit = "nvim -c 'cd ${userInfo.dotFiles}' ${userInfo.dotFiles}";
+      cdiff = "git -C ${userInfo.dotFiles} diff";
       csave = ''
-        git -C ${dotFilesRoot} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
-      cpush = "git -C ${dotFilesRoot} push origin main";
-      cpull = "git -C ${dotFilesRoot} pull origin main";
-      cst = "git -C ${dotFilesRoot} status";
-      clg = "git -C ${dotFilesRoot} log --oneline";
+        git -C ${userInfo.dotFiles} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
+      cpush = "git -C ${userInfo.dotFiles} push origin main";
+      cpull = "git -C ${userInfo.dotFiles} pull origin main";
+      cst = "git -C ${userInfo.dotFiles} status";
+      clg = "git -C ${userInfo.dotFiles} log --oneline";
     };
   };
 
