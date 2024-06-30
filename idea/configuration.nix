@@ -95,7 +95,10 @@
   };
 
   # System packages
-  environment.systemPackages = with pkgs; [ nh ];
+  environment.systemPackages = with pkgs; [
+    nh
+    (import ../scripts/moss.nix { inherit pkgs config; })
+  ];
 
   # ZSH
   programs.zsh.enable = true;

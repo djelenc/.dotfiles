@@ -28,5 +28,7 @@ in {
       keyFile = "${path}/${file}";
       # generateKey = true;
     };
+
+    secrets.moss_id = { };
   };
 }
