@@ -20,6 +20,7 @@
         wrapProgram $out/bin/zoom-us --unset XDG_SESSION_TYPE
       '';
     }))
+    teams-for-linux
 
     python3
     jetbrains.pycharm-community-bin # python ide
