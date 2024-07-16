@@ -29,6 +29,7 @@ in {
       # generateKey = true;
     };
 
+    # decrypts and loads moss id (needed in scripts/moss.nix)
     secrets.moss_id = { };
   };
 }

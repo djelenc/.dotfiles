@@ -97,6 +97,7 @@
   # System packages
   environment.systemPackages = with pkgs; [
     nh
+    wineWowPackages.waylandFull
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
 
