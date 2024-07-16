@@ -112,8 +112,8 @@
 
       # powerline
       set -g status-interval 1
-      set -g status-right '#(powerline tmux right)'
-      set -g status-left '#(powerline tmux left)'
+      # set -g status-right '#(powerline tmux right)'
+      # set -g status-left '#(powerline tmux left)'
     '';
 
     plugins = with pkgs.tmuxPlugins; [
@@ -135,7 +135,7 @@
     curl
 
     # powerline for tmux
-    powerline
+    # powerline
     python311Packages.psutil
   ];
 }

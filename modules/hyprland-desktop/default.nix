@@ -22,11 +22,11 @@
   # utilities
   home.packages = with pkgs; [
     networkmanagerapplet # network applet
-    gnome.gnome-disk-utility # disks utility
+    gnome-disk-utility # disks utility
     gsimplecal # calendar applet
     dconf # desktop properties
-    gnome.nautilus # file explorer
-    gnome.adwaita-icon-theme # icons
+    nautilus # file explorer
+    adwaita-icon-theme # icons
     xarchiver # zip and other archives
     pavucontrol # control sounds
     wlsunset # redshift

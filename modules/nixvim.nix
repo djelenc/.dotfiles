@@ -50,7 +50,9 @@
       autoclose.enable = true;
       treesitter = {
         enable = true;
-        incrementalSelection.enable = true; # gnn: grn | grm
+        settings = {
+          incremental_selection.enable = true; # gnn: grn | grm
+        };
       };
       nix.enable = true;
       surround.enable = true;

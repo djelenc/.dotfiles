@@ -66,7 +66,7 @@
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ userInfo.user ];
   virtualisation.virtualbox.guest.enable = true;
-  virtualisation.virtualbox.guest.draganddrop = true;
+  virtualisation.virtualbox.guest.dragAndDrop = true;
   virtualisation.virtualbox.guest.clipboard = true;
 
   imports = [
@@ -121,7 +121,6 @@
   system.stateVersion = "24.05";
 
   # sound
-  sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -140,7 +139,7 @@
   };
 
   # opengl
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
 
   # power management
   powerManagement.enable = true;

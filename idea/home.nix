@@ -63,7 +63,7 @@
   qt = {
     enable = true;
     style.name = "adwaita-dark"; # "adwaita-dark";
-    platformTheme = "gnome";
+    platformTheme.name = "adwaita";
   };
 
   xdg.mimeApps = {
