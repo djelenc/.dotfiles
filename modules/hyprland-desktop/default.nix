@@ -37,6 +37,7 @@
     nsxiv # images
     gedit # text editor
     fontpreview # display fonts
+    hyprcursor # cursor for hyprland
   ];
 
   # screen lock
