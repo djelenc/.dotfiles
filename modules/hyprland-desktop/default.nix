@@ -37,10 +37,14 @@
     gedit # text editor
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
+    xwaylandvideobridge # to make screensharing work
   ];
 
   # zathura (PDF reader)
-  programs.zathura.enable = true;
+  programs.zathura = {
+    enable = true;
+    options = { recolor = true; };
+  };
 
   # screen lock
   programs.swaylock = {

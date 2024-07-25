@@ -133,6 +133,14 @@
       "float,class:^(org.keepassxc.KeePassXC)$"
       "float,initialTitle:(All Files)"
       "move 45% 2.9%,class:^(gsimplecal)$"
+
+      # to make xwayladvideobridge work
+      # https://wiki.hyprland.org/0.41.2/Useful-Utilities/Screen-Sharing/#xwayland
+      "opacity 0.0 override,class:^(xwaylandvideobridge)$"
+      "noanim,class:^(xwaylandvideobridge)$"
+      "noinitialfocus,class:^(xwaylandvideobridge)$"
+      "maxsize 1 1,class:^(xwaylandvideobridge)$"
+      "noblur,class:^(xwaylandvideobridge)$"
     ];
   };
 }
