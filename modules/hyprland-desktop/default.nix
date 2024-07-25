@@ -32,13 +32,15 @@
     wlsunset # redshift
     brightnessctl # control brightness
     libnotify # notifications
-    zathura # pdfs
     wl-clipboard # fix clipboard
     nsxiv # images
     gedit # text editor
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
   ];
+
+  # zathura (PDF reader)
+  programs.zathura.enable = true;
 
   # screen lock
   programs.swaylock = {

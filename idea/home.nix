@@ -32,6 +32,7 @@
 
     vlc # videos
     obs-studio # video taking
+    zotero
 
     # nix-related
     nix-index
