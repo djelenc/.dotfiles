@@ -42,8 +42,8 @@ Update buffers when changed by other programs
 
   (setq org_notes "~/nextcloud/org/"
         org_journal "~/nextcloud/journal/"
-        org-cite-global-bibliography '("/home/david/Documents/Zotero/zotero.bib")
-        org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/")
+        org-cite-global-bibliography '("/home/david/Zotero/biblio.bib")
+        ;; org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/")
         ;; org-cite-export-processors '((latex . biblatex)
         ;;                              (t . ("ieee.csl"))
         ;;                              )
@@ -539,10 +539,13 @@ But don't look beyond what's visible on the screen."
   (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
 #+end_src
 * Org-roam
+** Sources
+- https://jethrokuan.github.io/org-roam-guide
+** Configuration
 #+begin_src emacs-lisp
-; (after! org
-;   (setq org-roam-directory "~/nextcloud/roam/"
-;         org-roam-db-location "~/Documents/roam.db")
-;   (org-roam-db-autosync-mode)
-;   )
+(after! org
+  (setq org-roam-directory "~/nextcloud/roam/"
+        org-roam-db-location "~/Documents/roam.db")
+  (org-roam-db-autosync-mode)
+  )
 #+end_src
