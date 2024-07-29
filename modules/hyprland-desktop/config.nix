@@ -1,4 +1,13 @@
-{ config, lib, pkgs, inputs, ... }: {
+{ config, lib, pkgs, inputs, ... }:
+let
+  # for testing lid-opening/closing
+  lidOpen = pkgs.writeShellScriptBin "lidOpen" ''
+    echo "LID OPEN..." >> /tmp/switch.log
+  '';
+  lidClose = pkgs.writeShellScriptBin "lidClose" ''
+    echo "LID OPEN..." >> /tmp/switch.log
+  '';
+in {
   # hyprland config
   wayland.windowManager.hyprland.settings = {
     # TODO: this may change on every host
@@ -14,7 +23,7 @@
       "${pkgs.nextcloud-client}/bin/nextcloud"
     ];
 
-    env = [ "GDK_SCALE,1.25" ];
+    env = [ "XCURSOR_SIZE,64" "GDK_SCALE,1.25" ];
 
     input = {
       kb_layout = "us,si";
@@ -120,7 +129,11 @@
       [ "$mainMod, mouse:272, movewindow" "$mainMod, mouse:273, resizewindow" ];
 
     # lock on lid-open
-    bindl = [ ",switch:off:Lid Switch, exec, swaylock" ];
+    bindl = [
+      # ",switch:off:Lid Switch, exec, swaylock"
+      ",switch:on:Lid Switch,exec, ${lib.getExe lidClose}"
+      ",switch:off:Lid Switch,exec, ${lib.getExe lidOpen}"
+    ];
 
     # execute on release
     bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
@@ -136,11 +149,11 @@
 
       # to make xwayladvideobridge work
       # https://wiki.hyprland.org/0.41.2/Useful-Utilities/Screen-Sharing/#xwayland
-      "opacity 0.0 override,class:^(xwaylandvideobridge)$"
-      "noanim,class:^(xwaylandvideobridge)$"
-      "noinitialfocus,class:^(xwaylandvideobridge)$"
-      "maxsize 1 1,class:^(xwaylandvideobridge)$"
-      "noblur,class:^(xwaylandvideobridge)$"
+      # "opacity 0.0 override,class:^(xwaylandvideobridge)$"
+      # "noanim,class:^(xwaylandvideobridge)$"
+      # "noinitialfocus,class:^(xwaylandvideobridge)$"
+      # "maxsize 1 1,class:^(xwaylandvideobridge)$"
+      # "noblur,class:^(xwaylandvideobridge)$"
     ];
   };
 }
