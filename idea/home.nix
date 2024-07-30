@@ -1,6 +1,9 @@
 { config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }: rec {
   programs.home-manager.enable = true;
 
+  # enable BT headset media control buttons
+  services.mpris-proxy.enable = true;
+
   home.username = userInfo.user;
   home.homeDirectory = "/home/${home.username}";
   home.sessionVariables = { EDITOR = "nvim"; };

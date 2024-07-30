@@ -2,10 +2,10 @@
 let
   # for testing lid-opening/closing
   lidOpen = pkgs.writeShellScriptBin "lidOpen" ''
-    echo "LID OPEN..." >> /tmp/switch.log
+    echo "LID OPEN ..." >> /tmp/switch.log
   '';
   lidClose = pkgs.writeShellScriptBin "lidClose" ''
-    echo "LID OPEN..." >> /tmp/switch.log
+    echo "LID CLOSE ..." >> /tmp/switch.log
   '';
 in {
   # hyprland config
