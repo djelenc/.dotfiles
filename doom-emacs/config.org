@@ -545,7 +545,21 @@ But don't look beyond what's visible on the screen."
 #+begin_src emacs-lisp
 (after! org
   (setq org-roam-directory "~/nextcloud/roam/"
-        org-roam-db-location "~/Documents/roam.db")
+        org-roam-db-location "~/Documents/roam.db"
+
+        org-roam-db-node-include-function (lambda () ; exclude all id's as nodes that have the ATTACH tag
+                                            (not (member "ATTACH" (org-get-tags)))))
   (org-roam-db-autosync-mode)
+
+  ; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
+  (defun force-org-rebuild-cache ()
+    "Rebuild the `org-mode' and `org-roam' cache."
+    (interactive)
+    (org-id-update-id-locations)
+    ;; Note: you may need `org-roam-db-clear-all'
+    ;; followed by `org-roam-db-sync'
+    (org-roam-db-sync)
+    (org-roam-update-org-id-locations))
+
   )
 #+end_src
