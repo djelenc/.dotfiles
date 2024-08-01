@@ -35,7 +35,8 @@
 
     vlc # videos
     obs-studio # video taking
-    zotero
+    zotero # ref management
+    yt-dlp # download youtube videos
 
     # nix-related
     nix-index
@@ -66,8 +67,8 @@
   gtk.enable = true;
   qt = {
     enable = true;
-    style.name = "adwaita-dark"; # "adwaita-dark";
-    platformTheme.name = "adwaita";
+    # style.name = "adwaita-dark"; # "adwaita-dark";
+    # platformTheme.name = "adwaita";
   };
 
   xdg.mimeApps = {
