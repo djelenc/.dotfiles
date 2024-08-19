@@ -170,8 +170,8 @@
       corefonts
       fantasque-sans-mono
       powerline-fonts
-      nerdfonts
-      nerd-font-patcher
+      # nerdfonts
+      # nerd-font-patcher
       font-awesome
     ];
   };

@@ -1,13 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
-let
-  # for testing lid-opening/closing
-  lidOpen = pkgs.writeShellScriptBin "lidOpen" ''
-    echo "LID OPEN ..." >> /tmp/switch.log
-  '';
-  lidClose = pkgs.writeShellScriptBin "lidClose" ''
-    echo "LID CLOSE ..." >> /tmp/switch.log
-  '';
-in {
+{ config, lib, pkgs, inputs, ... }: {
   # hyprland config
   wayland.windowManager.hyprland.settings = {
     # TODO: this may change on every host
@@ -23,7 +14,10 @@ in {
       "${pkgs.nextcloud-client}/bin/nextcloud"
     ];
 
-    env = [ "XCURSOR_SIZE,64" "GDK_SCALE,1.25" ];
+    env = [
+      # "XCURSOR_SIZE,32"
+      "GDK_SCALE,1.25"
+    ];
 
     input = {
       kb_layout = "us,si";
@@ -129,11 +123,7 @@ in {
       [ "$mainMod, mouse:272, movewindow" "$mainMod, mouse:273, resizewindow" ];
 
     # lock on lid-open
-    bindl = [
-      # ",switch:off:Lid Switch, exec, swaylock"
-      ",switch:on:Lid Switch,exec, ${lib.getExe lidClose}"
-      ",switch:off:Lid Switch,exec, ${lib.getExe lidOpen}"
-    ];
+    bindl = [ ",switch:off:Lid Switch, exec, swaylock" ];
 
     # execute on release
     bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
