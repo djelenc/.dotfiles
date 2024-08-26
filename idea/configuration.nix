@@ -159,6 +159,15 @@
   # swaylock
   security.pam.services.swaylock = { text = "auth include login"; };
 
+  # printers
+  services.printing.enable = true;
+  services.avahi = {
+    # network printers autodiscovery
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   # FONTS
   # Allow installation of unfree corefonts package
   nixpkgs.config.allowUnfreePredicate = pkg:
