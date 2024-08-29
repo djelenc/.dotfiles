@@ -41,6 +41,9 @@
     # nix-related
     nix-index
     nixfmt-classic
+
+    # latex
+    texlive.combined.scheme-full
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
