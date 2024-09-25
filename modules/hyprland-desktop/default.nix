@@ -43,7 +43,10 @@
   # zathura (PDF reader)
   programs.zathura = {
     enable = true;
-    options = { recolor = true; };
+    options = {
+      recolor = true;
+      selection-clipboard = "clipboard";
+    };
   };
 
   # screen lock
