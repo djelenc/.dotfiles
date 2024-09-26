@@ -103,8 +103,8 @@
       "$mainMod SHIFT, l, movewindow, r"
 
       # TODO: should be MRU not cycling
-      "LALT,Tab,cyclenext,"
-      "LALT,Tab,bringactivetotop,"
+      "$mainMod, Tab, cyclenext, "
+      "$mainMod, Tab, bringactivetotop, "
 
       ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
       ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
