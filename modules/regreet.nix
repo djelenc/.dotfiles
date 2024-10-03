@@ -6,17 +6,17 @@
     enable = true;
     settings = {
       background = {
-        path = ../assets/gruvbox-nix.png;
+        path = lib.mkDefault ../assets/gruvbox-nix.png;
         fit = "Cover";
       };
       # env = { ENV_VARIABLE = "value"; };
 
       GTK = with config.stylix.fonts; {
         application_prefer_dark_theme = true;
-        cursor_theme_name = "Adwaita";
-        font_name = "Cantarell 16";
-        icon_theme_name = "Adwaita";
-        theme_name = "Adwaita";
+        cursor_theme_name = lib.mkDefault "Adwaita";
+        font_name = lib.mkDefault "Cantarell 16";
+        icon_theme_name = lib.mkDefault "Adwaita";
+        theme_name = lib.mkDefault "Adwaita";
       };
 
       commands = {
