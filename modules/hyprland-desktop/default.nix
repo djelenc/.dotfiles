@@ -58,7 +58,8 @@
       font = config.stylix.fonts.monospace.name;
       clock = true;
       timestr = "%R";
-      datestr = "%A, %e. %B";
+      # datestr = "%A, %e. %B";
+      datestr = "%e. %B";
       # grace = 2;
       screenshots = true;
       # fade-in = 0.2;

@@ -44,6 +44,7 @@
 
     # latex
     texlive.combined.scheme-full
+    ghostscript
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
