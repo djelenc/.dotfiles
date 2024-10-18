@@ -55,12 +55,13 @@
         };
       };
       nix.enable = true;
-      surround.enable = true;
+      vim-surround.enable = true;
+      web-devicons.enable = true;
       tmux-navigator = {
         enable = true;
 
         # disable default mappings and provide custom
-        settings.no_mappings = true;
+        settings.no_mappings = 1;
         keymaps = [
           {
             action = "left";

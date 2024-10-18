@@ -49,6 +49,11 @@
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
 
+  # links intellij vim config
+  home.file.".ideavimrc".source =
+    config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles
+    + /intellij/.ideavimrc;
+
   # Java
   programs.java.enable = true;
 

@@ -1,0 +1,36 @@
+set timeoutlen=1000
+set incsearch
+set number relativenumber
+set rnu
+set showmode
+set surround
+set multiple-cursors
+set commentary
+
+" ideavim supported plugins
+set surround
+
+" noremap <space> :
+let mapleader = " "
+
+" insert empty lines but stay in normal mode
+nmap zj o<Esc>k
+nmap zk O<Esc>j
+
+" comment lines
+nmap gcc :action CommentByLineComment<cr>
+vmap gcc :action CommentByLineComment<cr>
+
+" custom bindings
+map <Leader>ff :action SearchEverywhere<CR>
+map <Leader>bb :action RecentFiles<CR>
+map <Leader>k :action NextTab<CR>
+map <Leader>j :action PreviousTab<CR>
+map <Leader>bd :q<CR>
+map <Leader>fs :w<CR>
+
+" scroll with ctrl+y
+" nmap <C-y> :action VimMotionScrollLineUp<CR>
+" nmap <C-e> :action VimMotionScrollLineDown<CR>
+
+"set ideajoin
