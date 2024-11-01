@@ -35,6 +35,17 @@
             };
           }) { })
     ];
+
+    extraConfig = ''
+      plugin {
+          virtual-desktops {
+              notifyinit = 0
+              verbose_logging = 0
+              cycleworkspaces = 0
+          }
+      }
+    '';
+
   };
 
   imports = [ ./waybar.nix ./config.nix ];
