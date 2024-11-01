@@ -48,6 +48,29 @@
 
   };
 
+  # Power management as desktop commands
+  # (so they apper in launcher)
+  xdg.desktopEntries = {
+    suspend = {
+      name = "Suspend";
+      exec = "systemctl suspend";
+      terminal = false;
+      categories = [ "System" ];
+    };
+    power-off = {
+      name = "Power off";
+      exec = "systemctl poweroff";
+      terminal = false;
+      categories = [ "System" ];
+    };
+    reboot = {
+      name = "Reboot";
+      exec = "systemctl reboot";
+      terminal = false;
+      categories = [ "System" ];
+    };
+  };
+
   imports = [ ./waybar.nix ./config.nix ];
 
   xdg.portal = {
