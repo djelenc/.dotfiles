@@ -6,6 +6,9 @@
 
   imports = [ inputs.nixvim.homeManagerModules.nixvim ];
 
+  # disable stylix styling
+  stylix.targets.nixvim.enable = false;
+
   programs.nixvim = {
     enable = true;
     defaultEditor = true;

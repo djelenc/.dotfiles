@@ -121,6 +121,8 @@
       vim-tmux-navigator
       better-mouse-mode
     ];
+
+    shell = "${pkgs.zsh}/bin/zsh";
   };
 
   # command line utilities
