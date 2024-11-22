@@ -6,6 +6,7 @@ set showmode
 set surround
 set multiple-cursors
 set commentary
+set clipboard+=unnamed
 
 " ideavim supported plugins
 set surround
