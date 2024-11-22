@@ -12,8 +12,9 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprland.url =
-      "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.44.1";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    # "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.45.0";
+    # "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.44.1";
 
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";

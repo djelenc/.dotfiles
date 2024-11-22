@@ -52,10 +52,10 @@
         size = 3;
         passes = 1;
       };
-      drop_shadow = "yes";
-      shadow_range = 4;
-      shadow_render_power = 3;
-      "col.shadow" = lib.mkDefault "rgba(1a1a1aee)";
+      # drop_shadow = "yes";
+      # shadow_range = 4;
+      # shadow_render_power = 3;
+      # "col.shadow" = lib.mkDefault "rgba(1a1a1aee)";
     };
 
     animations = {
@@ -99,10 +99,10 @@
       "$mainMod, l, movefocus, r"
       "$mainMod, k, movefocus, u"
       "$mainMod, j, movefocus, d"
-      "$mainMod CONTROL, j, nextdesk"
-      "$mainMod CONTROL, k, prevdesk"
-      "$mainMod SHIFT, j, movetonextdesk"
-      "$mainMod SHIFT, k, movetoprevdesk"
+      "$mainMod CONTROL, j, workspace, +1"
+      "$mainMod CONTROL, k, workspace, -1"
+      "$mainMod SHIFT, j, movetoworkspace, +1"
+      "$mainMod SHIFT, k, movetoworkspace, -1"
       "$mainMod SHIFT, h, movewindow, l"
       "$mainMod SHIFT, l, movewindow, r"
 
