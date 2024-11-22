@@ -17,6 +17,8 @@
       "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
       "${pkgs.blueman}/bin/blueman-applet"
       "${pkgs.nextcloud-client}/bin/nextcloud"
+      "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch cliphist store # Stores only text data"
+      "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch cliphist store # Stores only image data"
     ];
 
     env = [ "GDK_SCALE,1.25" ];

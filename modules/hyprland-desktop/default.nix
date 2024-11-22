@@ -94,6 +94,7 @@
     brightnessctl # control brightness
     libnotify # notifications
     wl-clipboard # fix clipboard
+    cliphist
     nsxiv # images
     gedit # text editor
     fontpreview # display fonts
