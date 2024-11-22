@@ -62,12 +62,22 @@
   # docker
   virtualisation.docker.enable = true;
 
-  # virtual box
-  virtualisation.virtualbox.host.enable = true;
+  # virtualbox
+  virtualisation.virtualbox = {
+    host = {
+      enable = true;
+      # enableKvm = true;
+      # addNetworkInterface = false;
+      # package = inputs.nixpkgs-vbox-pr.legacyPackages.x86_64-linux.virtualbox;
+    };
+    guest = {
+      enable = true;
+      dragAndDrop = true;
+      clipboard = true;
+    };
+  };
+
   users.extraGroups.vboxusers.members = [ userInfo.user ];
-  virtualisation.virtualbox.guest.enable = true;
-  virtualisation.virtualbox.guest.dragAndDrop = true;
-  virtualisation.virtualbox.guest.clipboard = true;
 
   imports = [
     ./hardware-configuration.nix

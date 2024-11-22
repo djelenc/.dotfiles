@@ -934,6 +934,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-vbox-pr": {
+      "locked": {
+        "lastModified": 1730897827,
+        "narHash": "sha256-3pHpwvP7djtnRLqeX/46ppUSiTqHajgFP6cjR9Jw1l0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3339bf30e854be9c700746ee5ee5feb2fec99c9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "pull/353857/head",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1730200266,
@@ -1103,6 +1119,7 @@
         "hyprland": "hyprland",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-24_05": "nixpkgs-24_05",
+        "nixpkgs-vbox-pr": "nixpkgs-vbox-pr",
         "nixvim": "nixvim",
         "sops-nix": "sops-nix",
         "stylix": "stylix",

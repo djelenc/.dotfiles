@@ -3,8 +3,9 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
     nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
+    # nixpkgs.url = "github:NixOS/nixpkgs?ref=pull/353857/head";
+    nixpkgs-vbox-pr.url = "github:NixOS/nixpkgs?ref=pull/353857/head";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -36,6 +37,7 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       pkgs-24_05 = nixpkgs-24_05.legacyPackages.${system};
+
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
