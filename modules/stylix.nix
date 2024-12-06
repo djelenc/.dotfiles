@@ -30,13 +30,13 @@
       };
 
       monospace = {
-        package = pkgs.nerdfonts;
+        package = pkgs.nerd-fonts.caskaydia-mono;
         name = "CaskaydiaMono Nerd Font";
       };
 
       sansSerif = {
         # package = pkgs.dejavu_fonts;
-        package = pkgs.nerdfonts;
+        package = pkgs.nerd-fonts.noto;
         # name = "DejaVuSansM Nerd Font";
         name = "NotoSans NF Reg";
       };
