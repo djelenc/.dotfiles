@@ -31,7 +31,8 @@
     android-studio # ide andorid dev
     maven # java DM
     vscodium.fhs # general editor
-    meld
+    meld # diff/merger
+    drawio # draw graphs
 
     vlc # videos
     obs-studio # video taking
