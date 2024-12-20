@@ -88,7 +88,7 @@
     dconf # desktop properties
     nautilus # file explorer
     adwaita-icon-theme # icons
-    xarchiver # zip and other archives
+    # xarchiver # zip and other archives
     pavucontrol # control sounds
     wlsunset # redshift
     brightnessctl # control brightness

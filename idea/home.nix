@@ -95,9 +95,9 @@
       "image/png" = [ "nsxiv.desktop" ];
       "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
 
-      "application/zip" = [ "xarchiver.desktop" ];
-      "application/x-zip" = [ "xarchiver.desktop" ];
-      "application/x-zip-compressed" = [ "xarchiver.desktop" ];
+      # "application/zip" = [ "xarchiver.desktop" ];
+      # "application/x-zip" = [ "xarchiver.desktop" ];
+      # "application/x-zip-compressed" = [ "xarchiver.desktop" ];
 
       "video/*" = [ "vlc.desktop" ];
 
