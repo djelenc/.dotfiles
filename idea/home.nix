@@ -34,6 +34,8 @@
     meld # diff/merger
     drawio # draw graphs
 
+    caligula # burning utility
+
     vlc # videos
     obs-studio # video taking
     zotero # ref management
