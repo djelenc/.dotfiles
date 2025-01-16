@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
-    nixpkgs-vbox-pr.url = "github:NixOS/nixpkgs?ref=pull/353857/head";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -13,9 +12,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-    # "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.45.0";
-    # "git+https://github.com/hyprwm/Hyprland?submodules=1&ref=refs/tags/v0.44.1";
-
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 

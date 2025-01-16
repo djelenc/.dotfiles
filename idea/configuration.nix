@@ -68,7 +68,6 @@
       enable = true;
       # enableKvm = true;
       # addNetworkInterface = false;
-      # package = inputs.nixpkgs-vbox-pr.legacyPackages.x86_64-linux.virtualbox;
     };
     guest = {
       enable = true;
