@@ -33,6 +33,8 @@
     vscodium.fhs # general editor
     meld # diff/merger
     drawio # draw graphs
+    zip
+    perl540Packages.LaTeXML
 
     caligula # burning utility
 
