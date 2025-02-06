@@ -5,46 +5,7 @@
     xwayland.enable = true;
     systemd.enable = true;
 
-    plugins = [
-      # (pkgs.callPackage
-      #   ({ lib, fetchFromGitHub, cmake, hyprland, hyprlandPlugins, }:
-      #     hyprlandPlugins.mkHyprlandPlugin pkgs.hyprland {
-      #       pluginName = "virtual-desktops";
-      #       version = "2.2.4";
-
-      #       src = fetchFromGitHub {
-      #         owner = "levnikmyskin";
-      #         repo = "hyprland-virtual-desktops";
-      #         rev = "8eea25c8bc162f9259f2b249cd864c3c8a540fd1";
-      #         hash = "sha256-bJ6fDQiMH4ro0TuZp35FnV5kNdOXNNTi8d44GcEZYVs=";
-      #       };
-
-      #       installPhase = ''
-      #         mkdir -p $out/lib
-      #         cp virtual-desktops.so $out/lib/libvirtual-desktops.so
-      #       '';
-
-      #       meta = {
-      #         homepage =
-      #           "https://github.com/levnikmyskin/hyprland-virtual-desktops";
-      #         description =
-      #           "A plugin for the Hyprland compositor, implementing virtual-desktop functionality.";
-      #         license = lib.licenses.bsd3;
-      #         platforms = lib.platforms.linux;
-      #         maintainers = with lib.maintainers; [ levnikmyskin ];
-      #       };
-      #     }) { })
-    ];
-
-    # extraConfig = ''
-    #   plugin {
-    #       virtual-desktops {
-    #           notifyinit = 0
-    #           verbose_logging = 0
-    #           cycleworkspaces = 0
-    #       }
-    #   }
-    # '';
+    plugins = [ ];
 
   };
 
@@ -72,13 +33,6 @@
   };
 
   imports = [ ./waybar.nix ./config.nix ];
-
-  xdg.portal = {
-    config.common.default = "*";
-    enable = true;
-    extraPortals =
-      [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-hyprland ];
-  };
 
   # utilities
   home.packages = with pkgs; [
