@@ -33,6 +33,7 @@
     vscodium.fhs # general editor
     meld # diff/merger
     drawio # draw graphs
+    inkscape # vector drawings
     zip
     xarchiver
 
