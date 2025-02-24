@@ -1,11 +1,60 @@
-{ config, lib, pkgs, inputs, ... }: {
+{ config, lib, pkgs, inputs, ... }:
+let
+  # switch one workspace down on all monitors
+  hyprland-switch-down = pkgs.writeShellScriptBin "hyprland-switch-down" ''
+    num_monitors=$(hyprctl monitors | grep -c "ID")
+
+    for ((i = 1; i <= num_monitors; i++)); do
+        hyprctl dispatch workspace r+1
+        hyprctl dispatch focusmonitor +1
+    done
+  '';
+  # switch one workspace up on all monitors
+  hyprland-switch-up = pkgs.writeShellScriptBin "hyprland-switch-up" ''
+    num_monitors=$(hyprctl monitors | grep -c "ID")
+
+    for ((i = 1; i <= num_monitors; i++)); do
+        hyprctl dispatch workspace r-1
+        hyprctl dispatch focusmonitor +1
+    done
+  '';
+  # move window one workespace down and switch all workspace one down
+  hyprland-move-down = pkgs.writeShellScriptBin "hyprland-move-down" ''
+    num_monitors=$(hyprctl monitors | grep -c "ID")
+
+    # move
+    hyprctl dispatch movetoworkspace r+1
+    hyprctl dispatch focusmonitor +1
+
+    # switch
+    for ((i = 1; i < num_monitors; i++)); do
+        hyprctl dispatch workspace r+1
+        hyprctl dispatch focusmonitor +1
+    done
+  '';
+  # move window one workespace up and switch all workspace one up
+  hyprland-move-up = pkgs.writeShellScriptBin "hyprland-move-up" ''
+    num_monitors=$(hyprctl monitors | grep -c "ID")
+
+    # move
+    hyprctl dispatch movetoworkspace r-1
+    hyprctl dispatch focusmonitor +1
+
+    # switch
+    for ((i = 1; i < num_monitors; i++)); do
+        hyprctl dispatch workspace r-1
+        hyprctl dispatch focusmonitor +1
+    done
+  '';
+in {
   # hyprland config
   wayland.windowManager.hyprland.settings = {
     # monitor = ",preferred,auto,1.25";
     monitor = [
       # name, resolution, position, scale
       "eDP-1, preferred, auto, 1.25, vrr, 1"
-      "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-up, 1"
+      "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-right, 1"
+      "desc:AOC Q27P1B GNXL7HA167593, preferred, auto-right, 1"
       ", preferred, auto, 1, mirror, eDP-1"
     ];
 
@@ -99,10 +148,12 @@
       "$mainMod, l, movefocus, r"
       "$mainMod, k, movefocus, u"
       "$mainMod, j, movefocus, d"
-      "$mainMod CONTROL, j, workspace, +1"
-      "$mainMod CONTROL, k, workspace, -1"
-      "$mainMod SHIFT, j, movetoworkspace, +1"
-      "$mainMod SHIFT, k, movetoworkspace, -1"
+
+      # configuration: monitors side-by-side, workspaces switch up/down
+      "$mainMod CONTROL, j, exec, ${hyprland-switch-down}/bin/hyprland-switch-down"
+      "$mainMod CONTROL, k, exec, ${hyprland-switch-up}/bin/hyprland-switch-up"
+      "$mainMod SHIFT, j, exec, ${hyprland-move-down}/bin/hyprland-move-down"
+      "$mainMod SHIFT, k, exec, ${hyprland-move-up}/bin/hyprland-move-up"
       "$mainMod SHIFT, h, movewindow, l"
       "$mainMod SHIFT, l, movewindow, r"
 
