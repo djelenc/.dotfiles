@@ -29,6 +29,7 @@ in {
     shfmt
     imagemagick
     pandoc
+    ical2orgpy
 
     # doom-web module
     html-tidy
