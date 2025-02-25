@@ -138,4 +138,48 @@
       };
     };
   };
+
+  # Kanshi: Monitor configuration
+  services.kanshi = {
+    enable = true;
+    systemdTarget = "hyprland-session.target";
+
+    settings = [
+      {
+        profile.name = "undocked";
+        profile.outputs = [{
+          criteria = "eDP-1";
+          status = "enable";
+          scale = 1.25;
+          adaptiveSync = true;
+          position = "0,0";
+        }];
+      }
+      {
+        profile.name = "home";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            status = "disable";
+          }
+          {
+            criteria = "AOC Q27P1B GNXL7HA167657";
+            position = "2560,0";
+            status = "enable";
+            scale = 1.0;
+            adaptiveSync = true;
+          }
+          {
+            criteria =
+              "Philips Consumer Electronics Company 231PQPY UHB1430018671";
+            transform = "90";
+            position = "5120,0";
+            status = "enable";
+            scale = 1.0;
+            adaptiveSync = true;
+          }
+        ];
+      }
+    ];
+  };
 }

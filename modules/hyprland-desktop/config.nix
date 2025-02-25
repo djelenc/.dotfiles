@@ -49,15 +49,6 @@ let
 in {
   # hyprland config
   wayland.windowManager.hyprland.settings = {
-    # monitor = ",preferred,auto,1.25";
-    monitor = [
-      # name, resolution, position, scale
-      "eDP-1, preferred, auto, 1.25, vrr, 1"
-      "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-right, 1"
-      "desc:AOC Q27P1B GNXL7HA167593, preferred, auto-right, 1"
-      ", preferred, auto, 1, mirror, eDP-1"
-    ];
-
     xwayland = { force_zero_scaling = true; };
 
     exec-once = [
@@ -101,10 +92,6 @@ in {
         size = 3;
         passes = 1;
       };
-      # drop_shadow = "yes";
-      # shadow_range = 4;
-      # shadow_render_power = 3;
-      # "col.shadow" = lib.mkDefault "rgba(1a1a1aee)";
     };
 
     animations = {
@@ -138,12 +125,12 @@ in {
 
     bind = [
       "$mainMod, T, exec, alacritty"
-      "$mainMod, Q, killactive, "
+      "$mainMod, Q, killactive,"
       "$mainMod, M, fullscreen, 1"
-      "$mainMod SHIFT, Q, exit, "
+      "$mainMod SHIFT, Q, exit,"
       "$mainMod, F, exec, nautilus"
-      "$mainMod, G, togglefloating, "
-      "$mainMod, O, togglesplit, # dwindle"
+      "$mainMod, G, togglefloating,"
+      "$mainMod, O, togglesplit,"
       "$mainMod, h, movefocus, l"
       "$mainMod, l, movefocus, r"
       "$mainMod, k, movefocus, u"
