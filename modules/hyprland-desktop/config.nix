@@ -5,7 +5,7 @@ let
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     for ((i = 1; i <= num_monitors; i++)); do
-        hyprctl dispatch workspace r+1
+        hyprctl dispatch split-cycleworkspaces next
         hyprctl dispatch focusmonitor +1
     done
   '';
@@ -14,7 +14,7 @@ let
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     for ((i = 1; i <= num_monitors; i++)); do
-        hyprctl dispatch workspace r-1
+        hyprctl dispatch split-cycleworkspaces prev
         hyprctl dispatch focusmonitor +1
     done
   '';
@@ -23,12 +23,12 @@ let
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     # move
-    hyprctl dispatch movetoworkspace r+1
+    hyprctl dispatch split-movetoworkspace e+1
     hyprctl dispatch focusmonitor +1
 
     # switch
     for ((i = 1; i < num_monitors; i++)); do
-        hyprctl dispatch workspace r+1
+        hyprctl dispatch split-cycleworkspaces next
         hyprctl dispatch focusmonitor +1
     done
   '';
@@ -37,12 +37,12 @@ let
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     # move
-    hyprctl dispatch movetoworkspace r-1
+    hyprctl dispatch split-movetoworkspace e-1
     hyprctl dispatch focusmonitor +1
 
     # switch
     for ((i = 1; i < num_monitors; i++)); do
-        hyprctl dispatch workspace r-1
+        hyprctl dispatch split-cycleworkspaces prev
         hyprctl dispatch focusmonitor +1
     done
   '';
@@ -188,4 +188,15 @@ in {
       # "noblur,class:^(xwaylandvideobridge)$"
     ];
   };
+
+  wayland.windowManager.hyprland.extraConfig = ''
+    plugin {
+      split-monitor-workspaces {
+        count = 5
+        keep_focused = 0
+        enable_notifications = 0
+        enable_persistent-workspaces = 1
+      }
+    }
+  '';
 }

@@ -5,7 +5,9 @@
     xwayland.enable = true;
     systemd.enable = true;
 
-    plugins = [ ];
+    plugins = [
+      inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
+    ];
 
   };
 
@@ -172,6 +174,30 @@
           {
             criteria =
               "Philips Consumer Electronics Company 231PQPY UHB1430018671";
+            transform = "90";
+            position = "5120,0";
+            status = "enable";
+            scale = 1.0;
+            adaptiveSync = true;
+          }
+        ];
+      }
+      {
+        profile.name = "lem";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            status = "disable";
+          }
+          {
+            criteria = "AOC Q27P1B GNXL7HA167593";
+            position = "2560,0";
+            status = "enable";
+            scale = 1.0;
+            adaptiveSync = true;
+          }
+          {
+            criteria = "Dell Inc. DELL U2412M 0FFXD4136Y1L";
             transform = "90";
             position = "5120,0";
             status = "enable";
