@@ -62,6 +62,12 @@ in {
       "${inputs.pyprland.packages.${pkgs.system}.pyprland}/bin/pypr"
     ];
 
+    monitor = [
+      # name, resolution, position, scale
+      # "eDP-1, preferred, auto, 1.25, vrr, 1"
+      # ", preferred, auto, 1, mirror, eDP-1"
+    ];
+
     env = [ "GDK_SCALE,1.25" ];
 
     input = {
