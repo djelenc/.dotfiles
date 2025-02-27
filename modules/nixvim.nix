@@ -130,7 +130,10 @@
 
       lsp = {
         enable = true;
-        servers = { pyright.enable = true; };
+        servers = {
+          pyright.enable = true;
+          clangd.enable = true;
+        };
         keymaps.lspBuf = {
           K = "hover";
           gD = "references";
