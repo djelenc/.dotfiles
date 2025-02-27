@@ -72,7 +72,7 @@ in {
 
     input = {
       kb_layout = "us,si";
-      # kb_options = "grp:win_space_toggle";
+      kb_options = "grp:win_space_toggle";
       numlock_by_default = true;
 
       follow_mouse = 2;
@@ -153,7 +153,8 @@ in {
       "$mainMod SHIFT, k, exec, ${hyprland-move-up}/bin/hyprland-move-up"
       "$mainMod SHIFT, h, movewindow, l"
       "$mainMod SHIFT, l, movewindow, r"
-      "$mainMod SHIFT, SPACE, split-changemonitor, next"
+      "$mainMod SHIFT, n, split-changemonitor, next"
+      "$mainMod SHIFT, p, split-changemonitor, prev"
 
       # TODO: should be MRU not cycling
       # TODO: should include apps on all monitors
