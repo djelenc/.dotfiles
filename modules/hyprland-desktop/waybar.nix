@@ -23,8 +23,8 @@
       "hyprland/workspaces" = {
         disable-scroll = false;
         format = "{icon}";
-        on-scroll-up = "hyprctl dispatch workspace e+1";
-        on-scroll-down = "hyprctl dispatch workspace e-1";
+        # on-scroll-up = "hyprctl dispatch workspace e+1";
+        # on-scroll-down = "hyprctl dispatch workspace e-1";
         all-outputs = false;
         warp-on-scroll = true;
         on-click = "activate";

@@ -65,7 +65,7 @@ in {
 
     input = {
       kb_layout = "us,si";
-      kb_options = "grp:win_space_toggle";
+      # kb_options = "grp:win_space_toggle";
       numlock_by_default = true;
 
       follow_mouse = 2;
@@ -136,6 +136,9 @@ in {
       "$mainMod, k, movefocus, u"
       "$mainMod, j, movefocus, d"
 
+      # change keyboard
+      "$mainMod, SPACE, exec, hyprctl switchxkblayout at-translated-set-2-keyboard next"
+
       # configuration: monitors side-by-side, workspaces switch up/down
       "$mainMod CONTROL, j, exec, ${hyprland-switch-down}/bin/hyprland-switch-down"
       "$mainMod CONTROL, k, exec, ${hyprland-switch-up}/bin/hyprland-switch-up"
@@ -143,8 +146,10 @@ in {
       "$mainMod SHIFT, k, exec, ${hyprland-move-up}/bin/hyprland-move-up"
       "$mainMod SHIFT, h, movewindow, l"
       "$mainMod SHIFT, l, movewindow, r"
+      "$mainMod SHIFT, SPACE, split-changemonitor, next"
 
       # TODO: should be MRU not cycling
+      # TODO: should include apps on all monitors
       "$mainMod, Tab, cyclenext, "
       "$mainMod, Tab, bringactivetotop, "
 
