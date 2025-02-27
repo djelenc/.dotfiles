@@ -8,8 +8,15 @@
     plugins = [
       inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
     ];
-
   };
+
+  # pyprland -- hyprland extensions
+  xdg.configFile."hypr/pyprland.toml".text = ''
+    [pyprland]
+    plugins = [
+    "magnify"
+    ]
+  '';
 
   # Power management as desktop commands
   # (so they apper in launcher)
@@ -56,6 +63,7 @@
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
     xwaylandvideobridge # to make screensharing work
+    inputs.pyprland.packages.${pkgs.system}.pyprland # pyprland plugins
   ];
 
   # zathura (PDF reader)

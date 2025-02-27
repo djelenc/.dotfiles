@@ -59,6 +59,7 @@ in {
       "${pkgs.nextcloud-client}/bin/nextcloud"
       "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch cliphist store # Stores only text data"
       "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch cliphist store # Stores only image data"
+      "${inputs.pyprland.packages.${pkgs.system}.pyprland}/bin/pypr"
     ];
 
     env = [ "GDK_SCALE,1.25" ];
@@ -156,6 +157,10 @@ in {
       ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
       ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
       "$mainMod, escape, exec, swaylock"
+
+      # zooming
+      "$mainMod, Z, exec, pypr zoom ++0.5"
+      "$mainMod SHIFT, Z, exec, pypr zoom"
     ];
 
     # when held, repeat key
