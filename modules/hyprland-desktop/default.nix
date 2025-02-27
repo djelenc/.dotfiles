@@ -158,7 +158,7 @@
         }];
       }
       {
-        profile.name = "home";
+        profile.name = "home-docked";
         profile.outputs = [
           {
             criteria = "eDP-1";
@@ -179,6 +179,26 @@
             status = "enable";
             scale = 1.0;
             adaptiveSync = true;
+          }
+        ];
+      }
+      {
+        profile.name = "home-extra-monitor";
+        profile.outputs = [
+
+          {
+            criteria = "AOC Q27P1B GNXL7HA167657";
+            position = "0,0";
+            status = "enable";
+            scale = 1.0;
+            adaptiveSync = true;
+          }
+          {
+            criteria = "eDP-1";
+            status = "enable";
+            scale = 1.25;
+            adaptiveSync = true;
+            position = "256,1440";
           }
         ];
       }
