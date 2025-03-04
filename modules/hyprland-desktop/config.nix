@@ -64,8 +64,11 @@ in {
 
     monitor = [
       # name, resolution, position, scale
-      # "eDP-1, preferred, auto, 1.25, vrr, 1"
-      # ", preferred, auto, 1, mirror, eDP-1"
+      "eDP-1, preferred, auto, 1.25, vrr, 1"
+      "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-up, 1"
+      "desc:AOC Q27P1B GNXL7HA167593, preferred, auto-up, 1"
+      ", preferred, auto, 1, mirror, eDP-1"
+      # Deciding which screens are turned on/off is done with kanshi
     ];
 
     env = [ "GDK_SCALE,1.25" ];
