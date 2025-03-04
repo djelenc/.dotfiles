@@ -166,8 +166,8 @@
   # flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # swaylock
-  security.pam.services.swaylock = { text = "auth include login"; };
+  # hyprlock
+  security.pam.services.hyprlock = { };
 
   # printers
   services.printing.enable = true;

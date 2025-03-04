@@ -75,28 +75,46 @@
     };
   };
 
-  # screen lock
-  programs.swaylock = {
+  # idling
+  services.hypridle = {
     enable = true;
-    package = pkgs.swaylock-effects;
     settings = {
-      ignore-empty-password = true;
-      font = config.stylix.fonts.monospace.name;
-      clock = true;
-      timestr = "%R";
-      # datestr = "%A, %e. %B";
-      datestr = "%e. %B";
-      # grace = 2;
-      screenshots = true;
-      # fade-in = 0.2;
-      effect-blur = "20x2";
-      # effect-greyscale = true;
-      effect-scale = 0.3;
-      indicator = true;
-      indicator-radius = 400;
-      indicator-thickness = 20;
-      indicator-caps-lock = true;
-      disable-caps-lock-text = true;
+      general = {
+        after_sleep_cmd = "hyprctl dispatch dpms on";
+        ignore_dbus_inhibit = false;
+        lock_cmd = "hyprlock";
+      };
+
+      listener = [
+        {
+          timeout = 900;
+          on-timeout = "hyprlock";
+        }
+        {
+          timeout = 1200;
+          on-timeout = "hyprctl dispatch dpms off";
+          on-resume = "hyprctl dispatch dpms on";
+        }
+      ];
+    };
+  };
+
+  # screen lock
+  programs.hyprlock = {
+    enable = true;
+    settings = {
+      general = {
+        disable_loading_bar = false;
+        grace = 0;
+        hide_cursor = true;
+        no_fade_in = false;
+      };
+
+      background = lib.mkForce [{
+        path = "screenshot";
+        blur_passes = 3;
+        blur_size = 8;
+      }];
     };
   };
 

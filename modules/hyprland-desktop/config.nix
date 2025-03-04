@@ -119,8 +119,6 @@ in {
       preserve_split = "yes";
     };
 
-    # master = { new_is_master = true; };
-
     gestures = { workspace_swipe = "on"; };
 
     misc = {
@@ -163,7 +161,7 @@ in {
 
       ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
       ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
-      "$mainMod, escape, exec, swaylock"
+      "$mainMod, escape, exec, hyprlock"
 
       # zooming
       "$mainMod, Z, exec, pypr zoom ++0.5"
@@ -182,7 +180,7 @@ in {
       [ "$mainMod, mouse:272, movewindow" "$mainMod, mouse:273, resizewindow" ];
 
     # lock on lid-open
-    bindl = [ ",switch:off:Lid Switch, exec, swaylock" ];
+    bindl = [ ",switch:off:Lid Switch, exec, hyprlock" ];
 
     # execute on release
     bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
