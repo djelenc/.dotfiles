@@ -50,7 +50,7 @@ in {
   programs = {
     emacs = {
       enable = true;
-      package = pkgs.emacs29-pgtk; # supports fractional scaling
+      package = pkgs.emacs30-pgtk; # supports fractional scaling
       extraPackages = (epkgs: [ pkgs.mu.mu4e epkgs.mu4e ]);
       overrides = self: super: { org = self.elpaPackages.org; };
     };
