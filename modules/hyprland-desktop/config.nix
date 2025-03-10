@@ -194,8 +194,10 @@ in {
       "float,class:^(pavucontrol)$"
       "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
       "float,class:(blueman)"
+      "float,class:^(vlc)$"
       "float,class:^(org.keepassxc.KeePassXC)$"
       "float,initialTitle:(All Files)"
+      "float,initialTitle:.*wants to save$"
       "move 45% 2.9%,class:^(gsimplecal)$"
 
       # to make xwayladvideobridge work
