@@ -44,6 +44,10 @@
     zotero # ref management
     yt-dlp # download youtube videos
 
+    # music
+    audacious
+    audacious-plugins
+
     # nix-related
     nix-index
     nixfmt-classic
