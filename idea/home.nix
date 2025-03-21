@@ -34,8 +34,10 @@
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
-    zip
-    xarchiver
+    zip # zipping
+    xarchiver # zipping
+    nvtopPackages.amd # gpu-top
+    simple-scan # scanning
 
     caligula # burning utility
 
@@ -58,6 +60,12 @@
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
+
+  # ollama
+  services.ollama = {
+    enable = true;
+    acceleration = "rocm";
+  };
 
   # links intellij vim config
   home.file.".ideavimrc".source =
