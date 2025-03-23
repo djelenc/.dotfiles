@@ -16,13 +16,13 @@
     kdePackages.okular # PDF signing
     keepassxc # storing passwords
     nextcloud-client # remote file sync and backup
-    (zoom-us.overrideAttrs (old: {
-      # to allow screen sharing
-      postFixup = old.postFixup + ''
-        wrapProgram $out/bin/zoom --unset XDG_SESSION_TYPE
-        wrapProgram $out/bin/zoom-us --unset XDG_SESSION_TYPE
-      '';
-    }))
+    # (zoom-us.overrideAttrs (old: {
+    #   # to allow screen sharing
+    #   postFixup = old.postFixup + ''
+    #     wrapProgram $out/bin/zoom --unset XDG_SESSION_TYPE
+    #     wrapProgram $out/bin/zoom-us --unset XDG_SESSION_TYPE
+    #   '';
+    # }))
     teams-for-linux
 
     python3
@@ -35,9 +35,7 @@
     drawio # draw graphs
     inkscape # vector drawings
     zip # zipping
-    xarchiver # zipping
     nvtopPackages.amd # gpu-top
-    simple-scan # scanning
 
     caligula # burning utility
 
@@ -107,9 +105,9 @@
       "text/plain" = [ "emacs.desktop" ];
       "text/org" = [ "emacs.desktop" ];
       "application/pdf" = [ "org.pwmt.zathura-pdf-mupdf.desktop" ];
-      "image/jpeg" = [ "nsxiv.desktop" ];
-      "image/jpg" = [ "nsxiv.desktop" ];
-      "image/png" = [ "nsxiv.desktop" ];
+      "image/jpeg" = [ "qimgv.desktop" ];
+      "image/jpg" = [ "qimgv.desktop" ];
+      "image/png" = [ "qimgv.desktop" ];
       "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
 
       "application/zip" = [ "xarchiver.desktop" ];

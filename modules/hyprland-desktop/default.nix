@@ -58,7 +58,9 @@
     libnotify # notifications
     wl-clipboard # fix clipboard
     cliphist
-    nsxiv # images
+    qimgv # images
+    xarchiver # zipping
+    simple-scan # scanning
     gedit # text editor
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
