@@ -72,7 +72,12 @@ in {
       # Deciding which screens are turned on/off is done with kanshi
     ];
 
-    env = [ "GDK_SCALE,1.25" ];
+    env = [
+      # "GDK_SCALE,1.25"
+      "GDK_SCALE,1.0"
+      "HYPRCURSOR_SIZE,30"
+      "XCURSOR_SIZE,30"
+    ];
 
     input = {
       kb_layout = "us,si";

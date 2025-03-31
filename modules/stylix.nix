@@ -4,14 +4,13 @@
     autoEnable = true;
     image = ../assets/space.jpg;
 
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-dark.yaml";
-    # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-storm.yaml";
     base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-hard.yaml";
     polarity = "dark";
 
     cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Ice";
+      size = 30;
     };
 
     opacity = {
@@ -35,9 +34,7 @@
       };
 
       sansSerif = {
-        # package = pkgs.dejavu_fonts;
         package = pkgs.nerd-fonts.noto;
-        # name = "DejaVuSansM Nerd Font";
         name = "NotoSans NF Reg";
       };
 
