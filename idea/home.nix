@@ -34,7 +34,7 @@
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
-    zip # zipping
+    zip unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
 
     caligula # burning utility
