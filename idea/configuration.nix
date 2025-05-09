@@ -77,6 +77,12 @@
   #   };
   # };
 
+  # virt-manager
+  programs.virt-manager.enable = true;
+  users.groups.libvirtd.members = [ "david" ];
+  virtualisation.libvirtd.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
+
   users.extraGroups.vboxusers.members = [ userInfo.user ];
 
   imports = [

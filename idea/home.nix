@@ -34,7 +34,8 @@
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
-    zip unrar-wrapper # zipping and similar
+    zip
+    unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
 
     caligula # burning utility
@@ -94,6 +95,14 @@
     enable = true;
     # style.name = "adwaita-dark"; # "adwaita-dark";
     # platformTheme.name = "adwaita";
+  };
+
+  # virt-manager
+  dconf.settings = {
+    "org/virt-manager/virt-manager/connections" = {
+      autoconnect = [ "qemu:///system" ];
+      uris = [ "qemu:///system" ];
+    };
   };
 
   xdg.mimeApps = {
