@@ -29,6 +29,7 @@ in {
     shfmt
     imagemagick
     pandoc
+    haskellPackages.citeproc
     ical2orgpy
 
     # doom-web module

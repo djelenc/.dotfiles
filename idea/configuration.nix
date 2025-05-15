@@ -64,18 +64,18 @@
   virtualisation.docker.enable = true;
 
   # virtualbox
-  # virtualisation.virtualbox = {
-  #   host = {
-  #     enable = true;
-  #     # enableKvm = true;
-  #     # addNetworkInterface = false;
-  #   };
-  #   guest = {
-  #     enable = true;
-  #     dragAndDrop = true;
-  #     clipboard = true;
-  #   };
-  # };
+  virtualisation.virtualbox = {
+    host = {
+      enable = true;
+      # enableKvm = true;
+      # addNetworkInterface = false;
+    };
+    guest = {
+      enable = true;
+      dragAndDrop = true;
+      clipboard = true;
+    };
+  };
 
   # virt-manager
   programs.virt-manager.enable = true;
