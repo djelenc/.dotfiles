@@ -36,6 +36,8 @@ Update buffers when changed by other programs
 #+begin_src emacs-lisp
 (after! org
   ; (require 'org-mu4e) ;; required to have working links to mail
+  (require 'oc)
+  (require 'oc-csl)
   (require 'org-checklist) ;; required for automatic deselection of checkboxes for recurrent tasks
   (add-hook 'org-checkbox-statistics-hook 'dj/org-checkbox-todo)  ;; toggle task state when checkboxes are ticked
   (add-hook 'org-after-todo-statistics-hook 'dj/org-summary-todo) ;; toggle task state when subtask states are changed
