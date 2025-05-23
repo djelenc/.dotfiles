@@ -31,5 +31,8 @@ in {
 
     # decrypts and loads moss id (needed in scripts/moss.nix)
     secrets.moss_id = { };
+
+    # open_ai token
+    secrets.open_ai_test.owner = userInfo.user;
   };
 }
