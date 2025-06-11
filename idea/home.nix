@@ -38,6 +38,12 @@
     unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
 
+    # SQL related
+    postgresql # psql client, server is not started
+    pgmodeler
+    mysql-client
+    mysql-workbench
+
     caligula # burning utility
 
     vlc # videos
