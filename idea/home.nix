@@ -46,10 +46,14 @@
 
     caligula # burning utility
 
+    # sound
+    ffmpeg
+    audacity
+    yt-dlp # download youtube videos
+
     vlc # videos
     obs-studio # video taking
     zotero # ref management
-    yt-dlp # download youtube videos
 
     # music
     audacious
