@@ -577,3 +577,14 @@ When exporting ORG to LATEX, convert SVG images to PDF with Inkscape.
   ;; ("latexmk -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f")
 
 #+end_src
+* Gptel
+#+begin_src emacs-lisp
+(use-package! gptel
+  :config
+  ;; Read the API key from a file and trim any trailing newline/whitespace
+  (setq! gptel-api-key
+         (string-trim
+          (with-temp-buffer
+            (insert-file-contents "/run/secrets/open_ai_test")
+            (buffer-string)))))
+#+end_src
