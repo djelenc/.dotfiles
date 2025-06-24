@@ -43,6 +43,7 @@
     pgmodeler
     mysql-client
     mysql-workbench
+    (import ../scripts/cfc.nix { inherit pkgs; })
 
     caligula # burning utility
 
