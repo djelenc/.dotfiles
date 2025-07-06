@@ -8,8 +8,8 @@ shopt -s globstar nullglob
 buffer=""
 
 for pattern in "$@"; do
-  files=( $pattern )
-  if (( ${#files[@]} == 0 )); then
+  files=($pattern)
+  if ((${#files[@]} == 0)); then
     echo "Warning: pattern '$pattern' did not match any files" >&2
     continue
   fi
@@ -24,8 +24,8 @@ for pattern in "$@"; do
         relpath="${file/#"$PWD\/"/}"
       fi
 
-      buffer+="\`\`\`"$'\n'
       buffer+="# file: $relpath"$'\n'
+      buffer+="\`\`\`"$'\n'
       buffer+="$(<"$file")"$'\n'
       buffer+="\`\`\`"$'\n'
     else
