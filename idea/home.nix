@@ -71,12 +71,6 @@
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
 
-  # ollama
-  services.ollama = {
-    enable = true;
-    acceleration = "rocm";
-  };
-
   # links intellij vim config
   home.file.".ideavimrc".source =
     config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles
