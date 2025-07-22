@@ -16,13 +16,6 @@
     kdePackages.okular # PDF signing
     keepassxc # storing passwords
     nextcloud-client # remote file sync and backup
-    # (zoom-us.overrideAttrs (old: {
-    #   # to allow screen sharing
-    #   postFixup = old.postFixup + ''
-    #     wrapProgram $out/bin/zoom --unset XDG_SESSION_TYPE
-    #     wrapProgram $out/bin/zoom-us --unset XDG_SESSION_TYPE
-    #   '';
-    # }))
     teams-for-linux
 
     python3
@@ -37,6 +30,7 @@
     zip
     unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
+    aider-chat-full
 
     # SQL related
     postgresql # psql client, server is not started
