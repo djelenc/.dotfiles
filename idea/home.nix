@@ -31,6 +31,7 @@
     unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
     aider-chat-full
+    teleport
 
     # SQL related
     postgresql # psql client, server is not started

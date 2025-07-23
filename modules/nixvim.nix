@@ -32,13 +32,15 @@
     };
 
     plugins = {
-      nvim-jdtls = {
+      jdtls = {
         enable = true;
-        cmd = [ "${pkgs.jdt-language-server}/bin/jdtls" ];
         settings = {
-          java = {
-            signatureHelp = true;
-            completion = true;
+          cmd = [ "${pkgs.jdt-language-server}/bin/jdtls" ];
+          settings = {
+            java = {
+              signatureHelp = true;
+              completion = true;
+            };
           };
         };
         # WIP
