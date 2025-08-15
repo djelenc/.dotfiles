@@ -107,7 +107,7 @@
           car = "🚗";
           default = [ "🔈" "🔉" "🔊" ];
         };
-        on-click = "pavucontrol";
+        on-click = "pwvucontrol";
         min-length = 8;
       };
 

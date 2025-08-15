@@ -51,7 +51,7 @@
     dconf # desktop properties
     nautilus # file explorer
     adwaita-icon-theme # icons
-    pavucontrol # control sounds
+    pwvucontrol # control sounds
     wlsunset # redshift
     brightnessctl # control brightness
     libnotify # notifications

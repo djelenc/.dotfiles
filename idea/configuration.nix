@@ -150,16 +150,27 @@
     wireplumber = {
       enable = true;
       extraConfig = {
-        # Prefer Bluetooth sinks over the built-in card
+        # Set sink priorities
         "20-priorities" = {
+          # Bluetooth: highest priority
           "monitor.bluez.rules" = [{
-            matches = [{ "node.name" = "~bluez_output.*"; }];
-            actions = { update-props = { "priority.session" = 2000; }; };
+            matches = [ { "node.name" = "~bluez_output.*"; } ];
+            actions = { update-props = { "priority.session" = 4000; }; };
           }];
-          "monitor.alsa.rules" = [{
-            matches = [{ "node.name" = "~alsa_output.*"; }];
-            actions = { update-props = { "priority.session" = 1000; }; };
-          }];
+
+          # ALSA sinks: prefer analog, de-prioritize HDMI
+          "monitor.alsa.rules" = [
+            # Prefer internal analog outputs
+            {
+              matches = [ { "alsa.id" = "*Analog*"; } ];
+              actions = { update-props = { "priority.session" = 3000; }; };
+            }
+            # De-prioritize all HDMI sinks so they never become default
+            {
+              matches = [ { "alsa.id" = "~HDMI*"; } ];
+              actions = { update-props = { "priority.session" = 500; }; };
+            }
+          ];
         };
       };
     };
