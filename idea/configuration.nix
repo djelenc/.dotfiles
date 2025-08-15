@@ -146,7 +146,23 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
-    wireplumber.enable = true;
+
+    wireplumber = {
+      enable = true;
+      extraConfig = {
+        # Prefer Bluetooth sinks over the built-in card
+        "20-priorities" = {
+          "monitor.bluez.rules" = [{
+            matches = [{ "node.name" = "~bluez_output.*"; }];
+            actions = { update-props = { "priority.session" = 2000; }; };
+          }];
+          "monitor.alsa.rules" = [{
+            matches = [{ "node.name" = "~alsa_output.*"; }];
+            actions = { update-props = { "priority.session" = 1000; }; };
+          }];
+        };
+      };
+    };
   };
 
   # envs

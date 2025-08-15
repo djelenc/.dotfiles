@@ -4,7 +4,7 @@
     jdt-language-server # nvim jdtls
   ];
 
-  imports = [ inputs.nixvim.homeManagerModules.nixvim ];
+  imports = [ inputs.nixvim.homeModules.nixvim ];
 
   # disable stylix styling
   stylix.targets.nixvim.enable = false;
