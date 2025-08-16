@@ -13,7 +13,6 @@
 
   # networking
   networking.hostName = "idea";
-  networking.wireless.userControlled.enable = true;
   networking.networkmanager.enable = true;
 
   # localization
@@ -129,6 +128,7 @@
   # hyprland (configured by HM)
   programs.hyprland.enable = true;
   programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # yet another nix helper
   programs.nh.enable = true;
@@ -154,7 +154,7 @@
         "20-priorities" = {
           # Bluetooth: highest priority
           "monitor.bluez.rules" = [{
-            matches = [ { "node.name" = "~bluez_output.*"; } ];
+            matches = [{ "node.name" = "~bluez_output.*"; }];
             actions = { update-props = { "priority.session" = 4000; }; };
           }];
 
@@ -162,12 +162,12 @@
           "monitor.alsa.rules" = [
             # Prefer internal analog outputs
             {
-              matches = [ { "alsa.id" = "*Analog*"; } ];
+              matches = [{ "alsa.id" = "*Analog*"; }];
               actions = { update-props = { "priority.session" = 3000; }; };
             }
             # De-prioritize all HDMI sinks so they never become default
             {
-              matches = [ { "alsa.id" = "~HDMI*"; } ];
+              matches = [{ "alsa.id" = "~HDMI*"; }];
               actions = { update-props = { "priority.session" = 500; }; };
             }
           ];
@@ -179,6 +179,8 @@
   # envs
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
+    GTK_USE_PORTAL = "1";
+    MOZ_ENABLE_WAYLAND = "1";
     # NIXOS_OZONE_WL = "1";
   };
 

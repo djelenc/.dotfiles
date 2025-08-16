@@ -76,6 +76,9 @@
     };
   };
 
+  # polkit agent
+  services.hyprpolkitagent.enable = true;
+
   # idling
   services.hypridle = {
     enable = true;
