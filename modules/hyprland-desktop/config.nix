@@ -195,8 +195,7 @@ in {
     bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
 
     windowrulev2 = [
-      "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
-      "float,class:^(pavucontrol)$"
+      "float,class:^(com.saivert.pwvucontrol)$"
       "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
       "float,class:(blueman)"
       "float,class:^(vlc)$"

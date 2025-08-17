@@ -20,7 +20,7 @@
 
     python3
     jetbrains.pycharm-community-bin # python ide
-    jetbrains.idea-community-src # java ide
+    jetbrains.idea-community-bin # java ide
     android-studio # ide andorid dev
     maven # java DM
     vscodium.fhs # general editor
