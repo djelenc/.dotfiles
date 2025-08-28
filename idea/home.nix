@@ -32,6 +32,7 @@
     nvtopPackages.amd # gpu-top
     aider-chat-full
     teleport
+    gnumake
 
     # SQL related
     postgresql # psql client, server is not started
@@ -59,9 +60,11 @@
     nix-index
     nixfmt-classic
 
-    # latex
+    # latex, pandoc, publishing
     texlive.combined.scheme-full
     ghostscript
+    pandoc
+    haskellPackages.pandoc-crossref
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
