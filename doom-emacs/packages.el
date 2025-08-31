@@ -59,3 +59,4 @@
 (package! mu4e-alert :disable t)
 (package! citeproc)
 (package! gptel :recipe (:nonrecursive t))
+(package! citar) ; citing in org/md

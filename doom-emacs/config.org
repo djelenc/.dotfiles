@@ -151,6 +151,123 @@ Update buffers when changed by other programs
       new))
   (advice-add #'org-export-new-reference :override #'org-export-deterministic-reference))
 #+end_src
+* Citar
+Per-buffer bibliography (in Org & Markdown)
+#+begin_src emacs-lisp
+(require 'subr-x)  ;; string-trim, string-empty-p, string-suffix-p
+
+;; Keep citar minimal: we only need its processors and variables.
+(use-package! citar
+  :after org
+  :init
+  (setq citar-bibliography org-cite-global-bibliography)
+  :config
+  (setq org-cite-insert-processor   'citar
+        org-cite-follow-processor   'citar
+        org-cite-activate-processor 'citar))
+
+;; ---------- Markdown helpers ----------
+(defun dj/md--yaml-front-matter-string ()
+  "Return YAML front matter as a string, or nil if not present."
+  (save-excursion
+    (goto-char (point-min))
+    (when (looking-at-p "^---\\s-*$")
+      (forward-line 1)
+      (let ((start (point)))
+        (when (re-search-forward "^\\(---\\|\\.\\.\\.\\)\\s-*$" nil t)
+          (buffer-substring-no-properties start (match-beginning 0)))))))
+
+(defun dj/md--extract-bibs ()
+  "Return list of .bib files from Markdown YAML `bibliography:` (scalar or [list])."
+  (let ((yaml (dj/md--yaml-front-matter-string))
+        files)
+    (when yaml
+      (with-temp-buffer
+        (insert yaml)
+        (goto-char (point-min))
+        (when (re-search-forward "^bibliography:\\s-*\\(.+\\)$" nil t)
+          (let ((rhs (string-trim (match-string 1))))
+            (cond
+             ;; Inline list: [a.bib, "b.bib"]
+             ((and (>= (length rhs) 2)
+                   (string-prefix-p "[" rhs)
+                   (string-suffix-p "]" rhs))
+              (dolist (p (split-string (substring rhs 1 -1) "," t "\\s-*"))
+                (setq p (string-trim p "\"'"))
+                (when (string-suffix-p ".bib" p) (push p files))))
+             ;; Scalar: bibliography: refs.bib (optionally quoted)
+             ((not (string-empty-p rhs))
+              (setq rhs (string-trim rhs "\"'"))
+              (when (string-suffix-p ".bib" rhs) (push rhs files)))))))
+    (when files
+      (setq files (nreverse files))
+      (mapcar (lambda (f)
+                (expand-file-name f (or (and buffer-file-name (file-name-directory buffer-file-name))
+                                        default-directory)))
+              files)))))
+
+;; ---------- Org helper ----------
+(defun dj/org--extract-bibs ()
+  "Return list of .bib files from Org `#+bibliography:` lines."
+  (let (files)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^#\\+bibliography:\\s-*\\(.+\\)$" nil t)
+        (dolist (p (split-string (match-string 1) "[ \t]+" t))
+          (when (string-suffix-p ".bib" p)
+            (push (expand-file-name p (or (and buffer-file-name (file-name-directory buffer-file-name))
+                                          default-directory))
+                  files)))))
+    (nreverse files)))
+
+;; ---------- Core setter ----------
+(defun dj/set-buffer-bibliography ()
+  "Detect local .bib files and set buffer-local `citar-bibliography`."
+  (interactive)
+  (require 'citar)
+  (let* ((local (cond
+                 ((derived-mode-p 'org-mode)      (dj/org--extract-bibs))
+                 ((derived-mode-p 'markdown-mode) (dj/md--extract-bibs))
+                 (t nil)))
+         (final (or local org-cite-global-bibliography)))
+    (setq-local citar-bibliography final
+                bibtex-completion-bibliography final)))
+
+(defalias 'dj/reload-bibliography #'dj/set-buffer-bibliography)
+
+;; ---------- Hooks ----------
+(add-hook 'org-mode-hook      #'dj/set-buffer-bibliography)
+(add-hook 'markdown-mode-hook #'dj/set-buffer-bibliography)
+(add-hook 'after-save-hook
+          (lambda ()
+            (when (memq major-mode '(org-mode markdown-mode))
+              (dj/set-buffer-bibliography))))
+
+#+end_src
+** Citation inserter for Markdown using Citar
+#+begin_src emacs-lisp
+(defun dj/markdown-insert-pandoc-citation (&optional raw)
+  "Pick refs via Citar and insert a Pandoc citation.
+Default: insert [@key1; @key2].
+With C-u (RAW), insert @key1; @key2 (no brackets)."
+  (interactive "P")
+  (require 'citar)
+  (let* ((keys (citar-select-refs :multiple t))       ; pick one or many
+         (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+    (insert (if raw body (format "[%s]" body)))))
+
+;; Keybindings: localleader “@” in Markdown/GFM like Org’s SPC m @
+(after! markdown-mode
+  (map! :map markdown-mode-map
+        :localleader
+        "@" #'dj/markdown-insert-pandoc-citation))
+
+(after! gfm-mode
+  (map! :map gfm-mode-map
+        :localleader
+        "@" #'dj/markdown-insert-pandoc-citation))
+#+end_src
+
 * Projectile
 #+begin_src emacs-lisp
 (after! projectile
