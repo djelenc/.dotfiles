@@ -451,11 +451,6 @@ Leaves point at the new heading."
     "Hide compilation output on success; show only on errors."
     :type 'boolean :group 'dj/paper)
 
-  ;; Open result on success? (you already have this variable)
-  (defcustom dj/paper-open-after-build t
-    "Open the produced artifact if the build succeeds."
-    :type 'boolean :group 'dj/paper)
-
   (defun dj/paper--finish (buf status)
     "On success, (optionally) open the artifact; on failure, show BUF."
     (let ((success (string-match-p "\\`finished" status)))
@@ -496,12 +491,38 @@ Leaves point at the new heading."
        (_ "")) ;; clean or unknown: nothing to open
      root))
 
-  (defun dj/paper--open-file (path)
-    "Open PATH sensibly (HTML in browser, others via `org-open-file`)."
-    (when (and path (file-exists-p path))
-      (if (string-equal (file-name-extension path) "html")
-          (browse-url-of-file path)
-        (org-open-file path))))
+  ;; Open a file with the OS default application (async).
+(defun dj/system-open (file)
+  "Open FILE with the system default app."
+  (when (and file (file-exists-p file))
+    (pcase system-type
+      ('darwin
+       (start-process "open" nil "open" file))
+      ('windows-nt
+       ;; Ensure backslashes for w32-shell-execute.
+       (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" file t t)))
+      (_
+       ;; Linux/BSD: prefer xdg-open; fall back to gio open/gnome-open/kde-open
+       (let* ((prog (or (executable-find "xdg-open")
+                        (executable-find "gio")
+                        (executable-find "gnome-open")
+                        (executable-find "kde-open")))
+              (args (cond
+                     ((null prog) nil)
+                     ((string-suffix-p "/gio" prog) (list "open" file))
+                     (t (list file)))))
+         (if prog
+             (apply #'start-process "sys-open" nil prog args)
+           (browse-url-of-file file)))))))
+
+(defun dj/paper--open-file (path)
+  "Open PATH sensibly: HTML in browser, PDF via system viewer, others via `org-open-file`."
+  (when (and path (file-exists-p path))
+    (let ((ext (downcase (or (file-name-extension path) ""))))
+      (cond
+       ((string= ext "html") (browse-url-of-file path))
+       ((string= ext "pdf")  (dj/system-open path))
+       (t                    (org-open-file path))))))
 
   (defun dj/paper--make (target)
     "Run `make TARGET PAPER=<basename>` at nearest Makefile root.
