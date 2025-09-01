@@ -128,7 +128,7 @@ in {
       preserve_split = "yes";
     };
 
-    gestures = { workspace_swipe = "on"; };
+    gesture = [ "3, up, workspace" "3, down, workspace" ];
 
     misc = {
       force_default_wallpaper = 0;
