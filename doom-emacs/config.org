@@ -1,4 +1,9 @@
+* Metadata
+Settings for generating =config.el=
 
+#+begin_src emacs-lisp :tangle config.el :comments no
+;;; -*- lexical-binding: t; -*-
+#+end_src
 * Basic information
 #+begin_src emacs-lisp
 (doom/set-frame-opacity 65)
@@ -426,6 +431,135 @@ Leaves point at the new heading."
         :n [C-return]  #'dj/markdown-c-return
         :i [C-return]  #'dj/markdown-c-return
         :v [C-return]  #'dj/markdown-c-return))
+#+end_src
+** Export via =Makefile=
+#+begin_src emacs-lisp
+;;; Export current Markdown file via Makefile targets (pdf/html/tex)
+(after! markdown-mode
+  (require 'compile)
+
+  (defgroup dj/paper nil
+    "Pandoc/pandoc-crossref Makefile export helpers."
+    :group 'tools)
+
+  (defcustom dj/paper-open-after-build t
+    "Open the produced artifact if the build succeeds."
+    :type 'boolean :group 'dj/paper)
+
+  ;; If non-nil: don't show the compilation buffer unless there are errors.
+  (defcustom dj/paper-quiet-success t
+    "Hide compilation output on success; show only on errors."
+    :type 'boolean :group 'dj/paper)
+
+  ;; Open result on success? (you already have this variable)
+  (defcustom dj/paper-open-after-build t
+    "Open the produced artifact if the build succeeds."
+    :type 'boolean :group 'dj/paper)
+
+  (defun dj/paper--finish (buf status)
+    "On success, (optionally) open the artifact; on failure, show BUF."
+    (let ((success (string-match-p "\\`finished" status)))
+      (if success
+          (progn
+            (when dj/paper-open-after-build
+              (with-current-buffer buf
+                (when (and (boundp 'dj/paper--outfile)
+                           dj/paper--outfile
+                           (file-exists-p dj/paper--outfile))
+                  (dj/paper--open-file dj/paper--outfile))))
+            ;; Kill/bury the compilation buffer on success.
+            (when (buffer-live-p buf) (kill-buffer buf)))
+        ;; Failure: surface the buffer so you can see the errors.
+        (display-buffer buf))))
+
+  ;; Install a single global finish hook.
+  (add-hook 'compilation-finish-functions #'dj/paper--finish)
+
+  (defun dj/paper--find-root ()
+    "Find directory that contains a Makefile above current buffer."
+    (or (and buffer-file-name
+             (locate-dominating-file buffer-file-name "Makefile"))
+        (user-error "No Makefile found above %s" (or buffer-file-name default-directory))))
+
+  (defun dj/paper--basename ()
+    "Return file basename without extension for current buffer."
+    (or (and buffer-file-name (file-name-base buffer-file-name))
+        (user-error "Buffer is not visiting a file")))
+
+  (defun dj/paper--output-path (root base target)
+    "Compute expected output path, given ROOT, BASE and TARGET."
+    (expand-file-name
+     (pcase target
+       ("pdf"  (format "%s.pdf"  base))
+       ("html" (format "%s.html" base))
+       ("tex"  (format "%s.tex"  base))
+       (_ "")) ;; clean or unknown: nothing to open
+     root))
+
+  (defun dj/paper--open-file (path)
+    "Open PATH sensibly (HTML in browser, others via `org-open-file`)."
+    (when (and path (file-exists-p path))
+      (if (string-equal (file-name-extension path) "html")
+          (browse-url-of-file path)
+        (org-open-file path))))
+
+  (defun dj/paper--make (target)
+    "Run `make TARGET PAPER=<basename>` at nearest Makefile root.
+Hides the compilation buffer immediately; only shows it on errors."
+    (interactive)
+    (let* ((root (dj/paper--find-root))
+           (base (dj/paper--basename))
+           (default-directory root)
+           (cmd  (format "make %s PAPER=%s"
+                         (shell-quote-argument target)
+                         (shell-quote-argument base)))
+           (outfile (dj/paper--output-path root base target)))
+      (save-some-buffers t)
+      (message "Building %s with PAPER=%s in %s" target base root)
+      (let ((buf (compile cmd)))
+        ;; Stash expected artifact path on the compilation buffer for the finish hook.
+        (when (bufferp buf)
+          (with-current-buffer buf
+            (setq-local dj/paper--outfile
+                        (and (not (string-empty-p outfile)) outfile))))
+        ;; Quiet mode: close the window immediately; we’ll re-show on error.
+        (when (and dj/paper-quiet-success (bufferp buf))
+          (when-let ((win (get-buffer-window buf)))
+            (delete-window win))))
+      ;; Return non-nil to placate callers.
+      t))
+
+  ;; Public entry points
+  (defun dj/paper-make-pdf  () (interactive) (dj/paper--make "pdf"))
+  (defun dj/paper-make-html () (interactive) (dj/paper--make "html"))
+  (defun dj/paper-make-tex  () (interactive) (dj/paper--make "tex"))
+  (defun dj/paper-make-clean() (interactive) (dj/paper--make "clean"))
+
+  ;; Optional: a small transient for discoverability (if available)
+  (when (require 'transient nil t)
+    (transient-define-prefix dj/paper-export-dispatch ()
+      "Pandoc Makefile export"
+      [["Targets"
+        ("p" "PDF"  dj/paper-make-pdf)
+        ("h" "HTML" dj/paper-make-html)
+        ("t" "TeX"  dj/paper-make-tex)
+        ("c" "Clean" dj/paper-make-clean)]
+       ["Options"
+        ("o" "Toggle open-after-build"
+         (lambda ()
+           (interactive)
+           (setq dj/paper-open-after-build (not dj/paper-open-after-build))
+           (message "Open after build: %s" dj/paper-open-after-build)))]]))
+
+  ;; Doom localleader bindings (Markdown)
+  (map! :map markdown-mode-map
+        :localleader
+        (:prefix ("e" . "export (Make)")
+         :desc "PDF (make pdf)"  "p" #'dj/paper-make-pdf
+         :desc "HTML (make html)" "h" #'dj/paper-make-html
+         :desc "TeX (make tex)"   "t" #'dj/paper-make-tex
+         :desc "Clean"            "c" #'dj/paper-make-clean
+         :desc "Dispatch (if available)" "e" (cmd! (call-interactively 'dj/paper-export-dispatch)))))
 #+end_src
 * Projectile
 #+begin_src emacs-lisp
