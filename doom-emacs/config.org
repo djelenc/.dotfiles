@@ -151,8 +151,9 @@ Update buffers when changed by other programs
       new))
   (advice-add #'org-export-new-reference :override #'org-export-deterministic-reference))
 #+end_src
-* Citar
-Per-buffer bibliography (in Org & Markdown)
+* Markdown paper authoring
+Hand-crafted (and GPT-assisted) bits that allows writing paper in Markdown, referencing bibtex bibliography and cross-referencing images, tables, equations and sections.
+** Citation with Citar
 #+begin_src emacs-lisp
 (require 'subr-x)  ;; string-trim, string-empty-p, string-suffix-p
 
@@ -243,9 +244,7 @@ Per-buffer bibliography (in Org & Markdown)
             (when (memq major-mode '(org-mode markdown-mode))
               (dj/set-buffer-bibliography))))
 
-#+end_src
-** Citation inserter for Markdown using Citar
-#+begin_src emacs-lisp
+
 (defun dj/markdown-insert-pandoc-citation (&optional raw)
   "Pick refs via Citar and insert a Pandoc citation.
 Default: insert [@key1; @key2].
@@ -256,18 +255,178 @@ With C-u (RAW), insert @key1; @key2 (no brackets)."
          (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
     (insert (if raw body (format "[%s]" body)))))
 
-;; Keybindings: localleader “@” in Markdown/GFM like Org’s SPC m @
+;; Keybindings: localleader @ in Markdown like Org's SPC m @
 (after! markdown-mode
   (map! :map markdown-mode-map
         :localleader
-        "@" #'dj/markdown-insert-pandoc-citation))
-
-(after! gfm-mode
-  (map! :map gfm-mode-map
-        :localleader
+        :desc "Insert bibliography"
         "@" #'dj/markdown-insert-pandoc-citation))
 #+end_src
+** Cross-references
+Crossref label picker & inserter (Markdown/Org)
 
+#+begin_src emacs-lisp
+(require 'subr-x)  ;; string-trim, string-empty-p
+(require 'seq)
+
+(defun dj/pandoc-xref--collect ()
+  "Return candidates of pandoc-crossref labels in current buffer.
+Each candidate is (DISPLAY . KEY), where KEY is like \"fig:arch\"."
+  (save-excursion
+    (goto-char (point-min))
+    (let (pairs)
+      ;; Figures: ![Caption](...){#fig:arch}
+      (while (re-search-forward "^!\\[\\([^]\n]*\\)\\][^\n]*{#\\(fig:[^} \t\n]+\\)[^}]*}" nil t)
+        (push (cons (format "%s — Figure: %s" (match-string 2)
+                            (string-trim (match-string 1)))
+                    (match-string 2))
+              pairs))
+      ;; Tables: Table: Caption {#tbl:results}
+      (goto-char (point-min))
+      (while (re-search-forward "^Table:\\s-*\\([^{}\n]*?\\)\\s-*{#\\(tbl:[^} \t\n]+\\)}" nil t)
+        (push (cons (format "%s — Table: %s" (match-string 2)
+                            (string-trim (match-string 1)))
+                    (match-string 2))
+              pairs))
+      ;; Sections: ## Title {#sec:label}
+      (goto-char (point-min))
+      (while (re-search-forward "^#+\\s-+\\([^{\n]*?\\)\\s-*{#\\(sec:[^} \t\n]+\\)}" nil t)
+        (push (cons (format "%s — Section: %s" (match-string 2)
+                            (string-trim (match-string 1)))
+                    (match-string 2))
+              pairs))
+      ;; Equations: $$ ... $$ {#eq:label}
+      (goto-char (point-min))
+      (while (re-search-forward "{#\\(eq:[^} \t\n]+\\)}" nil t)
+        (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
+      ;; Equations (LaTeX): \label{eq:label}
+      (goto-char (point-min))
+      (while (re-search-forward "\\\\label{\\(eq:[^} \t\n]+\\)}" nil t)
+        (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
+      ;; Listings (if you use them): {#lst:label}
+      (goto-char (point-min))
+      (while (re-search-forward "{#\\(lst:[^} \t\n]+\\)}" nil t)
+        (push (cons (format "%s — Listing" (match-string 1)) (match-string 1)) pairs))
+
+      ;; Deduplicate by KEY, prefer first description we saw
+      (let* ((seen (make-hash-table :test 'equal))
+             out)
+        (dolist (p pairs)
+          (unless (gethash (cdr p) seen)
+            (puthash (cdr p) t seen)
+            (push (cons (car p) (cdr p)) out)))
+        (sort out (lambda (a b) (string< (cdr a) (cdr b))))))))
+
+(defun dj/insert-pandoc-xrefs (&optional raw)
+  "Prompt for one or more xref labels and insert Pandoc refs.
+Default inserts [@key1; @key2]. With C-u (RAW), insert @key1; @key2."
+  (interactive "P")
+  (let* ((items (dj/pandoc-xref--collect)))
+    (unless items
+      (user-error "No pandoc-crossref labels found in this buffer"))
+    (let* ((choices (completing-read-multiple
+                     "Insert reference(s): "
+                     (mapcar #'car items) nil t))
+           (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
+           (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+      (insert (if raw body (format "[%s]" body))))))
+
+;; Filtered variants (figure/table/eq/section), handy on muscle memory:
+(defun dj/insert-pandoc-xrefs-type (prefix &optional raw)
+  "Like `dj/insert-pandoc-xrefs' but restricted to PREFIX, e.g. \"fig\"."
+  (interactive "sType (fig/tbl/eq/sec/lst): \nP")
+  (let* ((items (seq-filter (lambda (p) (string-prefix-p (concat prefix ":") (cdr p)))
+                            (dj/pandoc-xref--collect))))
+    (unless items (user-error "No %s labels found" prefix))
+    (let* ((choices (completing-read-multiple
+                     (format "Insert %s reference(s): " prefix)
+                     (mapcar #'car items) nil t))
+           (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
+           (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+      (insert (if raw body (format "[%s]" body))))))
+
+(defun dj/insert-pandoc-fig-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "fig" raw))
+(defun dj/insert-pandoc-tbl-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "tbl" raw))
+(defun dj/insert-pandoc-eq-ref  (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "eq"  raw))
+(defun dj/insert-pandoc-sec-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "sec" raw))
+
+;; Doom localleader bindings
+(after! markdown-mode
+  (map! :map markdown-mode-map
+        :localleader
+        :desc "Insert cross-reference"
+        "r" #'dj/insert-pandoc-xrefs))
+#+end_src
+** ORG like =C-RET= behavior
+Makes pressing =C-RET= do the same thing as in =org-mode=:
+- In a list item (or its continuation lines): insert a sibling item below
+  without splitting the current line.
+- Else: insert a new heading *after the current section* (same level as the
+  current heading). If not under any heading, insert a level-1 heading. Leaves point at the new heading.
+#+begin_src emacs-lisp
+(after! markdown-mode
+  (require 'outline)
+
+  ;; Am I in/under a list item?
+  (defun dj/md-in-list-p ()
+    (or (and (fboundp 'markdown-cur-list-item-bounds)
+             (markdown-cur-list-item-bounds))
+        (save-excursion
+          (beginning-of-line)
+          (looking-at "\\s-*\\([*+-]\\|[0-9]+[.)]\\)\\s-"))))
+
+  ;; Return current ATX heading level (# count) or nil. Always move to BOL of heading.
+  (defun dj/md-current-heading-level ()
+    (save-excursion
+      (when (outline-back-to-heading t)
+        (when (looking-at "^\\(#+\\)\\s-")
+          (length (match-string 1))))))
+
+  ;; Insert ATX heading at POS with LEVEL hashes.
+  ;; Return point *after* the inserted "#+space", ready for typing.
+  (defun dj/md-insert-heading-at (pos level)
+    (save-excursion
+      (goto-char pos)
+      (unless (bolp) (end-of-line) (newline))
+      (unless (save-excursion (forward-line -1) (looking-at-p "^\\s-*$"))
+        (newline))
+      (insert (make-string (max 1 level) ?#) " ")
+      (point)))
+
+  (defun dj/markdown-c-return (&optional _arg)
+    "Org-like C-RET in Markdown.
+
+- In a list item (or its continuation lines): insert a sibling item below
+  without splitting the current line.
+- Else: insert a new heading *after the current section* (same level as the
+  current heading). If not under any heading, insert a level-1 heading.
+
+Leaves point at the new heading."
+    (interactive "P")
+    (if (dj/md-in-list-p)
+        (progn
+          (end-of-line)
+          (call-interactively #'markdown-insert-list-item))
+      (let* ((lvl (dj/md-current-heading-level))
+             (dest
+              (if lvl
+                  (save-excursion
+                    (outline-back-to-heading t)
+                    (outline-end-of-subtree)
+                    (dj/md-insert-heading-at (point) lvl))
+                (save-excursion
+                  (end-of-line)
+                  (dj/md-insert-heading-at (point) 1)))))
+        (goto-char dest))))
+
+  (map! :map markdown-mode-map
+        :n "C-RET"     #'dj/markdown-c-return
+        :i "C-RET"     #'dj/markdown-c-return
+        :v "C-RET"     #'dj/markdown-c-return
+        :n [C-return]  #'dj/markdown-c-return
+        :i [C-return]  #'dj/markdown-c-return
+        :v [C-return]  #'dj/markdown-c-return))
+#+end_src
 * Projectile
 #+begin_src emacs-lisp
 (after! projectile
