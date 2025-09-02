@@ -1,4 +1,7 @@
-{ config, lib, pkgs, userInfo, ... }: {
+{ config, lib, pkgs, userInfo, ... }:
+let
+  hyprctl = lib.getExe' config.wayland.windowManager.hyprland.package "hyprctl";
+in {
   # Kanshi: Monitor configuration
   # Configuration is done together with hyprland (otherwise mirroring does not work)
   # - in hyprland, I set screen properties
@@ -17,6 +20,7 @@
           # adaptiveSync = true;
           # position = "0,0";
         }];
+        profile.exec = "${hyprctl} dispatch split-grabroguewindows";
       }
       {
         profile.name = "home";

@@ -4,47 +4,51 @@ let
   hyprland-switch-down = pkgs.writeShellScriptBin "hyprland-switch-down" ''
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
+    cmds=""
     for ((i = 1; i <= num_monitors; i++)); do
-        hyprctl dispatch split-cycleworkspaces next
-        hyprctl dispatch focusmonitor +1
+        cmds+="dispatch split-cycleworkspaces next; dispatch focusmonitor +1; "
     done
+
+    hyprctl --batch "$cmds"
   '';
   # switch one workspace up on all monitors
   hyprland-switch-up = pkgs.writeShellScriptBin "hyprland-switch-up" ''
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
+    cmds=""
     for ((i = 1; i <= num_monitors; i++)); do
-        hyprctl dispatch split-cycleworkspaces prev
-        hyprctl dispatch focusmonitor +1
+        cmds+="dispatch split-cycleworkspaces prev; dispatch focusmonitor +1; "
     done
+
+    hyprctl --batch "$cmds"
   '';
   # move window one workespace down and switch all workspace one down
   hyprland-move-down = pkgs.writeShellScriptBin "hyprland-move-down" ''
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     # move
-    hyprctl dispatch split-movetoworkspace e+1
-    hyprctl dispatch focusmonitor +1
+    cmds="dispatch split-movetoworkspacesilent +1; "
 
     # switch
-    for ((i = 1; i < num_monitors; i++)); do
-        hyprctl dispatch split-cycleworkspaces next
-        hyprctl dispatch focusmonitor +1
+    for ((i = 1; i <= num_monitors; i++)); do
+        cmds+="dispatch split-cycleworkspaces next; dispatch focusmonitor +1; "
     done
+
+    hyprctl --batch "$cmds"
   '';
   # move window one workespace up and switch all workspace one up
   hyprland-move-up = pkgs.writeShellScriptBin "hyprland-move-up" ''
     num_monitors=$(hyprctl monitors | grep -c "ID")
 
     # move
-    hyprctl dispatch split-movetoworkspace e-1
-    hyprctl dispatch focusmonitor +1
+    cmds="dispatch split-movetoworkspacesilent -1; "
 
     # switch
-    for ((i = 1; i < num_monitors; i++)); do
-        hyprctl dispatch split-cycleworkspaces prev
-        hyprctl dispatch focusmonitor +1
+    for ((i = 1; i <= num_monitors; i++)); do
+        cmds+="dispatch split-cycleworkspaces prev; dispatch focusmonitor +1; "
     done
+
+    hyprctl --batch "$cmds"
   '';
 in {
   # hyprland config
@@ -128,7 +132,13 @@ in {
       preserve_split = "yes";
     };
 
-    gesture = [ "3, up, workspace" "3, down, workspace" ];
+    # hyprctl dispatch split-cycleworkspaces next
+    gesture = [
+      "3, up, dispatcher, exec, ${hyprland-switch-up}/bin/hyprland-switch-up"
+      "3, down, dispatcher, exec, ${hyprland-switch-down}/bin/hyprland-switch-down"
+      "3, up, mod:SUPER, dispatcher, split-cycleworkspaces, prev"
+      "3, down, mod:SUPER, dispatcher, split-cycleworkspaces, next"
+    ];
 
     misc = {
       force_default_wallpaper = 0;
