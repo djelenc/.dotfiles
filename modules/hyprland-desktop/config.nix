@@ -172,7 +172,12 @@ in {
       "$mainMod SHIFT, l, movewindow, r"
       "$mainMod SHIFT, n, split-changemonitor, next"
       "$mainMod SHIFT, p, split-changemonitor, prev"
-      "$mainMod, Tab, cyclenext, visible hist"
+
+      # TODO: should be MRU not cycling
+      # TODO: should include apps on all monitors
+      # "$mainMod, Tab, cyclenext, visible hist" # <-- problem, ko je okno maksimizirano
+      "$mainMod, Tab, cyclenext, "
+      "$mainMod, Tab, bringactivetotop, "
 
       ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
       ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
