@@ -20,7 +20,8 @@ in {
           # adaptiveSync = true;
           # position = "0,0";
         }];
-        profile.exec = "${hyprctl} dispatch split-grabroguewindows";
+        profile.exec =
+          "${pkgs.coreutils}/bin/sleep 1 && ${hyprctl} dispatch split-grabroguewindows";
       }
       {
         profile.name = "home";
