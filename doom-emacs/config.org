@@ -1019,3 +1019,22 @@ When exporting ORG to LATEX, convert SVG images to PDF with Inkscape.
             (insert-file-contents "/run/secrets/open_ai_test")
             (buffer-string)))))
 #+end_src
+* PDF tools
+Auto-select newly created annotations (usually the default, but ensure it)
+#+begin_src emacs-lisp
+(setq pdf-annot-activate-created-annotations t)
+
+(defun dj/pdf-annot-open-editor-after-add (&rest _ignore)
+  "Open the annotation contents buffer right after creating an annotation."
+  (when (and (boundp 'pdf-annot-activate-created-annotations)
+             pdf-annot-activate-created-annotations)
+    ;; The just-created annot is selected; open its contents buffer.
+    (pdf-annot-edit-contents)))
+
+(dolist (fn '(pdf-annot-add-highlight-markup-annotation
+              pdf-annot-add-underline-markup-annotation
+              pdf-annot-add-strikeout-markup-annotation
+              pdf-annot-add-squiggly-markup-annotation
+              pdf-annot-add-text-annotation))
+  (advice-add fn :after #'dj/pdf-annot-open-editor-after-add))
+#+end_src
