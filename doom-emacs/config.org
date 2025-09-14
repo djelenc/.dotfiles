@@ -11,6 +11,7 @@ Settings for generating =config.el=
       user-full-name "David Jelenc")
 #+end_src
 * Look & Feel
+** Look & Feel
 Nice looking fonts, requires =nerdfonts=
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "CaskaydiaMono Nerd Font" :size 23 :weight 'semi-light)
@@ -36,6 +37,31 @@ Navigation: =j= and =k= work across wrapped lines, but commands work across whol
 Update buffers when changed by other programs
 #+begin_src emacs-lisp
 (global-auto-revert-mode)
+#+end_src
+** Navigation
+Let C-o / C-i follow Evil's jumplist as usual, but if called with a prefix argument, use Org's mark ring.
+#+begin_src emacs-lisp
+;; - No prefix  -> normal Evil/evil-collection PDF jump
+;; - With prefix -> use Org's mark ring (back to where you followed the link)
+;; - And silence the stray "(4)" error and keep the behavior:
+(defun dj/around-ec-pdf-jump (orig-fn &optional count)
+  "Prefix -> `org-mark-ring-goto`. Else call ORIG-FN with COUNT=1.
+Silences `wrong-type-argument` errors emitted by evil-collection when a prefix leaks."
+  (condition-case _err
+      (if current-prefix-arg
+          (org-mark-ring-goto)
+        (let ((current-prefix-arg nil))
+          (funcall orig-fn (or count 1))))
+    (wrong-type-argument
+     ;; If some layer still received the raw prefix and complained, just redo cleanly:
+     (let ((current-prefix-arg nil))
+       (funcall orig-fn 1)))))
+
+(with-eval-after-load 'evil-collection-pdf
+  (advice-remove 'evil-collection-pdf-jump-backward #'dj/around-ec-pdf-jump)
+  (advice-remove 'evil-collection-pdf-jump-forward  #'dj/around-ec-pdf-jump)
+  (advice-add 'evil-collection-pdf-jump-backward :around #'dj/around-ec-pdf-jump)
+  (advice-add 'evil-collection-pdf-jump-forward  :around #'dj/around-ec-pdf-jump))
 #+end_src
 * Org Mode
 #+begin_src emacs-lisp
@@ -1020,7 +1046,8 @@ When exporting ORG to LATEX, convert SVG images to PDF with Inkscape.
             (buffer-string)))))
 #+end_src
 * PDF tools
-Auto-select newly created annotations (usually the default, but ensure it)
+** Auto-select newly created annotations
+Usually the default, but ensure it
 #+begin_src emacs-lisp
 (setq pdf-annot-activate-created-annotations t)
 
@@ -1037,4 +1064,17 @@ Auto-select newly created annotations (usually the default, but ensure it)
               pdf-annot-add-squiggly-markup-annotation
               pdf-annot-add-text-annotation))
   (advice-add fn :after #'dj/pdf-annot-open-editor-after-add))
+#+end_src
+** Backward compatibility fix for storing links to pages in PDFs
+#+begin_src emacs-lisp
+;; Emacs 30+: provide the old cl 'find-if' symbol via cl-lib
+(require 'cl-lib)
+(unless (fboundp 'find-if)
+  (defalias 'find-if #'cl-find-if))
+
+;; Org-pdftools compat for Emacs 30 (old cl.el symbols)
+(with-eval-after-load 'org-pdftools
+  (require 'cl-lib)
+  (unless (fboundp 'find-if) (defalias 'find-if #'cl-find-if))
+  (unless (fboundp 'getf)    (defalias 'getf    #'cl-getf)))
 #+end_src
