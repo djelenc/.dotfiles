@@ -9,6 +9,12 @@
       inputs.split-monitor-workspaces.packages.${pkgs.system}.split-monitor-workspaces
     ];
   };
+  # Let HM manage portals; add GTK for Print/FileChooser
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
+  # Helps GTK apps prefer portals on Wayland
+  home.sessionVariables.GTK_USE_PORTAL = "1";
 
   # pyprland -- hyprland extensions
   xdg.configFile."hypr/pyprland.toml".text = ''

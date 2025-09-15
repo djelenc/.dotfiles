@@ -128,7 +128,7 @@
   # hyprland (configured by HM)
   programs.hyprland.enable = true;
   programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # yet another nix helper
   programs.nh.enable = true;
