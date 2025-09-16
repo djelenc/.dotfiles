@@ -31,6 +31,7 @@ in {
     pandoc
     haskellPackages.citeproc
     ical2orgpy
+    sqlite
 
     # doom-web module
     html-tidy
