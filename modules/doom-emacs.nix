@@ -32,6 +32,8 @@ in {
     haskellPackages.citeproc
     ical2orgpy
     sqlite
+    nodejs_22
+    dockfmt
 
     # doom-web module
     html-tidy
