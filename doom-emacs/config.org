@@ -38,6 +38,27 @@ Update buffers when changed by other programs
 (global-auto-revert-mode)
 #+end_src
 * Better navigation
+** Fast search of ORG headings
+Ripgrep over ORG files, and by default, only over Level 1 headings
+#+begin_src emacs-lisp
+(after! org
+  (defun dj/consult-project-org-level1 ()
+    "Search Org level-1 headings (exactly one star + space) in the current project."
+    (interactive)
+    (let* ((root (project-root (project-current t)))
+           ;; flags only; include hidden and common org variants
+           (consult-ripgrep-args
+            "rg --null --line-buffered --color=never --max-columns=1000 \
+ --path-separator / --line-number --smart-case --no-heading \
+ --hidden -uu -g *.org")
+           ;; single star at bol, then whitespace, then NOT another star
+           (pattern "^\\*\\s[^*] "))
+      (let ((consult-async-split-style 'perl)) ; treat backslash escapes properly
+        (consult-ripgrep root pattern))))
+
+  (map! :desc "Go to any org headline" :leader "n SPC" #'dj/consult-project-org-level1)
+  )
+#+end_src
 ** Basic shortcuts
 #+begin_src emacs-lisp
 (setq buffer-save-without-query t)
@@ -46,7 +67,6 @@ Update buffers when changed by other programs
  :desc "Switch buffer" :leader "b b" 'switch-to-buffer
  :desc "Next buffer" :leader "j" 'next-buffer
  :desc "Prev buffer" :leader "k" 'previous-buffer
- :desc "Go to any org headline" :leader "n SPC" 'counsel-org-goto-all
  )
 #+end_src
 ** Mark ring for prefix + C-o/C-i
@@ -89,7 +109,6 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
         org-attach-id-dir "org-attachments"
         org-id-link-to-org-use-id 'create-if-interactive
         org-agenda-files '("~/nextcloud/org/")
-        ivy-use-selectable-prompt t
         org-directory org_notes
         org-default-notes-file (concat org_notes "/refile.org")
         org-startup-folded t

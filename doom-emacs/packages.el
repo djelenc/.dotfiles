@@ -52,7 +52,7 @@
 (package! org-caldav)
 (package! org-super-agenda)
 (package! org-ql)
-(package! helm-org-rifle)
+;; (package! helm-org-rifle)
 (package! org-reveal)
 (package! ox-reveal)
 (package! mu4e-compat :recipe (:host github :repo "tecosaur/mu4e-compat")) ;;  because org-mode composing in mu4e is weird
