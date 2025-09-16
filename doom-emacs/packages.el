@@ -60,3 +60,4 @@
 (package! citeproc)
 (package! gptel :recipe (:nonrecursive t))
 (package! citar) ; citing in org/md
+(package! citar-org-roam) ; to make roam integrate with biblio

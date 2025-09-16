@@ -85,12 +85,7 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
   (add-hook 'org-after-todo-statistics-hook 'dj/org-summary-todo) ;; toggle task state when subtask states are changed
 
   (setq org_notes "~/nextcloud/org/"
-        org_journal "~/nextcloud/journal/"
         org-cite-global-bibliography '("/home/david/Zotero/biblio.bib")
-        ;; org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/")
-        ;; org-cite-export-processors '((latex . biblatex)
-        ;;                              (t . ("ieee.csl"))
-        ;;                              )
         org-attach-id-dir "org-attachments"
         org-id-link-to-org-use-id 'create-if-interactive
         org-agenda-files '("~/nextcloud/org/")
@@ -103,11 +98,6 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
         org-hierarchical-todo-statistics nil
         vc-follow-symlinks t
 
-        ;; org-file-apps (quote
-        ;;                ((auto-mode . emacs)
-        ;;                 ("\\.mm\\'" . default)
-        ;;                 ("\\.x?html?\\'" . "flatpak run com.brave.Browser %s")
-        ;;                 ("\\.pdf\\'" . default)))
         org-refile-targets '(("~/nextcloud/org/active.org" :maxlevel . 1)
                              ("~/nextcloud/org/inactive.org" :maxlevel . 1)
                              ("~/nextcloud/org/toread.org" :maxlevel . 1)
@@ -130,9 +120,6 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
                                  ("DONE" . "ForestGreen")
                                  ("CANCELLED" .  "SlateBlue"))
         )
-  ;; (add-hook 'after-init-hook 'org-html--format-image) ;; inline images with org export to HTML
-                                        ; to solve issuse with ORG mode in capture buffer
-                                        ; https://github.com/doomemacs/doomemacs/issues/5714
   (add-hook! 'org-capture-after-finalize-hook (org-element-cache-reset t))
   (defadvice! dan/+org--restart-mode-h-careful-restart (fn &rest args)
     :around #'+org--restart-mode-h
@@ -575,7 +562,7 @@ But don't look beyond what's visible on the screen."
 * Org-roam
 ** Sources
 - https://jethrokuan.github.io/org-roam-guide
-** Configuration
+** Main configuration
 #+begin_src emacs-lisp
 (use-package! org-roam
   :custom
@@ -594,33 +581,136 @@ But don't look beyond what's visible on the screen."
            :immediate-finish t
            :unnarrowed t)
           ("r" "reference" plain "%?"
-           :if-new
-           (file+head "reference/${title}.org" "#+title: ${title}\n")
-           :immediate-finish t
-           :unnarrowed t)
+           :if-new (file+head "reference/${citar-citekey}.org"
+                              "#+title: %(dj/citar-zettel-title)\n%(dj/citar-make-links-line)")
+           :immediate-finish t :unnarrowed t)
           ("a" "article" plain "%?"
            :if-new
            (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
            :immediate-finish t
            :unnarrowed t)))
   )
+#+end_src
+** Citar and citar-org-roam
+- With =citar-open-notes= brings up the entire bibliography list;
+- With =RET= select an entry;
+- And an entry in ROAM is generated with =author-year-title= format and a link to the file.
 
-(defun jethro/org-roam-node-from-cite (keys-entries)
-  (interactive (list (citar-select-ref :multiple nil :rebuild-cache t)))
-  (let ((title (citar--format-entry-no-widths (cdr keys-entries)
-                                              "${author editor} :: ${title}")))
-    (org-roam-capture- :templates
-                       '(("r" "reference" plain "%?" :if-new
-                          (file+head "reference/${citekey}.org"
-                                     ":PROPERTIES:
-:ROAM_REFS: [cite:@${citekey}]
-:END:
-,#+title: ${title}\n")
-                          :immediate-finish t
-                          :unnarrowed t))
-                       :info (list :citekey (car keys-entries))
-                       :node (org-roam-node-create :title title)
-                       :props '(:finalize find-file))))
+#+begin_src emacs-lisp
+(use-package! citar
+  :after org
+  :custom
+  (citar-bibliography org-cite-global-bibliography))
+
+(use-package! citar-org-roam
+  :after (citar org-roam)
+  :config
+  (citar-org-roam-mode 1)
+
+  (require 'subr-x)   ;; string-trim, string-empty-p, string-join
+
+  ;; Helper: get current citekey during org-roam capture (works with citar-org-roam)
+  (defun dj/citar--current-citekey ()
+    (or (and (boundp 'org-roam-capture--info)
+             (plist-get org-roam-capture--info :citar-citekey))
+        (and (boundp 'org-roam-capture--info)
+             (plist-get org-roam-capture--info :citekey))
+        (and (boundp 'citar-org-roam-citekey) citar-org-roam-citekey)))
+
+  (defun dj/citar--split-authors (s)
+    (when (and (stringp s) (not (string-empty-p s)))
+      (let ((case-fold-search t)) ;; match "And" too, just in case
+        (mapcar #'string-trim
+                (split-string s "\\s-+and\\s-+" t)))))
+
+
+  (defun dj/citar--family (person)
+    (if (string-match-p "," person)
+        (car (split-string person "\\s*,\\s*" t))          ; "Last, First" → "Last"
+      (car (last (split-string person "\\s+" t)))))        ; "First Middle Last" → "Last"
+
+  (defun dj/citar--year (entry)
+    (let ((y (or (and (fboundp 'citar-get-value)  (citar-get-value 'year entry))
+                 (and (fboundp 'citar-get-value)  (citar-get-value 'date entry))
+                 (and (fboundp 'citar--get-value) (citar--get-value entry "year"))
+                 (and (fboundp 'citar--get-value) (citar--get-value entry "date")))))
+      (and y (string-match "\\([12][0-9][0-9][0-9]\\)" y) (match-string 1 y))))
+
+  (defun dj/citar-zettel-title ()
+    "Author (year): Title  OR  Author et al. (year): Title"
+    (let* ((key   (dj/citar--current-citekey))
+           (entry (or (and (fboundp 'citar-get-entry)  (citar-get-entry key))
+                      (and (fboundp 'citar--get-entry) (citar--get-entry key))
+                      (user-error "No Citar entry for key: %s" key)))
+           (authors-str (or (and (fboundp 'citar-get-value)  (citar-get-value 'author entry))
+                            (and (fboundp 'citar--get-value) (citar--get-value entry "author"))
+                            (and (fboundp 'citar-get-value)  (citar-get-value 'editor entry))
+                            (and (fboundp 'citar--get-value) (citar--get-value entry "editor"))
+                            ""))
+           (authors (dj/citar--split-authors authors-str))
+           (first   (if authors (dj/citar--family (car authors)) ""))
+           (etal    (if (> (length authors) 1) " et al." ""))
+           (year    (or (dj/citar--year entry) "n.d."))
+           (title   (or (and (fboundp 'citar-get-value)  (citar-get-value 'title entry))
+                        (and (fboundp 'citar--get-value) (citar--get-value entry "title"))
+                        key)))
+
+      (message "dj/citar-zettel-title: %s" key)
+      (string-trim (format "%s%s (%s): %s" first etal year title))))
+
+
+  ;; Find first attached file for KEY (via Citar), else nil.
+  (defun dj/citar--first-file (key)
+    "Return first file path for KEY from Citar, across versions."
+    (cond
+     ((fboundp 'citar-get-files)
+      ;; Prefer passing a list of keys; many versions return a hash-table/alist.
+      (let ((res (citar-get-files (list key))))
+        (cond
+         ((hash-table-p res) (car (gethash key res)))
+         ((and (listp res) (consp (car res))) (cadar res))   ; ((KEY (files...)) …)
+         ((and (listp res) (stringp (car res))) (car res))   ; rare: plain list of paths
+         (t nil))))
+     ((fboundp 'citar-file--files)
+      (let ((res (citar-file--files key)))
+        (cond
+         ((hash-table-p res) (car (gethash key res)))
+         ((and (listp res) (stringp (car res))) (car res))
+         ((and (listp res) (consp (car res))) (cadar res))
+         (t nil))))
+     (t nil)))
+
+
+
+  (defun dj/citar-make-links ()
+    "Return a space-separated string of Org links: PDF, URL, DOI (first available)."
+    (let* ((key   (dj/citar--current-citekey))
+           (entry (and key
+                       (or (and (fboundp 'citar-get-entry)  (citar-get-entry key))
+                           (and (fboundp 'citar--get-entry) (citar--get-entry key)))))
+           (pdf (and key (dj/citar--first-file key)))
+           (url (and entry (or (and (fboundp 'citar-get-value)  (citar-get-value 'url entry))
+                               (and (fboundp 'citar--get-value) (citar--get-value entry "url")))))
+           (doi (and entry (or (and (fboundp 'citar-get-value)  (citar-get-value 'doi entry))
+                               (and (fboundp 'citar--get-value) (citar--get-value entry "doi")))))
+           (links (delq nil
+                        (list (when pdf (format "[[file:%s][PDF]]" (expand-file-name pdf)))
+                              (when url (format "[[%s][URL]]" url))
+                              (when doi (format "[[https://doi.org/%s][DOI]]" doi))))))
+      (string-join links " ")))
+
+
+  (defun dj/citar-make-links-line ()
+    "Return a full '- Links: ...' line if any links exist, else empty string."
+    (let ((s (dj/citar-make-links)))
+      (if (string-empty-p s) "" (concat "- Links: " s "\n"))))
+
+  ;; Make citar-org-roam use the "r" template from org-roam-capture-templates
+  (setq citar-org-roam-capture-template-key "r"
+        citar-org-roam-subdir "reference"
+        ;; ensure citar doesn't apply its own ${note-title} formatting
+        citar-org-roam-note-title-template nil)
+  )
 #+end_src
 ** Old configuration
 #+begin_src emacs-lisp
