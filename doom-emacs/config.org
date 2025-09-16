@@ -11,18 +11,33 @@ Settings for generating =config.el=
       user-full-name "David Jelenc")
 #+end_src
 * Look & Feel
+** Fonts
 Nice looking fonts, requires =nerdfonts=
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "CaskaydiaMono Nerd Font" :size 23 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "CaskaydiaMono Nerd Font" :size 21))
 #+end_src
+** Background
+Set background transaprency
+#+begin_src emacs-lisp
+;; 0.0 = fully transparent, 1.0 = fully opaque
+(defvar dj/alpha-bg 0.6)
 
-Sets the theme
+(defun dj/apply-opacity (&optional frame)
+  (let ((f (or frame (selected-frame))))
+    (set-frame-parameter f 'alpha-background dj/alpha-bg)))
+
+(dj/apply-opacity)
+(add-to-list 'default-frame-alist `(alpha-background . ,dj/alpha-bg))
+(add-hook 'after-make-frame-functions #'dj/apply-opacity)
+#+end_src
+
+** Theme
 #+begin_src emacs-lisp
 (setq doom-theme 'doom-gruvbox)
 #+end_src
 
-Line numbers
+** Line numbers
 #+begin_src emacs-lisp
 (setq display-line-numbers-type 'visual)
 #+end_src
@@ -33,6 +48,7 @@ Navigation: =j= and =k= work across wrapped lines, but commands work across whol
       :nv "k" #'evil-previous-visual-line)
 #+end_src
 
+** Autorevert buffers
 Update buffers when changed by other programs
 #+begin_src emacs-lisp
 (global-auto-revert-mode)
@@ -41,23 +57,24 @@ Update buffers when changed by other programs
 ** Fast search of ORG headings
 Ripgrep over ORG files, and by default, only over Level 1 headings
 #+begin_src emacs-lisp
-(after! org
-  (defun dj/consult-project-org-level1 ()
-    "Search Org level-1 headings (exactly one star + space) in the current project."
-    (interactive)
-    (let* ((root (project-root (project-current t)))
-           ;; flags only; include hidden and common org variants
-           (consult-ripgrep-args
-            "rg --null --line-buffered --color=never --max-columns=1000 \
- --path-separator / --line-number --smart-case --no-heading \
- --hidden -uu -g *.org")
-           ;; single star at bol, then whitespace, then NOT another star
-           (pattern "^\\*\\s[^*] "))
-      (let ((consult-async-split-style 'perl)) ; treat backslash escapes properly
-        (consult-ripgrep root pattern))))
+;; Tell the compiler this is a special var coming from Consult.
+(defvar consult-ripgrep-args)
 
-  (map! :desc "Go to any org headline" :leader "n SPC" #'dj/consult-project-org-level1)
-  )
+(defun dj/consult-project-org-level1 ()
+  "Search level-1 Org headings in the current project. C-u → include hidden/ignored."
+  (interactive)
+  (declare (special consult-ripgrep-args))
+  (let* ((root (project-root (project-current t)))
+         (consult-ripgrep-args
+          (concat
+           "rg --null --line-buffered --color=never --max-columns=1000 "
+           "--path-separator / --line-number --smart-case --no-heading "
+           "-g *.org")))
+    ;; Initial query for level-1 headings:
+    (consult-ripgrep root "^\\*\\s[^*] ")))
+
+(map! :desc "Go to any org headline (L1 only)"
+      :leader "n SPC" #'dj/consult-project-org-level1)
 #+end_src
 ** Basic shortcuts
 #+begin_src emacs-lisp
