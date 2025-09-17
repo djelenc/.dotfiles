@@ -650,7 +650,7 @@ But don't look beyond what's visible on the screen."
            :unnarrowed t)
           ("r" "reference" plain "%?"
            :if-new (file+head "reference/${citar-citekey}.org"
-                              "#+title: %(dj/citar-zettel-title)\n%(dj/citar-make-links-line)")
+                              "#+title: %(dj/citar-zettel-title)\n")
            :immediate-finish t :unnarrowed t)
           ("a" "article" plain "%?"
            :if-new
@@ -659,6 +659,10 @@ But don't look beyond what's visible on the screen."
            :unnarrowed t)))
   )
 #+end_src
+
+#+RESULTS:
+: t
+
 ** Citar and citar-org-roam
 - With =citar-open-notes= brings up the entire bibliography list;
 - With =RET= select an entry;
@@ -722,8 +726,6 @@ But don't look beyond what's visible on the screen."
            (title   (or (and (fboundp 'citar-get-value)  (citar-get-value 'title entry))
                         (and (fboundp 'citar--get-value) (citar--get-value entry "title"))
                         key)))
-
-      (message "dj/citar-zettel-title: %s" key)
       (string-trim (format "%s%s (%s): %s" first etal year title))))
 
 
@@ -748,58 +750,11 @@ But don't look beyond what's visible on the screen."
          (t nil))))
      (t nil)))
 
-
-
-  (defun dj/citar-make-links ()
-    "Return a space-separated string of Org links: PDF, URL, DOI (first available)."
-    (let* ((key   (dj/citar--current-citekey))
-           (entry (and key
-                       (or (and (fboundp 'citar-get-entry)  (citar-get-entry key))
-                           (and (fboundp 'citar--get-entry) (citar--get-entry key)))))
-           (pdf (and key (dj/citar--first-file key)))
-           (url (and entry (or (and (fboundp 'citar-get-value)  (citar-get-value 'url entry))
-                               (and (fboundp 'citar--get-value) (citar--get-value entry "url")))))
-           (doi (and entry (or (and (fboundp 'citar-get-value)  (citar-get-value 'doi entry))
-                               (and (fboundp 'citar--get-value) (citar--get-value entry "doi")))))
-           (links (delq nil
-                        (list (when pdf (format "[[file:%s][PDF]]" (expand-file-name pdf)))
-                              (when url (format "[[%s][URL]]" url))
-                              (when doi (format "[[https://doi.org/%s][DOI]]" doi))))))
-      (string-join links " ")))
-
-
-  (defun dj/citar-make-links-line ()
-    "Return a full '- Links: ...' line if any links exist, else empty string."
-    (let ((s (dj/citar-make-links)))
-      (if (string-empty-p s) "" (concat "- Links: " s "\n"))))
-
   ;; Make citar-org-roam use the "r" template from org-roam-capture-templates
   (setq citar-org-roam-capture-template-key "r"
         citar-org-roam-subdir "reference"
-        ;; ensure citar doesn't apply its own ${note-title} formatting
         citar-org-roam-note-title-template nil)
   )
-#+end_src
-** Old configuration
-#+begin_src emacs-lisp
-;; (after! org
-;;   (setq org-roam-directory "~/nextcloud/roam/"
-;;         org-roam-db-location "~/Documents/roam.db"
-
-;;         org-roam-db-node-include-function (lambda () ; exclude all id's as nodes that have the ATTACH tag
-;;                                             (not (member "ATTACH" (org-get-tags)))))
-;;   (org-roam-db-autosync-mode)
-
-;;   ; https://takeonrules.com/2022/01/11/resolving-an-unable-to-resolve-link-error-for-org-mode-in-emacs/
-;;   (defun force-org-rebuild-cache ()
-;;     "Rebuild the `org-mode' and `org-roam' cache."
-;;     (interactive)
-;;     (org-id-update-id-locations)
-;;     ;; Note: you may need `org-roam-db-clear-all'
-;;     ;; followed by `org-roam-db-sync'
-;;     (org-roam-db-sync)
-;;     (org-roam-update-org-id-locations))
-;;   )
 #+end_src
 * Latex
 When exporting ORG to LATEX, convert SVG images to PDF with Inkscape.

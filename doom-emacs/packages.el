@@ -52,12 +52,16 @@
 (package! org-caldav)
 (package! org-super-agenda)
 (package! org-ql)
-;; (package! helm-org-rifle)
 (package! org-reveal)
 (package! ox-reveal)
 (package! mu4e-compat :recipe (:host github :repo "tecosaur/mu4e-compat")) ;;  because org-mode composing in mu4e is weird
 (package! mu4e-alert :disable t)
 (package! citeproc)
 (package! gptel :recipe (:nonrecursive t))
+;; ROAM
 (package! citar) ; citing in org/md
 (package! citar-org-roam) ; to make roam integrate with biblio
+;; ORB
+(package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+(unpin! org-roam) ;; When using org-roam via the `+roam` flag
+(unpin! bibtex-completion helm-bibtex ivy-bibtex) ;; When using bibtex-completion via the `biblio` module
