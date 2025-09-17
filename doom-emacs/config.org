@@ -500,8 +500,8 @@ For syncing calendars with Google
   :config
   (org-super-agenda-mode))
 #+end_src
-* Org-Download :ATTACH:
-Save images into ./images relative to the Org file
+* Org-Download
+Save images into =./images= relative to the Org file
 #+begin_src emacs-lisp
 (use-package! org-download
   :after org
