@@ -501,25 +501,28 @@ For syncing calendars with Google
   (org-super-agenda-mode))
 #+end_src
 * Org-Download :ATTACH:
-Attach into =org-attachments= by default (Hyprland/Wayland)
+Save images into ./images relative to the Org file
 #+begin_src emacs-lisp
 (use-package! org-download
   :after org
   :init
-  ;; Store images as org-attachments on the current heading
-  (setq org-download-method 'attach)
+  (setq org-download-method 'directory
+        org-download-image-dir "images"
+        org-download-heading-lvl nil
+        org-download-link-format "[[file:%s]]"
+        org-download-abbreviate-filename-function #'file-relative-name)
 
   :config
-  ;; Region screenshot: slurp (select) + grim (capture) → attached to heading
+  ;; Region screenshot: slurp (select) + grim (capture) → save into images/
   (when (and (getenv "WAYLAND_DISPLAY")
              (executable-find "grim")
              (executable-find "slurp"))
     (setq org-download-screenshot-method "grim -g \"$(slurp)\" %s"))
 
-  ;; Minimal helper: paste image from Wayland clipboard (wl-clipboard) and attach
+  ;; Paste from Wayland clipboard → save into images/
   (when (executable-find "wl-paste")
     (defun dj/org-download-wl-paste ()
-      "Paste an image from Wayland clipboard and attach it here."
+      "Paste an image from Wayland clipboard and save it into ./images."
       (interactive)
       (let ((tmp (make-temp-file "org-dl-" nil ".png")))
         (if (= 0 (call-process "/bin/sh" nil nil nil "-c"
