@@ -63,6 +63,8 @@
     libnotify # notifications
     wl-clipboard # fix clipboard
     cliphist
+    slurp # screen shots
+    grim #screen shots
     qimgv # images
     xarchiver # zipping
     simple-scan # scanning
