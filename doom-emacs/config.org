@@ -106,6 +106,19 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
   (advice-add 'evil-collection-pdf-jump-backward :around #'dj/around-ec-pdf-jump)
   (advice-add 'evil-collection-pdf-jump-forward  :around #'dj/around-ec-pdf-jump))
 #+end_src
+** =SPC-u/C-u RET= opens files externally
+- In =dired=
+  #+begin_src emacs-lisp
+  (defun dj/dired-find-file-or-system (orig-fn &rest args)
+  "Open file with system default app if C-u is pressed, else use `dired-find-file'."
+  (if current-prefix-arg
+      (let ((files (dired-get-marked-files)))
+          (dolist (f files)
+          (call-process "xdg-open" nil 0 nil f)))
+      (apply orig-fn args)))
+
+  (advice-add 'dired-find-file :around #'dj/dired-find-file-or-system)
+  #+end_src
 * Org
 #+begin_src emacs-lisp
 (after! org
