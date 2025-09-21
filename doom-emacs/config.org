@@ -526,7 +526,7 @@ Save images into =./images= relative to the Org file
 * Org-roam and citations
 In part inspired:
 - https://jethrokuan.github.io/org-roam-guide
-** org-roam
+** Main config
 #+begin_src emacs-lisp
 (use-package! org-roam
   :custom
@@ -540,7 +540,7 @@ In part inspired:
   (setq org-roam-capture-templates
         '(("m" "main" plain
            "%?"
-           :if-new (file+head "main/${slug}.org"
+           :if-new (file+head "main/%<%Y%m%d%H%M%S>-${slug}.org"
                               "#+title: ${title}\n")
            :immediate-finish t
            :unnarrowed t)
@@ -550,12 +550,96 @@ In part inspired:
            :immediate-finish t :unnarrowed t)
           ("a" "article" plain "%?"
            :if-new
-           (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
+           (file+head "article/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
            :immediate-finish t
            :unnarrowed t)))
   )
 #+end_src
-** citar and citar-org-roam
+** Promote a regular ORG heading into a ROAM node
+Because =org-roam-extract-subtree= is causing issues.
+#+begin_src emacs-lisp
+(defun dj--slug (s)
+  "Make a simple slug from S."
+  (let* ((down (downcase s))
+         (s1 (replace-regexp-in-string "[^[:alnum:]]+" "-" down))
+         (s2 (replace-regexp-in-string "-+" "-" s1)))
+    (string-trim s2 "-+" "-+")))
+
+(defun dj/org-roam-promote-heading-to-file ()
+  "Turn the current heading into a standalone Org-roam *file node*.
+
+- File title = heading title.
+- Body text stays as body; all child headings are promoted by one level.
+- New file is created under `org-roam-directory`/main.
+- `org-id` map and Org-roam DB are refreshed."
+  (interactive)
+  (unless (org-before-first-heading-p)
+    (save-excursion
+      (org-back-to-heading t)
+      (let* ((title (org-get-heading t t t t))
+             (slug  (dj--slug title))
+             (ts    (format-time-string "%Y%m%d%H%M%S"))
+             (root  (file-name-as-directory (expand-file-name "main" org-roam-directory)))
+             (file  (expand-file-name (format "%s-%s.org" ts slug) root))
+             beg content-beg end body+children promoted id linktext)
+
+        (make-directory root t)
+
+        ;; Grab subtree content excluding the headline line itself
+        (setq beg (save-excursion (org-back-to-heading t) (line-beginning-position))
+              content-beg (save-excursion (org-back-to-heading t) (forward-line 1) (point))
+              end (save-excursion (org-end-of-subtree t t) (point)))
+
+        (setq body+children (buffer-substring-no-properties content-beg end))
+
+        ;; Promote all headings inside the captured subtree by one level
+        (with-temp-buffer
+          (insert body+children)
+          (goto-char (point-min))
+          (while (re-search-forward "^\\(\\*+\\)\\s-+" nil t)
+            (let* ((stars (match-string 1))
+                   (n (length stars)))
+              (when (> n 1)
+                (replace-match (make-string (1- n) ?*) t t nil 1))))
+          (setq promoted (buffer-string)))
+
+        ;; Create the new file as a file-node
+        (with-current-buffer (find-file-noselect file)
+          (erase-buffer)
+          (insert (format "#+title: %s\n\n" title))
+          (insert promoted)
+          (goto-char (point-min))
+          ;; Give the *file* an ID
+          ;; (Org supports a top-of-file property drawer.)
+          (unless (save-excursion
+                    (goto-char (point-min))
+                    (re-search-forward "^:ID:\\s-+" (line-end-position 5) t))
+            (save-excursion
+              (goto-char (point-min))
+              (open-line 3)
+              (insert ":PROPERTIES:\n:ID: "
+                      (org-id-new)
+                      "\n:END:")))
+          (save-buffer)
+          ;; Read the newly created ID
+          (save-excursion
+            (goto-char (point-min))
+            (re-search-forward "^:ID:\\s-+\\(.*\\)$")
+            (setq id (match-string 1))))
+
+        ;; remove the original subtree
+        (delete-region beg end)
+
+        ;; Persist both locations and reindex
+        (save-some-buffers t)
+        (org-roam-db-sync)
+
+        (setq linktext (format "id:%s" id))
+        (message "Promoted to %s → %s" file linktext)))))
+
+(map! :localleader "m P" #'dj/org-roam-promote-heading-to-file)
+#+end_src
+** Citar and citar-org-roam
 - With =citar-open= brings up the entire bibliography list;
 - With =RET= select an entry;
 - And an entry in ROAM is generated with =author-year-title= format and a link to the file.
