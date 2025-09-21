@@ -65,6 +65,7 @@
     ghostscript
     pandoc
     haskellPackages.pandoc-crossref
+    diff-pdf
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
