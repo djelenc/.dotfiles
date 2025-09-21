@@ -49,14 +49,6 @@ Update buffers when changed by other programs
 (global-auto-revert-mode)
 #+end_src
 * Better navigation
-** Fast search of ORG headings
-Consult over agenda ORG headings
-#+begin_src emacs-lisp
-(use-package! consult :defer t)
-(map! :leader
-      :desc "Jump to agenda headings (level ≤ 2)"
-      "n SPC" (cmd! (consult-org-agenda "LEVEL<=2")))
-#+end_src
 ** Basic shortcuts
 #+begin_src emacs-lisp
 (setq buffer-save-without-query t)
@@ -65,6 +57,12 @@ Consult over agenda ORG headings
  :desc "Switch buffer" :leader "b b" 'switch-to-buffer
  :desc "Next buffer" :leader "j" 'next-buffer
  :desc "Prev buffer" :leader "k" 'previous-buffer
+ )
+#+end_src
+** Fast search of ORG headings
+#+begin_src emacs-lisp
+(map!
+ :leader :desc "Jump to agenda headings (level ≤ 2)" "n SPC" (cmd! (consult-org-agenda "LEVEL<=2"))
  )
 #+end_src
 ** Mark ring for prefix + C-o/C-i
