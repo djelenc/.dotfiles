@@ -50,26 +50,12 @@ Update buffers when changed by other programs
 #+end_src
 * Better navigation
 ** Fast search of ORG headings
-Ripgrep over ORG files, and by default, only over Level 1 headings
+Consult over agenda ORG headings
 #+begin_src emacs-lisp
-;; Tell the compiler this is a special var coming from Consult.
-(defvar consult-ripgrep-args)
-
-(defun dj/consult-project-org-level1 ()
-  "Search level-1 Org headings in the current project. C-u → include hidden/ignored."
-  (interactive)
-  (declare (special consult-ripgrep-args))
-  (let* ((root (project-root (project-current t)))
-         (consult-ripgrep-args
-          (concat
-           "rg --null --line-buffered --color=never --max-columns=1000 "
-           "--path-separator / --line-number --smart-case --no-heading "
-           "-g *.org")))
-    ;; Initial query for level-2 headings:
-    (consult-ripgrep root "^\\*[\*]?\\s[^*] ")))
-
-(map! :desc "Go to any org headline (L1 only)"
-      :leader "n SPC" #'dj/consult-project-org-level1)
+(use-package! consult :defer t)
+(map! :leader
+      :desc "Jump to agenda headings (level ≤ 2)"
+      "n SPC" (cmd! (consult-org-agenda "LEVEL<=2")))
 #+end_src
 ** Basic shortcuts
 #+begin_src emacs-lisp
