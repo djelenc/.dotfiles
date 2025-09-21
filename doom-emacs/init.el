@@ -156,6 +156,7 @@
        (org
         +protocol
         +noter
+        +journal
         +dragndrop
         +pomodoro
         +roam2)        ; organize your plain life in plain text

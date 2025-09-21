@@ -103,7 +103,8 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
 
   (advice-add 'dired-find-file :around #'dj/dired-find-file-or-system)
   #+end_src
-* Org
+* OrgMode
+** Main
 #+begin_src emacs-lisp
 (after! org
   ; (require 'org-mu4e) ;; required to have working links to mail
@@ -135,7 +136,6 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
 
         org-capture-templates '(("n" "Todo" entry (file "refile.org") "* TODO %i%?")
                                 ("j" "Linked Todo" entry (file "refile.org") "* TODO %? %a\n\n")
-                                ("s" "Slipbox" entry  (file "../roam/inbox.org") "* %?\n")
                                 ("p" "Protocol" entry (file "refile.org")
                                  "* TODO [[%:link][%:description]]\n%U\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?" :immediate-finish t)
                                 ("L" "Protocol Link" entry (file "refile.org")
@@ -198,6 +198,17 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
   (if (org-entry-is-todo-p)
       (let ((todo-state (org-get-todo-state)))
         (org-todo (if (= n-not-done 0) "DONE" todo-state)))))
+#+end_src
+** Journal
+#+begin_src emacs-lisp
+(setq org-journal-dir "~/nextcloud/journal/"
+      org-journal-file-format "%Y-%m-%d.org"
+      org-journal-time-prefix "* "
+      org-journal-date-prefix ""
+      org-journal-file-header (lambda (time)
+                                (let* ((s (format-time-string "%A, %d. %B %Y" time))
+                                       (s (concat (capitalize (substring s 0 1)) (substring s 1))))
+                                  (format "#+title: %s\n" s))))
 #+end_src
 ** Force deterministic generated anchor links
 #+begin_src emacs-lisp
