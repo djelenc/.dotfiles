@@ -62,8 +62,10 @@ Update buffers when changed by other programs
 ** Fast search of ORG headings
 #+begin_src emacs-lisp
 (map!
- :leader :desc "Jump to agenda headings (level ≤ 2)" "n SPC" (cmd! (consult-org-agenda "LEVEL<=2"))
- )
+ :leader
+ :desc "Jump to agenda headings (level ≤ 2, not DONE)"
+ "n SPC"
+ (cmd! (consult-org-agenda "LEVEL<=2-TODO=\"DONE\"")))
 #+end_src
 ** Mark ring for prefix + C-o/C-i
 Let C-o / C-i follow Evil's jumplist as usual, but if called with a prefix argument, use Org's mark ring.
