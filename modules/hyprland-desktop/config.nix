@@ -213,6 +213,7 @@ in {
       "float,class:^(org.keepassxc.KeePassXC)$"
       "float,initialTitle:(All Files)"
       "float,initialTitle:.*wants to save$"
+      "float,initialTitle:^(Print)$"
       "move 45% 2.9%,class:^(gsimplecal)$"
       "float,initialTitle:.*Welcome to PyCharm"
     ];

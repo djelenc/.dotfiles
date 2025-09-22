@@ -29,7 +29,9 @@ Set background transaprency
 
 ** Theme
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-gruvbox)
+;; (setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'doom-dracula)
+;; (setq doom-theme 'modus-vivendi-deuteranopia)
 #+end_src
 
 ** Line numbers
@@ -205,12 +207,14 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
 #+begin_src emacs-lisp
 (setq org-journal-dir "~/nextcloud/journal/"
       org-journal-file-format "%Y-%m-%d.org"
-      org-journal-time-prefix "* "
       org-journal-date-prefix ""
-      org-journal-file-header (lambda (time)
+      org-journal-date-format (lambda (time)
                                 (let* ((s (format-time-string "%A, %d. %B %Y" time))
-                                       (s (concat (capitalize (substring s 0 1)) (substring s 1))))
-                                  (format "#+title: %s\n" s))))
+                                       (cap (concat (capitalize (substring s 0 1)) (substring s 1))))
+                                  (format "#+title: %s" cap)))
+      org-journal-time-prefix "* "
+      org-journal-time-format "%H:%M "
+      org-journal-file-header "")
 #+end_src
 ** Force deterministic generated anchor links
 #+begin_src emacs-lisp
