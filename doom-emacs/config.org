@@ -29,8 +29,8 @@ Set background transaprency
 
 ** Theme
 #+begin_src emacs-lisp
-;; (setq doom-theme 'doom-gruvbox)
-(setq doom-theme 'doom-dracula)
+(setq doom-theme 'doom-gruvbox)
+;; (setq doom-theme 'doom-dracula)
 ;; (setq doom-theme 'modus-vivendi-deuteranopia)
 #+end_src
 
@@ -548,7 +548,7 @@ In part inspired:
 (use-package! org-roam
   :custom
   (org-roam-directory (file-truename "~/nextcloud/roam"))
-  ;; (org-roam-dailies-directory "daily/")
+  (org-roam-completion-everywhere t)
   (org-roam-db-location (file-truename "~/Documents/roam.db"))
   (org-roam-db-node-include-function (lambda () (not (member "ATTACH" (org-get-tags))))) ; exclude all id's as nodes that have the ATTACH tag
   :config
