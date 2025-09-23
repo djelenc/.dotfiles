@@ -79,7 +79,7 @@
   programs.zathura = {
     enable = true;
     options = {
-      recolor = true;
+      recolor = false; # light mode by default, toggle with C-r
       selection-clipboard = "clipboard";
     };
   };
