@@ -94,7 +94,7 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
   (advice-add 'evil-collection-pdf-jump-backward :around #'dj/around-ec-pdf-jump)
   (advice-add 'evil-collection-pdf-jump-forward  :around #'dj/around-ec-pdf-jump))
 #+end_src
-** =SPC-u/C-u RET= opens files externally
+** =SPC-u/C-u RET/C-c C-o= opens files externally
 - In =dired=
   #+begin_src emacs-lisp
   (defun dj/dired-find-file-or-system (orig-fn &rest args)
@@ -107,6 +107,44 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
 
   (advice-add 'dired-find-file :around #'dj/dired-find-file-or-system)
   #+end_src
+- Opening =org= links
+  #+begin_src emacs-lisp
+  (defun dj/org-open-at-point-maybe-external (arg)
+    "Open link at point. With prefix ARG, use `xdg-open` externally.
+  Without ARG, fall back to normal `org-open-at-point` behavior."
+    (interactive "P")
+    (let ((org-file-apps (if arg
+                             '((t . "xdg-open %s"))
+                           org-file-apps)))
+      (org-open-at-point)))
+
+  (map! :map org-mode-map
+        :desc "Open link at point (prefix = xdg-open)"
+        "C-c C-o" #'dj/org-open-at-point-maybe-external)
+  #+end_src
+** Open current files externally with =xdg-open=
+#+begin_src emacs-lisp
+(defun dj/open-current-file-externally ()
+  "Open the file visited by the current buffer with the system viewer (xdg-open).
+If visiting a remote TRAMP file, copy it to a temporary local file first."
+  (interactive)
+  (let* ((buf (current-buffer))
+         (_ (when (buffer-modified-p buf) (save-buffer)))
+         (file (or (buffer-file-name buf)
+                   (when (derived-mode-p 'dired-mode)
+                     (dired-get-file-for-visit))
+                   (user-error "This buffer is not visiting a file"))))
+    (when (file-remote-p file)
+      (let* ((ext (file-name-extension file t)) ; keep original extension
+             (tmp (make-temp-file "dj-open-" nil ext)))
+        (copy-file file tmp t)  ; overwrite if exists
+        (setq file tmp)))
+    (start-process "xdg-open" nil "xdg-open" (expand-file-name file))
+    (message "Opening externally: %s" file)))
+
+(map! :desc "Open current file externally (xdg-open)"
+      :leader "f x" #'dj/open-current-file-externally)
+#+end_src
 * OrgMode
 ** Main
 #+begin_src emacs-lisp
@@ -227,6 +265,9 @@ Silences `wrong-type-argument` errors emitted by evil-collection when a prefix l
 #+end_src
 * Projectile
 #+begin_src emacs-lisp
+(with-eval-after-load 'project
+  (add-to-list 'project-find-functions #'projectile-project))
+
 (after! projectile
   (add-to-list 'projectile-globally-ignored-directories "*org-attachments"))
 #+end_src
