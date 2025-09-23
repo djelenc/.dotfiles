@@ -59,9 +59,9 @@
 (package! citeproc)
 (package! gptel :recipe (:nonrecursive t))
 ;; ROAM
-(package! citar) ; citing in org/md
-(package! citar-org-roam) ; to make roam integrate with biblio
-;; ORB
+(package! citar)
+(package! citar-org-roam)
 (package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-(unpin! org-roam) ;; When using org-roam via the `+roam` flag
-(unpin! bibtex-completion helm-bibtex ivy-bibtex) ;; When using bibtex-completion via the `biblio` module
+(package! org-roam-ui)
+(unpin! org-roam)
+(unpin! bibtex-completion helm-bibtex ivy-bibtex)

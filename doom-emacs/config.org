@@ -540,7 +540,7 @@ Save images into =./images= relative to the Org file
           (user-error "No image/png in Wayland clipboard")))))
   )
 #+end_src
-* Org-roam and citations
+* Org-Roam and citations
 In part inspired:
 - https://jethrokuan.github.io/org-roam-guide
 ** Main config
@@ -561,10 +561,15 @@ In part inspired:
                               "#+title: ${title}\n")
            :immediate-finish t
            :unnarrowed t)
+          ;; ("r" "reference" plain "%?"
+          ;;  :if-new (file+head "reference/${citar-citekey}.org"
+          ;;                     "#+title: %(dj/citar-zettel-title)\n")
+          ;;  :immediate-finish t :unnarrowed t)
           ("r" "reference" plain "%?"
            :if-new (file+head "reference/${citar-citekey}.org"
-                              "#+title: %(dj/citar-zettel-title)\n")
+                              "#+title: %(dj/citar-zettel-title)\n\n%(dj/org-noter-annotations-head)")
            :immediate-finish t :unnarrowed t)
+
           ("a" "article" plain "%?"
            :if-new
            (file+head "article/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
@@ -758,6 +763,15 @@ Because =org-roam-extract-subtree= is causing issues.
          (t nil))))
      (t nil)))
 
+  ;; Build initial Annotations heading with NOTER_DOCUMENT if a PDF is found
+  (defun dj/org-noter-annotations-head ()
+    "Return a level-1 heading '* Annotations' and a NOTER_DOCUMENT property if available."
+    (let* ((key (dj/citar--current-citekey))
+           (pdf (and key (dj/citar--first-file key))))
+      (concat "* Annotations\n"
+              (if pdf (format ":PROPERTIES:\n:NOTER_DOCUMENT: %s\n:END:\n" pdf) "")
+              "\n")))
+
   ;; Make citar-org-roam use the "r" template from org-roam-capture-templates
   (setq citar-org-roam-capture-template-key "r"
         citar-org-roam-subdir "reference"
@@ -768,6 +782,17 @@ Because =org-roam-extract-subtree= is causing issues.
       :desc "ORB note actions"
       :leader "m m b"
       #'orb-note-actions)
+#+end_src
+** Org-Roam-UI
+#+begin_src emacs-lisp
+(use-package! websocket :after org-roam)
+(use-package! org-roam-ui
+  :after org-roam ;; or :after org
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 #+end_src
 * Spelling
 ** Set default dictionary

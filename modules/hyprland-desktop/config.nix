@@ -134,10 +134,10 @@ in {
 
     # hyprctl dispatch split-cycleworkspaces next
     gesture = [
-      "3, up, dispatcher, exec, ${hyprland-switch-up}/bin/hyprland-switch-up"
-      "3, down, dispatcher, exec, ${hyprland-switch-down}/bin/hyprland-switch-down"
-      "3, up, mod:SUPER, dispatcher, split-cycleworkspaces, prev"
-      "3, down, mod:SUPER, dispatcher, split-cycleworkspaces, next"
+      "3, down, dispatcher, exec, ${hyprland-switch-up}/bin/hyprland-switch-up"
+      "3, up, dispatcher, exec, ${hyprland-switch-down}/bin/hyprland-switch-down"
+      "3, down, mod:SUPER, dispatcher, split-cycleworkspaces, prev"
+      "3, up, mod:SUPER, dispatcher, split-cycleworkspaces, next"
     ];
 
     misc = {
