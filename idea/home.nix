@@ -115,8 +115,11 @@
     #   exa /etc/profiles/per-user/david/share/applications/
     #   exa /run/current-system/sw/share/applications
     defaultApplications = {
-      "text/plain" = [ "emacs.desktop" ];
-      "text/org" = [ "emacs.desktop" ];
+      "text/plain" = [ "emacsclient.desktop" ];
+      "text/org" = [ "emacsclient.desktop" ];
+      "text/markdown" = [ "emacsclient.desktop" ];
+      "application/json" = [ "emacsclient.desktop" ];
+      "text/x-shellscript" = [ "emacsclient.desktop" ];
       "application/pdf" = [ "org.pwmt.zathura-pdf-mupdf.desktop" ];
       "image/jpeg" = [ "qimgv.desktop" ];
       "image/jpg" = [ "qimgv.desktop" ];
