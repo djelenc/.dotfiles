@@ -65,6 +65,35 @@ in {
     mbsync.package = isync-oauth2;
   };
 
+  # emacs user service
+  services.emacs = {
+    enable = true;
+    client.enable = true;
+  };
+
+  # org protocol
+  xdg = {
+    desktopEntries."org-protocol" = {
+      name = "Org Protocol";
+      genericName = "Org capture via org-protocol";
+      comment = "Handle org-protocol URLs";
+      exec = "env ALTERNATE_EDITOR= GDK_BACKEND=wayland ${pkgs.emacs}/bin/emacsclient -c %u";
+      terminal = false;
+      categories = [ "Office" ];
+      type = "Application";
+      mimeType = [ "x-scheme-handler/org-protocol" ];
+      noDisplay = true;
+    };
+
+    mimeApps.defaultApplications = {
+      "x-scheme-handler/org-protocol" = [ "org-protocol.desktop" ];
+    };
+  };
+
+  # required for org protocol
+  systemd.user.services.emacs.Service.Environment =
+    [ "XDG_SESSION_TYPE=wayland" "GDK_BACKEND=wayland" ];
+
   accounts.email = {
 
     maildirBasePath = ".mail";
