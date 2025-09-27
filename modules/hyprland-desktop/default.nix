@@ -165,17 +165,21 @@
   };
 
   # System notifications
-  services.dunst = {
+  services.mako = {
     enable = true;
     settings = {
-      global = {
-        width = 300;
-        height = 300;
-        offset = "30x50";
-        origin = "top-right";
-        transparency = 60;
-        font = lib.mkForce "CaskaydiaMono Nerd Font";
-      };
+      actions = true;
+      anchor = "top-right";
+      font = lib.mkForce "CaskaydiaMono Nerd Font";
+      default-timeout = 7000;
+      height = 100;
+      width = 300;
+      icons = true;
+      ignore-timeout = false;
+      layer = "top";
+      margin = 10;
+      padding = 10;
+      markup = true;
     };
   };
 }
