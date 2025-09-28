@@ -34,5 +34,12 @@ in {
 
     # open_ai token
     secrets.open_ai_test.owner = userInfo.user;
+
+    # org-caldav-sync
+    secrets."org-caldav.authinfo" = {
+      owner = userInfo.user;
+      group = "users";
+      mode = "0400";
+    };
   };
 }
