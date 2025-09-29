@@ -389,7 +389,6 @@ The beginning of line position for the first of each duplicated messages set is 
 For syncing calendars with Google
 #+begin_src emacs-lisp
 (setq org-caldav-url "https://cloud.lem.im/remote.php/dav/calendars/david" ;; the base address of your CalDAV server
-      org-caldav-username "david"
       auth-sources '("/run/secrets/org-caldav.authinfo")
       org-caldav-calendar-id "orgmode" ;; the calendar-id of your new calendar:
       org-caldav-inbox "~/nextcloud/org/tickler.org" ;; org filename where new entries from the calendar should be stored.
