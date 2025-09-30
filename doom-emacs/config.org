@@ -1,7 +1,6 @@
 #+PROPERTY: header-args:emacs-lisp :tangle yes
 * Basic information
 #+begin_src emacs-lisp
-(doom/set-frame-opacity 65)
 (setq user-mail-address "david.jelenc@fri.uni-lj.si"
       user-full-name "David Jelenc")
 #+end_src
@@ -16,7 +15,7 @@ Nice looking fonts, requires =nerdfonts=
 Set background transaprency
 #+begin_src emacs-lisp
 ;; 0.0 = fully transparent, 1.0 = fully opaque
-(defvar dj/alpha-bg 0.6)
+(defvar dj/alpha-bg 0.85)
 
 (defun dj/apply-opacity (&optional frame)
   (let ((f (or frame (selected-frame))))
