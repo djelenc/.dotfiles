@@ -243,18 +243,35 @@ If visiting a remote TRAMP file, copy it to a temporary local file first."
 #+end_src
 ** Journal
 #+begin_src emacs-lisp
-(setq org-journal-dir "~/nextcloud/journal/"
-      org-journal-file-format "%Y-%m-%d.org"
-      org-journal-date-prefix ""
-      org-journal-date-format (lambda (time)
-                                (let* ((s (format-time-string "%A, %d. %B %Y" time))
-                                       (cap (concat (capitalize (substring s 0 1)) (substring s 1))))
-                                  (format "#+title: %s" cap)))
-      org-journal-time-prefix "* "
-      org-journal-time-format "%H:%M "
-      org-journal-file-header "")
+(setq my/journal-file (expand-file-name "~/nextcloud/journal/journal.org"))
+(setq org-archive-location (concat my/journal-file "_archive::"))
+
+(defun my/journal--ensure-file (file)
+  "Create FILE (and its parent dirs) if missing."
+  (unless (file-exists-p file)
+    (make-directory (file-name-directory file) t)
+    (with-temp-file file
+      (insert "#+title: Journal\n\n"))))
+
+(defun my/journal-new-entry-bottom ()
+  "Insert a new level-1 entry with CREATED property at the end of journal.org."
+  (interactive)
+  (my/journal--ensure-file my/journal-file)
+  (find-file my/journal-file)
+  (goto-char (point-max))
+  (unless (bolp) (insert "\n"))
+  (insert (format "* %s\n" (format-time-string "%H:%M")))
+  (org-set-property "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))
+  (end-of-line)
+  (insert "\n")
+  (message "New journal entry created."))
+
+(map! :leader
+      :desc "New journal entry (scratchpad)"
+      "n j j" #'my/journal-new-entry-bottom)
 #+end_src
 ** Force deterministic generated anchor links
+Used in reveal.js.
 #+begin_src emacs-lisp
 (after! org
   (defun org-export-deterministic-reference (references)
@@ -1404,3 +1421,4 @@ Hides the compilation buffer immediately; only shows it on errors."
          :desc "Clean"            "c" #'dj/paper-make-clean
          :desc "Dispatch (if available)" "e" (cmd! (call-interactively 'dj/paper-export-dispatch)))))
 #+end_src
+
