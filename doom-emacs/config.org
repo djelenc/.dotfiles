@@ -240,7 +240,8 @@ If visiting a remote TRAMP file, copy it to a temporary local file first."
       (let ((todo-state (org-get-todo-state)))
         (org-todo (if (= n-not-done 0) "DONE" todo-state)))))
 #+end_src
-** Journal
+** Daily scratchpad
+Used like a daily journal. Called with =SPC n j j=. It simply creates a new L1 heading in the =journal.org=. When done, I usually archive it or refile it to roam or under project notes.
 #+begin_src emacs-lisp
 (setq my/journal-file (expand-file-name "~/nextcloud/journal/journal.org"))
 (setq org-archive-location (concat my/journal-file "_archive::"))
@@ -259,7 +260,7 @@ If visiting a remote TRAMP file, copy it to a temporary local file first."
   (find-file my/journal-file)
   (goto-char (point-max))
   (unless (bolp) (insert "\n"))
-  (insert (format "* %s\n" (format-time-string "%H:%M")))
+  (insert (format "* %s\n" (format-time-string "%Y-%m-%d %H:%M")))
   (org-set-property "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))
   (end-of-line)
   (insert "\n")
