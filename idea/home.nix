@@ -9,9 +9,24 @@
   home.sessionVariables = { EDITOR = "nvim"; };
   home.stateVersion = "23.11";
 
+  # browses the webs
+  programs.brave = {
+    enable = true;
+    commandLineArgs = [
+      "--ozone-platform=wayland"
+      "--use-gl=angle"
+      "--use-angle=gl"
+      "--enable-gpu-compositing"
+      "--enable-gpu-rasterization"
+      "--enable-hardware-overlays"
+      "--enable-native-gpu-memory-buffers"
+      "--ignore-gpu-blocklist"
+      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks"
+    ];
+  };
+
   home.packages = with pkgs; [
     firefox # browses the webs
-    brave # browses the webs
     libreoffice-qt # document manipulation
     kdePackages.okular # PDF signing
     keepassxc # storing passwords

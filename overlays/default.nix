@@ -1,12 +1,5 @@
 { config, pkgs, lib, ... }: {
   nixpkgs.overlays = [
-    # run brave under wayland
-    (self: super: {
-      brave = super.brave.override {
-        commandLineArgs =
-          "--enable-features=UseOzonePlatform --ozone-platform=wayland";
-      };
-    })
     # run drawio under wayland
     (self: super: {
       drawio = super.drawio.overrideAttrs (oldAttrs: {
