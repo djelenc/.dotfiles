@@ -8,8 +8,8 @@
   boot.plymouth.enable = true;
 
   # Use latest kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  # boot.kernelPackages = pkgs.linuxPackages_6_14;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # networking
   networking.hostName = "idea";
@@ -114,6 +114,7 @@
     nh
     busybox
     smartmontools
+    nvme-cli
     wineWowPackages.waylandFull
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
