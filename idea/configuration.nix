@@ -113,6 +113,7 @@
   environment.systemPackages = with pkgs; [
     nh
     busybox
+    smartmontools
     wineWowPackages.waylandFull
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
