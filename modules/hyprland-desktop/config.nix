@@ -160,6 +160,13 @@ in {
       "$mainMod, k, movefocus, u"
       "$mainMod, j, movefocus, d"
 
+      # scratchpad
+      "$mainMod, grave, togglespecialworkspace, scratch"
+      # drop from scratch to active workspace
+      ''
+        $mainMod SHIFT, grave, exec, hyprctl dispatch movetoworkspace "$(hyprctl activeworkspace -j | jq -r '.id')"
+      ''
+
       # change keyboard
       "$mainMod, SPACE, exec, hyprctl switchxkblayout at-translated-set-2-keyboard next"
 
@@ -216,6 +223,7 @@ in {
       "float,initialTitle:^(Print)$"
       "move 45% 2.9%,class:^(gsimplecal)$"
       "float,initialTitle:.*Welcome to PyCharm"
+      "float, title:^Calc$" # calc always floats
     ];
   };
 

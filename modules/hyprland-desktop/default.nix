@@ -24,8 +24,7 @@
     ]
   '';
 
-  # Power management as desktop commands
-  # (so they apper in launcher)
+  # Additional launcher commands
   xdg.desktopEntries = {
     suspend = {
       name = "Suspend";
@@ -44,6 +43,13 @@
       exec = "systemctl reboot";
       terminal = false;
       categories = [ "System" ];
+    };
+
+    my-calc = {
+      name = "Calculator [bc]";
+      exec = "${pkgs.alacritty}/bin/alacritty -t Calc -e bc -l -q";
+      terminal = true;
+      categories = [ "Applications" ];
     };
   };
 
@@ -64,7 +70,7 @@
     wl-clipboard # fix clipboard
     cliphist
     slurp # screen shots
-    grim #screen shots
+    grim # screen shots
     qimgv # images
     xarchiver # zipping
     simple-scan # scanning
