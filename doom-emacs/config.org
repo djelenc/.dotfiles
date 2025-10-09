@@ -260,7 +260,7 @@ Used like a daily journal. Called with =SPC n j j=. It simply creates a new L1 h
   (find-file my/journal-file)
   (goto-char (point-max))
   (unless (bolp) (insert "\n"))
-  (insert (format "* %s\n" (format-time-string "%Y-%m-%d %H:%M")))
+  (insert (format "* %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
   (org-set-property "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))
   (end-of-line)
   (insert "\n")
