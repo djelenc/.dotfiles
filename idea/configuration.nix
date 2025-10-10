@@ -16,8 +16,8 @@ let
 in {
   # Persistent journal so the log survives reboots too
   services.journald.extraConfig = ''
-      Storage=persistent
-      SystemMaxUse=2G
+    Storage=persistent
+    SystemMaxUse=2G
   '';
   systemd.services.nvme-ext4-ro-catcher = {
     description = "Catch first NVMe/ext4 fatal error, save log to /boot";
@@ -43,8 +43,8 @@ in {
   boot.plymouth.enable = true;
 
   # Use latest kernel
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelPackages = pkgs.linuxPackages_6_12;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # networking
   networking.hostName = "idea";
