@@ -32,7 +32,7 @@ in {
     };
   };
   # NVMe APST issues: set to 0 if they return
-  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=12000" ];
+  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=500" ];
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
