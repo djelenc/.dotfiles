@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }: rec {
+{ config, inputs, pkgs, lib, userInfo, ... }: rec {
   programs.home-manager.enable = true;
 
   # enable BT headset media control buttons

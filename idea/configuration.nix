@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, pkgs-24_05, lib, userInfo, ... }:
+{ config, inputs, pkgs, lib, userInfo, ... }:
 let
   catcher = pkgs.writeShellScriptBin "nvme-ext4-ro-catcher" ''
     set -euo pipefail
@@ -140,7 +140,7 @@ in {
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    extraSpecialArgs = { inherit inputs pkgs-24_05 userInfo; };
+    extraSpecialArgs = { inherit inputs userInfo; };
     users.${userInfo.user} = import ./home.nix;
   };
 

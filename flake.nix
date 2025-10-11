@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-24_05.url = "github:nixos/nixpkgs/nixos-24.05";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -27,7 +26,7 @@
     stylix.url = "github:danth/stylix";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-24_05, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       userInfo = {
         name = "David";
@@ -39,12 +38,11 @@
       lib = nixpkgs.lib;
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-24_05 = nixpkgs-24_05.legacyPackages.${system};
 
     in {
       nixosConfigurations = {
         idea = lib.nixosSystem {
-          specialArgs = { inherit inputs userInfo pkgs-24_05; };
+          specialArgs = { inherit inputs userInfo; };
           modules = [
             ./idea/configuration.nix
 
