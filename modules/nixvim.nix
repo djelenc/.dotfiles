@@ -1,7 +1,28 @@
-{ inputs, pkgs, ... }: {
+{ inputs, pkgs, ... }:
+let
+  debugServerDir =
+    "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug/server";
+  testServerDir =
+    "${pkgs.vscode-extensions.vscjava.vscode-java-test}/share/vscode/extensions/vscjava.vscode-java-test/server";
+
+  debugJar = let files = builtins.attrNames (builtins.readDir debugServerDir);
+  in "${debugServerDir}/${
+    pkgs.lib.findFirst
+    (n: pkgs.lib.hasPrefix "com.microsoft.java.debug.plugin-" n)
+    (throw "debug jar not found") files
+  }";
+
+  testJars = let files = builtins.attrNames (builtins.readDir testServerDir);
+  in map (n: "${testServerDir}/${n}")
+  (pkgs.lib.filter (n: pkgs.lib.hasSuffix ".jar" n) files);
+
+  bundles = [ debugJar ] ++ testJars;
+in {
   home.packages = with pkgs; [
     ripgrep # required by telescope
     jdt-language-server # nvim jdtls
+    vscode-extensions.vscjava.vscode-java-debug
+    vscode-extensions.vscjava.vscode-java-test
   ];
 
   imports = [ inputs.nixvim.homeModules.nixvim ];
@@ -32,6 +53,8 @@
     };
 
     plugins = {
+      dap.enable = true;
+
       jdtls = {
         enable = true;
         settings = {
@@ -268,5 +291,31 @@
       pattern = [ "*" ];
       command = ":%s/\\s\\+$//e";
     }];
+
+    extraFiles."ftplugin/java.lua".text = ''
+        local jdtls = require("jdtls")
+
+        local config = {
+          cmd = { "${pkgs.jdt-language-server}/bin/jdtls" },
+          init_options = {
+            bundles = {
+      ${builtins.concatStringsSep "\n"
+      (map (p: "        '" + p + "',") bundles)}
+            },
+          },
+          on_attach = function()
+            jdtls.setup_dap({ hotcodereplace = 'auto' })
+            require("jdtls.dap").setup_dap_main_class_configs()
+          end,
+        }
+
+        jdtls.start_or_attach(config)
+
+        -- Optional: key to run/debug current main
+        vim.keymap.set('n', '<leader>rm', function()
+          require('jdtls.dap').setup_dap_main_class_configs()
+          require('dap').continue()
+        end, { buffer = true, desc = 'Run/Debug current Java main (DAP)' })
+    '';
   };
 }
