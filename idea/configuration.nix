@@ -123,6 +123,7 @@
     busybox
     smartmontools
     nvme-cli
+    fwupd
     wineWowPackages.waylandFull
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
