@@ -1,36 +1,9 @@
-{ config, inputs, pkgs, lib, userInfo, ... }:
-let
-  catcher = pkgs.writeShellScriptBin "nvme-ext4-ro-catcher" ''
-    set -euo pipefail
-    TS=$(date -u +%Y%m%dT%H%M%SZ)
-    OUT="/boot/ro-remount-$TS.log"
-
-    # Grab 500 lines of context around the *first* serious storage error we see.
-    journalctl -kf -n 0 -o short-monotonic --no-hostname | \
-      stdbuf -oL egrep -i --line-buffered \
-      'nvme|I/O error|blk_update|timeout|abort|resetting controller|EXT4-fs error|Remounting filesystem read-only' | \
-      (head -n 1 && sleep 1 && journalctl -k -o short-monotonic --no-hostname | tail -n 500) > "$OUT" || true
-
-    sync || true
-  '';
-in {
+{ config, inputs, pkgs, lib, userInfo, ... }: {
   # Persistent journal so the log survives reboots too
   services.journald.extraConfig = ''
     Storage=persistent
     SystemMaxUse=2G
   '';
-  systemd.services.nvme-ext4-ro-catcher = {
-    description = "Catch first NVMe/ext4 fatal error, save log to /boot";
-    after = [ "multi-user.target" "systemd-journald.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${catcher}/bin/nvme-ext4-ro-catcher";
-      Restart = "always";
-      RestartSec = "2s";
-      Nice = 10;
-    };
-  };
   # NVMe APST issues: set to 0 if they return
   boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=500" ];
 
