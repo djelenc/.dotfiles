@@ -58,6 +58,9 @@
     }];
   };
 
+  # firmware updater
+  services.fwupd.enable = true;
+
   # automount USB and other removable media
   services.gvfs.enable = true;
 
@@ -123,7 +126,6 @@
     busybox
     smartmontools
     nvme-cli
-    fwupd
     wineWowPackages.waylandFull
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
