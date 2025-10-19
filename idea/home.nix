@@ -145,7 +145,16 @@
       "application/x-zip" = [ "xarchiver.desktop" ];
       "application/x-zip-compressed" = [ "xarchiver.desktop" ];
 
-      "video/*" = [ "vlc.desktop" ];
+      # video for VLC
+      "video/webm" = [ "vlc.desktop" ];
+      "video/mp4" = [ "vlc.desktop" ];
+      "video/x-matroska" = [ "vlc.desktop" ]; # .mkv
+      "video/x-msvideo" = [ "vlc.desktop" ]; # .avi
+      "video/quicktime" = [ "vlc.desktop" ]; # .mov
+      "video/x-flv" = [ "vlc.desktop" ]; # .flv
+      "video/x-ms-wmv" = [ "vlc.desktop" ]; # .wmv
+      "video/mpeg" = [ "vlc.desktop" ]; # .mpg / .mpeg
+      "video/ogg" = [ "vlc.desktop" ]; # .ogv
 
       # old
       "x-scheme-handler/http" = [ "brave-browser.desktop" ];
