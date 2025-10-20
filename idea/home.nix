@@ -81,6 +81,7 @@
     pandoc
     haskellPackages.pandoc-crossref
     diff-pdf
+    diffpdf
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];
