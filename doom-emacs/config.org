@@ -283,7 +283,12 @@ Used in reveal.js.
 * Projectile
 #+begin_src emacs-lisp
 (with-eval-after-load 'project
-  (add-to-list 'project-find-functions #'projectile-project))
+  (add-to-list 'project-find-functions
+               (lambda (dir)
+                 (when (fboundp 'projectile-project-root)
+                   (let ((root (projectile-project-root dir)))
+                     (when root (cons 'transient root)))))))
+
 
 (after! projectile
   (add-to-list 'projectile-globally-ignored-directories "*org-attachments"))
@@ -1007,418 +1012,464 @@ Usually the default, but ensure it
 #+end_src
 * Markdown paper authoring
 Hand-crafted (and GPT-assisted) bits that allows writing paper in Markdown, referencing bibtex bibliography and cross-referencing images, tables, equations and sections.
-** Citation helpers
-Rely heavily on citar.
+# ** Citation helpers
+# Rely heavily on citar.
+# #+begin_src emacs-lisp
+# (require 'subr-x)
+
+# ;; ---------- Markdown helpers ----------
+# (defun dj/md--yaml-front-matter-string ()
+#   "Return YAML front matter as a string, or nil if not present."
+#   (save-excursion
+#     (goto-char (point-min))
+#     (when (looking-at-p "^---\\s-*$")
+#       (forward-line 1)
+#       (let ((start (point)))
+#         (when (re-search-forward "^\\(---\\|\\.\\.\\.\\)\\s-*$" nil t)
+#           (buffer-substring-no-properties start (match-beginning 0)))))))
+
+# (defun dj/md--extract-bibs ()
+#   "Return list of .bib files from Markdown YAML `bibliography:` (scalar or [list])."
+#   (let ((yaml (dj/md--yaml-front-matter-string))
+#         files)
+#     (when yaml
+#       (with-temp-buffer
+#         (insert yaml)
+#         (goto-char (point-min))
+#         (when (re-search-forward "^bibliography:\\s-*\\(.+\\)$" nil t)
+#           (let ((rhs (string-trim (match-string 1))))
+#             (cond
+#              ;; Inline list: [a.bib, "b.bib"]
+#              ((and (>= (length rhs) 2)
+#                    (string-prefix-p "[" rhs)
+#                    (string-suffix-p "]" rhs))
+#               (dolist (p (split-string (substring rhs 1 -1) "," t "\\s-*"))
+#                 (setq p (string-trim p "\"'"))
+#                 (when (string-suffix-p ".bib" p) (push p files))))
+#              ;; Scalar: bibliography: refs.bib (optionally quoted)
+#              ((not (string-empty-p rhs))
+#               (setq rhs (string-trim rhs "\"'"))
+#               (when (string-suffix-p ".bib" rhs) (push rhs files)))))))
+#       (when files
+#         (setq files (nreverse files))
+#         (mapcar (lambda (f)
+#                   (expand-file-name f (or (and buffer-file-name (file-name-directory buffer-file-name))
+#                                           default-directory)))
+#                 files)))))
+
+# ;; ---------- Org helper ----------
+# (defun dj/org--extract-bibs ()
+#   "Return list of .bib files from Org `#+bibliography:` lines."
+#   (let (files)
+#     (save-excursion
+#       (goto-char (point-min))
+#       (while (re-search-forward "^#\\+bibliography:\\s-*\\(.+\\)$" nil t)
+#         (dolist (p (split-string (match-string 1) "[ \t]+" t))
+#           (when (string-suffix-p ".bib" p)
+#             (push (expand-file-name p (or (and buffer-file-name (file-name-directory buffer-file-name))
+#                                           default-directory))
+#                   files)))))
+#     (nreverse files)))
+
+# ;; ---------- Core setter ----------
+# (defun dj/set-buffer-bibliography ()
+#   "Detect local .bib files and set buffer-local `citar-bibliography`."
+#   (interactive)
+#   (require 'citar)
+#   (let* ((local (cond
+#                  ;; ((derived-mode-p 'org-mode)      (dj/org--extract-bibs))
+#                  ((derived-mode-p 'markdown-mode) (dj/md--extract-bibs))
+#                  (t nil)))
+#          (final (or local org-cite-global-bibliography)))
+#     (setq-local citar-bibliography final
+#                 bibtex-completion-bibliography final)))
+
+# (defalias 'dj/reload-bibliography #'dj/set-buffer-bibliography)
+
+# ;; ---------- Hooks ----------
+# (add-hook 'markdown-mode-hook #'dj/set-buffer-bibliography)
+# (add-hook 'after-save-hook
+#           (lambda ()
+#             (when (memq major-mode '(org-mode markdown-mode))
+#               (dj/set-buffer-bibliography))))
+
+
+# (defun dj/markdown-insert-pandoc-citation (&optional raw)
+#   "Pick refs via Citar and insert a Pandoc citation.
+# Default: insert [@key1; @key2].
+# With C-u (RAW), insert @key1; @key2 (no brackets)."
+#   (interactive "P")
+#   (require 'citar)
+#   (let* ((keys (citar-select-refs :multiple t))       ; pick one or many
+#          (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+#     (insert (if raw body (format "[%s]" body)))))
+
+# ;; Keybindings: localleader @ in Markdown like Org's SPC m @
+# (after! markdown-mode
+#   (map! :map markdown-mode-map
+#         :localleader
+#         :desc "Insert bibliography"
+#         "@" #'dj/markdown-insert-pandoc-citation))
+# #+end_src
+# ** Cross-references
+# Crossref label picker & inserter (Markdown)
+
+# #+begin_src emacs-lisp
+# (require 'subr-x)
+# (require 'seq)
+
+# (defun dj/pandoc-xref--collect ()
+#   "Return candidates of pandoc-crossref labels in current buffer.
+# Each candidate is (DISPLAY . KEY), where KEY is like \"fig:arch\"."
+#   (save-excursion
+#     (goto-char (point-min))
+#     (let (pairs)
+#       ;; Figures: ![Caption](...){#fig:arch}
+#       (while (re-search-forward "^!\\[\\([^]\n]*\\)\\][^\n]*{#\\(fig:[^} \t\n]+\\)[^}]*}" nil t)
+#         (push (cons (format "%s — Figure: %s" (match-string 2)
+#                             (string-trim (match-string 1)))
+#                     (match-string 2))
+#               pairs))
+#       ;; Tables: Table: Caption {#tbl:results}
+#       (goto-char (point-min))
+#       (while (re-search-forward "^Table:\\s-*\\([^{}\n]*?\\)\\s-*{#\\(tbl:[^} \t\n]+\\)}" nil t)
+#         (push (cons (format "%s — Table: %s" (match-string 2)
+#                             (string-trim (match-string 1)))
+#                     (match-string 2))
+#               pairs))
+#       ;; Sections: ## Title {#sec:label}
+#       (goto-char (point-min))
+#       (while (re-search-forward "^#+\\s-+\\([^{\n]*?\\)\\s-*{#\\(sec:[^} \t\n]+\\)}" nil t)
+#         (push (cons (format "%s — Section: %s" (match-string 2)
+#                             (string-trim (match-string 1)))
+#                     (match-string 2))
+#               pairs))
+#       ;; Equations: $$ ... $$ {#eq:label}
+#       (goto-char (point-min))
+#       (while (re-search-forward "{#\\(eq:[^} \t\n]+\\)}" nil t)
+#         (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
+#       ;; Equations (LaTeX): \label{eq:label}
+#       (goto-char (point-min))
+#       (while (re-search-forward "\\\\label{\\(eq:[^} \t\n]+\\)}" nil t)
+#         (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
+#       ;; Listings (if you use them): {#lst:label}
+#       (goto-char (point-min))
+#       (while (re-search-forward "{#\\(lst:[^} \t\n]+\\)}" nil t)
+#         (push (cons (format "%s — Listing" (match-string 1)) (match-string 1)) pairs))
+
+#       ;; Deduplicate by KEY, prefer first description we saw
+#       (let* ((seen (make-hash-table :test 'equal))
+#              out)
+#         (dolist (p pairs)
+#           (unless (gethash (cdr p) seen)
+#             (puthash (cdr p) t seen)
+#             (push (cons (car p) (cdr p)) out)))
+#         (sort out (lambda (a b) (string< (cdr a) (cdr b))))))))
+
+# (defun dj/insert-pandoc-xrefs (&optional raw)
+#   "Prompt for one or more xref labels and insert Pandoc refs.
+# Default inserts [@key1; @key2]. With C-u (RAW), insert @key1; @key2."
+#   (interactive "P")
+#   (let* ((items (dj/pandoc-xref--collect)))
+#     (unless items
+#       (user-error "No pandoc-crossref labels found in this buffer"))
+#     (let* ((choices (completing-read-multiple
+#                      "Insert reference(s): "
+#                      (mapcar #'car items) nil t))
+#            (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
+#            (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+#       (insert (if raw body (format "[%s]" body))))))
+
+# ;; Filtered variants (figure/table/eq/section), handy on muscle memory:
+# (defun dj/insert-pandoc-xrefs-type (prefix &optional raw)
+#   "Like `dj/insert-pandoc-xrefs' but restricted to PREFIX, e.g. \"fig\"."
+#   (interactive "sType (fig/tbl/eq/sec/lst): \nP")
+#   (let* ((items (seq-filter (lambda (p) (string-prefix-p (concat prefix ":") (cdr p)))
+#                             (dj/pandoc-xref--collect))))
+#     (unless items (user-error "No %s labels found" prefix))
+#     (let* ((choices (completing-read-multiple
+#                      (format "Insert %s reference(s): " prefix)
+#                      (mapcar #'car items) nil t))
+#            (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
+#            (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
+#       (insert (if raw body (format "[%s]" body))))))
+
+# (defun dj/insert-pandoc-fig-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "fig" raw))
+# (defun dj/insert-pandoc-tbl-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "tbl" raw))
+# (defun dj/insert-pandoc-eq-ref  (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "eq"  raw))
+# (defun dj/insert-pandoc-sec-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "sec" raw))
+
+# ;; Doom localleader bindings
+# (after! markdown-mode
+#   (map! :map markdown-mode-map
+#         :localleader
+#         :desc "Insert cross-reference"
+#         "r" #'dj/insert-pandoc-xrefs))
+# #+end_src
+# ** ORG like =C-RET= behavior
+# Makes pressing =C-RET= do the same thing as in =org-mode=:
+# - In a list item (or its continuation lines): insert a sibling item below
+#   without splitting the current line.
+# - Else: insert a new heading *after the current section* (same level as the
+#   current heading). If not under any heading, insert a level-1 heading. Leaves point at the new heading.
+# #+begin_src emacs-lisp
+# (after! markdown-mode
+#   (require 'outline)
+
+#   ;; Am I in/under a list item?
+#   (defun dj/md-in-list-p ()
+#     (or (and (fboundp 'markdown-cur-list-item-bounds)
+#              (markdown-cur-list-item-bounds))
+#         (save-excursion
+#           (beginning-of-line)
+#           (looking-at "\\s-*\\([*+-]\\|[0-9]+[.)]\\)\\s-"))))
+
+#   ;; Return current ATX heading level (# count) or nil. Always move to BOL of heading.
+#   (defun dj/md-current-heading-level ()
+#     (save-excursion
+#       (when (outline-back-to-heading t)
+#         (when (looking-at "^\\(#+\\)\\s-")
+#           (length (match-string 1))))))
+
+#   ;; Insert ATX heading at POS with LEVEL hashes.
+#   ;; Return point *after* the inserted "#+space", ready for typing.
+#   (defun dj/md-insert-heading-at (pos level)
+#     (save-excursion
+#       (goto-char pos)
+#       (unless (bolp) (end-of-line) (newline))
+#       (unless (save-excursion (forward-line -1) (looking-at-p "^\\s-*$"))
+#         (newline))
+#       (insert (make-string (max 1 level) ?#) " ")
+#       (point)))
+
+#   (defun dj/markdown-c-return (&optional _arg)
+#     "Org-like C-RET in Markdown.
+
+# - In a list item (or its continuation lines): insert a sibling item below
+#   without splitting the current line.
+# - Else: insert a new heading *after the current section* (same level as the
+#   current heading). If not under any heading, insert a level-1 heading.
+
+# Leaves point at the new heading."
+#     (interactive "P")
+#     (if (dj/md-in-list-p)
+#         (progn
+#           (end-of-line)
+#           (call-interactively #'markdown-insert-list-item))
+#       (let* ((lvl (dj/md-current-heading-level))
+#              (dest
+#               (if lvl
+#                   (save-excursion
+#                     (outline-back-to-heading t)
+#                     (outline-end-of-subtree)
+#                     (dj/md-insert-heading-at (point) lvl))
+#                 (save-excursion
+#                   (end-of-line)
+#                   (dj/md-insert-heading-at (point) 1)))))
+#         (goto-char dest))))
+
+#   (map! :map markdown-mode-map
+#         :n "C-RET"     #'dj/markdown-c-return
+#         :i "C-RET"     #'dj/markdown-c-return
+#         :v "C-RET"     #'dj/markdown-c-return
+#         :n [C-return]  #'dj/markdown-c-return
+#         :i [C-return]  #'dj/markdown-c-return
+#         :v [C-return]  #'dj/markdown-c-return))
+# #+end_src
+# ** Export via =Makefile=
+# #+begin_src emacs-lisp
+# ;;; Export current Markdown file via Makefile targets (pdf/html/tex)
+# (after! markdown-mode
+#   (require 'compile)
+
+#   (defgroup dj/paper nil
+#     "Pandoc/pandoc-crossref Makefile export helpers."
+#     :group 'tools)
+
+#   (defcustom dj/paper-open-after-build t
+#     "Open the produced artifact if the build succeeds."
+#     :type 'boolean :group 'dj/paper)
+
+#   ;; If non-nil: don't show the compilation buffer unless there are errors.
+#   (defcustom dj/paper-quiet-success t
+#     "Hide compilation output on success; show only on errors."
+#     :type 'boolean :group 'dj/paper)
+
+#   (defun dj/paper--finish (buf status)
+#     "On success, (optionally) open the artifact; on failure, show BUF."
+#     (let ((success (string-match-p "\\`finished" status)))
+#       (if success
+#           (progn
+#             (when dj/paper-open-after-build
+#               (with-current-buffer buf
+#                 (when (and (boundp 'dj/paper--outfile)
+#                            dj/paper--outfile
+#                            (file-exists-p dj/paper--outfile))
+#                   (dj/paper--open-file dj/paper--outfile))))
+#             ;; Kill/bury the compilation buffer on success.
+#             (when (buffer-live-p buf) (kill-buffer buf)))
+#         ;; Failure: surface the buffer so you can see the errors.
+#         (display-buffer buf))))
+
+#   ;; Install a single global finish hook.
+#   (add-hook 'compilation-finish-functions #'dj/paper--finish)
+
+#   (defun dj/paper--find-root ()
+#     "Find directory that contains a Makefile above current buffer."
+#     (or (and buffer-file-name
+#              (locate-dominating-file buffer-file-name "Makefile"))
+#         (user-error "No Makefile found above %s" (or buffer-file-name default-directory))))
+
+#   (defun dj/paper--basename ()
+#     "Return file basename without extension for current buffer."
+#     (or (and buffer-file-name (file-name-base buffer-file-name))
+#         (user-error "Buffer is not visiting a file")))
+
+#   (defun dj/paper--output-path (root base target)
+#     "Compute expected output path, given ROOT, BASE and TARGET."
+#     (expand-file-name
+#      (pcase target
+#        ("pdf"  (format "%s.pdf"  base))
+#        ("html" (format "%s.html" base))
+#        ("tex"  (format "%s.tex"  base))
+#        (_ "")) ;; clean or unknown: nothing to open
+#      root))
+
+#   ;; Open a file with the OS default application (async).
+# (defun dj/system-open (file)
+#   "Open FILE with the system default app."
+#   (when (and file (file-exists-p file))
+#     (pcase system-type
+#       ('darwin
+#        (start-process "open" nil "open" file))
+#       ('windows-nt
+#        ;; Ensure backslashes for w32-shell-execute.
+#        (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" file t t)))
+#       (_
+#        ;; Linux/BSD: prefer xdg-open; fall back to gio open/gnome-open/kde-open
+#        (let* ((prog (or (executable-find "xdg-open")
+#                         (executable-find "gio")
+#                         (executable-find "gnome-open")
+#                         (executable-find "kde-open")))
+#               (args (cond
+#                      ((null prog) nil)
+#                      ((string-suffix-p "/gio" prog) (list "open" file))
+#                      (t (list file)))))
+#          (if prog
+#              (apply #'start-process "sys-open" nil prog args)
+#            (browse-url-of-file file)))))))
+
+# (defun dj/paper--open-file (path)
+#   "Open PATH sensibly: HTML in browser, PDF via system viewer, others via `org-open-file`."
+#   (when (and path (file-exists-p path))
+#     (let ((ext (downcase (or (file-name-extension path) ""))))
+#       (cond
+#        ((string= ext "html") (browse-url-of-file path))
+#        ((string= ext "pdf")  (dj/system-open path))
+#        (t                    (org-open-file path))))))
+
+#   (defun dj/paper--make (target)
+#     "Run `make TARGET PAPER=<basename>` at nearest Makefile root.
+# Hides the compilation buffer immediately; only shows it on errors."
+#     (interactive)
+#     (let* ((root (dj/paper--find-root))
+#            (base (dj/paper--basename))
+#            (default-directory root)
+#            (cmd  (format "make %s PAPER=%s"
+#                          (shell-quote-argument target)
+#                          (shell-quote-argument base)))
+#            (outfile (dj/paper--output-path root base target)))
+#       (save-some-buffers t)
+#       (message "Building %s with PAPER=%s in %s" target base root)
+#       (let ((buf (compile cmd)))
+#         ;; Stash expected artifact path on the compilation buffer for the finish hook.
+#         (when (bufferp buf)
+#           (with-current-buffer buf
+#             (setq-local dj/paper--outfile
+#                         (and (not (string-empty-p outfile)) outfile))))
+#         ;; Quiet mode: close the window immediately; we’ll re-show on error.
+#         (when (and dj/paper-quiet-success (bufferp buf))
+#           (when-let ((win (get-buffer-window buf)))
+#             (delete-window win))))
+#       ;; Return non-nil to placate callers.
+#       t))
+
+#   ;; Public entry points
+#   (defun dj/paper-make-pdf  () (interactive) (dj/paper--make "pdf"))
+#   (defun dj/paper-make-html () (interactive) (dj/paper--make "html"))
+#   (defun dj/paper-make-tex  () (interactive) (dj/paper--make "tex"))
+#   (defun dj/paper-make-clean() (interactive) (dj/paper--make "clean"))
+
+#   ;; Optional: a small transient for discoverability (if available)
+#   (when (require 'transient nil t)
+#     (transient-define-prefix dj/paper-export-dispatch ()
+#       "Pandoc Makefile export"
+#       [["Targets"
+#         ("p" "PDF"  dj/paper-make-pdf)
+#         ("h" "HTML" dj/paper-make-html)
+#         ("t" "TeX"  dj/paper-make-tex)
+#         ("c" "Clean" dj/paper-make-clean)]
+#        ["Options"
+#         ("o" "Toggle open-after-build"
+#          (lambda ()
+#            (interactive)
+#            (setq dj/paper-open-after-build (not dj/paper-open-after-build))
+#            (message "Open after build: %s" dj/paper-open-after-build)))]]))
+
+#   ;; Doom localleader bindings (Markdown)
+#   (map! :map markdown-mode-map
+#         :localleader
+#         (:prefix ("e" . "export (Make)")
+#          :desc "PDF (make pdf)"  "p" #'dj/paper-make-pdf
+#          :desc "HTML (make html)" "h" #'dj/paper-make-html
+#          :desc "TeX (make tex)"   "t" #'dj/paper-make-tex
+#          :desc "Clean"            "c" #'dj/paper-make-clean
+#          :desc "Dispatch (if available)" "e" (cmd! (call-interactively 'dj/paper-export-dispatch)))))
+# #+end_src
+* Java IDE
+** Configuration
 #+begin_src emacs-lisp
-(require 'subr-x)
+(after! lsp-java
+  (require 'dap-java)
+  (setq lsp-java-format-enabled t
+        lsp-java-save-actions-organize-imports t))
 
-;; ---------- Markdown helpers ----------
-(defun dj/md--yaml-front-matter-string ()
-  "Return YAML front matter as a string, or nil if not present."
-  (save-excursion
-    (goto-char (point-min))
-    (when (looking-at-p "^---\\s-*$")
-      (forward-line 1)
-      (let ((start (point)))
-        (when (re-search-forward "^\\(---\\|\\.\\.\\.\\)\\s-*$" nil t)
-          (buffer-substring-no-properties start (match-beginning 0)))))))
+(use-package! dap-java :after dap-mode)
+#+end_src
+** Run current file
+#+begin_src emacs-lisp
+(defun dj/java--fqcn ()
+  "package.ClassName (ClassName is the current file's basename)."
+  (let* ((pkg (save-excursion
+                (goto-char (point-min))
+                (when (re-search-forward "^\\s-*package\\s-+\\([[:alnum:].]+\\)\\s-*;" nil t)
+                  (match-string 1))))
+         (cls (file-name-base (or (buffer-file-name) (buffer-name)))))
+    (if pkg (concat pkg "." cls) cls)))
 
-(defun dj/md--extract-bibs ()
-  "Return list of .bib files from Markdown YAML `bibliography:` (scalar or [list])."
-  (let ((yaml (dj/md--yaml-front-matter-string))
-        files)
-    (when yaml
-      (with-temp-buffer
-        (insert yaml)
-        (goto-char (point-min))
-        (when (re-search-forward "^bibliography:\\s-*\\(.+\\)$" nil t)
-          (let ((rhs (string-trim (match-string 1))))
-            (cond
-             ;; Inline list: [a.bib, "b.bib"]
-             ((and (>= (length rhs) 2)
-                   (string-prefix-p "[" rhs)
-                   (string-suffix-p "]" rhs))
-              (dolist (p (split-string (substring rhs 1 -1) "," t "\\s-*"))
-                (setq p (string-trim p "\"'"))
-                (when (string-suffix-p ".bib" p) (push p files))))
-             ;; Scalar: bibliography: refs.bib (optionally quoted)
-             ((not (string-empty-p rhs))
-              (setq rhs (string-trim rhs "\"'"))
-              (when (string-suffix-p ".bib" rhs) (push rhs files)))))))
-      (when files
-        (setq files (nreverse files))
-        (mapcar (lambda (f)
-                  (expand-file-name f (or (and buffer-file-name (file-name-directory buffer-file-name))
-                                          default-directory)))
-                files)))))
+(defun dj/java--pom-root ()
+  (when-let ((f (or (buffer-file-name) default-directory)))
+    (locate-dominating-file f "pom.xml")))
 
-;; ---------- Org helper ----------
-(defun dj/org--extract-bibs ()
-  "Return list of .bib files from Org `#+bibliography:` lines."
-  (let (files)
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^#\\+bibliography:\\s-*\\(.+\\)$" nil t)
-        (dolist (p (split-string (match-string 1) "[ \t]+" t))
-          (when (string-suffix-p ".bib" p)
-            (push (expand-file-name p (or (and buffer-file-name (file-name-directory buffer-file-name))
-                                          default-directory))
-                  files)))))
-    (nreverse files)))
-
-;; ---------- Core setter ----------
-(defun dj/set-buffer-bibliography ()
-  "Detect local .bib files and set buffer-local `citar-bibliography`."
+(defun dj/mvn-run-current-main ()
+  "Run current Java buffer main() via Maven from project root."
   (interactive)
-  (require 'citar)
-  (let* ((local (cond
-                 ;; ((derived-mode-p 'org-mode)      (dj/org--extract-bibs))
-                 ((derived-mode-p 'markdown-mode) (dj/md--extract-bibs))
-                 (t nil)))
-         (final (or local org-cite-global-bibliography)))
-    (setq-local citar-bibliography final
-                bibtex-completion-bibliography final)))
+  (unless (derived-mode-p 'java-mode)
+    (user-error "Not a Java buffer"))
+  (let* ((root (or (dj/java--pom-root)
+                   (user-error "Couldn't find pom.xml above current file")))
+         (fqcn (dj/java--fqcn))
+         (default-directory root)
+         (cmd (format
+               "mvn -q -DskipTests org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.mainClass=%s"
+               fqcn)))
+    (save-some-buffers t)
+    (compile cmd)))
 
-(defalias 'dj/reload-bibliography #'dj/set-buffer-bibliography)
-
-;; ---------- Hooks ----------
-(add-hook 'markdown-mode-hook #'dj/set-buffer-bibliography)
-(add-hook 'after-save-hook
-          (lambda ()
-            (when (memq major-mode '(org-mode markdown-mode))
-              (dj/set-buffer-bibliography))))
-
-
-(defun dj/markdown-insert-pandoc-citation (&optional raw)
-  "Pick refs via Citar and insert a Pandoc citation.
-Default: insert [@key1; @key2].
-With C-u (RAW), insert @key1; @key2 (no brackets)."
-  (interactive "P")
-  (require 'citar)
-  (let* ((keys (citar-select-refs :multiple t))       ; pick one or many
-         (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
-    (insert (if raw body (format "[%s]" body)))))
-
-;; Keybindings: localleader @ in Markdown like Org's SPC m @
-(after! markdown-mode
-  (map! :map markdown-mode-map
-        :localleader
-        :desc "Insert bibliography"
-        "@" #'dj/markdown-insert-pandoc-citation))
+(map! :map java-mode-map
+      :localleader
+      (:prefix ("r" . "run")
+       :desc "Run current main via Maven" "m" #'dj/mvn-run-current-main))
 #+end_src
-** Cross-references
-Crossref label picker & inserter (Markdown)
 
-#+begin_src emacs-lisp
-(require 'subr-x)
-(require 'seq)
-
-(defun dj/pandoc-xref--collect ()
-  "Return candidates of pandoc-crossref labels in current buffer.
-Each candidate is (DISPLAY . KEY), where KEY is like \"fig:arch\"."
-  (save-excursion
-    (goto-char (point-min))
-    (let (pairs)
-      ;; Figures: ![Caption](...){#fig:arch}
-      (while (re-search-forward "^!\\[\\([^]\n]*\\)\\][^\n]*{#\\(fig:[^} \t\n]+\\)[^}]*}" nil t)
-        (push (cons (format "%s — Figure: %s" (match-string 2)
-                            (string-trim (match-string 1)))
-                    (match-string 2))
-              pairs))
-      ;; Tables: Table: Caption {#tbl:results}
-      (goto-char (point-min))
-      (while (re-search-forward "^Table:\\s-*\\([^{}\n]*?\\)\\s-*{#\\(tbl:[^} \t\n]+\\)}" nil t)
-        (push (cons (format "%s — Table: %s" (match-string 2)
-                            (string-trim (match-string 1)))
-                    (match-string 2))
-              pairs))
-      ;; Sections: ## Title {#sec:label}
-      (goto-char (point-min))
-      (while (re-search-forward "^#+\\s-+\\([^{\n]*?\\)\\s-*{#\\(sec:[^} \t\n]+\\)}" nil t)
-        (push (cons (format "%s — Section: %s" (match-string 2)
-                            (string-trim (match-string 1)))
-                    (match-string 2))
-              pairs))
-      ;; Equations: $$ ... $$ {#eq:label}
-      (goto-char (point-min))
-      (while (re-search-forward "{#\\(eq:[^} \t\n]+\\)}" nil t)
-        (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
-      ;; Equations (LaTeX): \label{eq:label}
-      (goto-char (point-min))
-      (while (re-search-forward "\\\\label{\\(eq:[^} \t\n]+\\)}" nil t)
-        (push (cons (format "%s — Equation" (match-string 1)) (match-string 1)) pairs))
-      ;; Listings (if you use them): {#lst:label}
-      (goto-char (point-min))
-      (while (re-search-forward "{#\\(lst:[^} \t\n]+\\)}" nil t)
-        (push (cons (format "%s — Listing" (match-string 1)) (match-string 1)) pairs))
-
-      ;; Deduplicate by KEY, prefer first description we saw
-      (let* ((seen (make-hash-table :test 'equal))
-             out)
-        (dolist (p pairs)
-          (unless (gethash (cdr p) seen)
-            (puthash (cdr p) t seen)
-            (push (cons (car p) (cdr p)) out)))
-        (sort out (lambda (a b) (string< (cdr a) (cdr b))))))))
-
-(defun dj/insert-pandoc-xrefs (&optional raw)
-  "Prompt for one or more xref labels and insert Pandoc refs.
-Default inserts [@key1; @key2]. With C-u (RAW), insert @key1; @key2."
-  (interactive "P")
-  (let* ((items (dj/pandoc-xref--collect)))
-    (unless items
-      (user-error "No pandoc-crossref labels found in this buffer"))
-    (let* ((choices (completing-read-multiple
-                     "Insert reference(s): "
-                     (mapcar #'car items) nil t))
-           (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
-           (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
-      (insert (if raw body (format "[%s]" body))))))
-
-;; Filtered variants (figure/table/eq/section), handy on muscle memory:
-(defun dj/insert-pandoc-xrefs-type (prefix &optional raw)
-  "Like `dj/insert-pandoc-xrefs' but restricted to PREFIX, e.g. \"fig\"."
-  (interactive "sType (fig/tbl/eq/sec/lst): \nP")
-  (let* ((items (seq-filter (lambda (p) (string-prefix-p (concat prefix ":") (cdr p)))
-                            (dj/pandoc-xref--collect))))
-    (unless items (user-error "No %s labels found" prefix))
-    (let* ((choices (completing-read-multiple
-                     (format "Insert %s reference(s): " prefix)
-                     (mapcar #'car items) nil t))
-           (keys (mapcar (lambda (disp) (cdr (assoc disp items))) choices))
-           (body (mapconcat (lambda (k) (concat "@" k)) keys "; ")))
-      (insert (if raw body (format "[%s]" body))))))
-
-(defun dj/insert-pandoc-fig-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "fig" raw))
-(defun dj/insert-pandoc-tbl-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "tbl" raw))
-(defun dj/insert-pandoc-eq-ref  (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "eq"  raw))
-(defun dj/insert-pandoc-sec-ref (&optional raw) (interactive "P") (dj/insert-pandoc-xrefs-type "sec" raw))
-
-;; Doom localleader bindings
-(after! markdown-mode
-  (map! :map markdown-mode-map
-        :localleader
-        :desc "Insert cross-reference"
-        "r" #'dj/insert-pandoc-xrefs))
-#+end_src
-** ORG like =C-RET= behavior
-Makes pressing =C-RET= do the same thing as in =org-mode=:
-- In a list item (or its continuation lines): insert a sibling item below
-  without splitting the current line.
-- Else: insert a new heading *after the current section* (same level as the
-  current heading). If not under any heading, insert a level-1 heading. Leaves point at the new heading.
-#+begin_src emacs-lisp
-(after! markdown-mode
-  (require 'outline)
-
-  ;; Am I in/under a list item?
-  (defun dj/md-in-list-p ()
-    (or (and (fboundp 'markdown-cur-list-item-bounds)
-             (markdown-cur-list-item-bounds))
-        (save-excursion
-          (beginning-of-line)
-          (looking-at "\\s-*\\([*+-]\\|[0-9]+[.)]\\)\\s-"))))
-
-  ;; Return current ATX heading level (# count) or nil. Always move to BOL of heading.
-  (defun dj/md-current-heading-level ()
-    (save-excursion
-      (when (outline-back-to-heading t)
-        (when (looking-at "^\\(#+\\)\\s-")
-          (length (match-string 1))))))
-
-  ;; Insert ATX heading at POS with LEVEL hashes.
-  ;; Return point *after* the inserted "#+space", ready for typing.
-  (defun dj/md-insert-heading-at (pos level)
-    (save-excursion
-      (goto-char pos)
-      (unless (bolp) (end-of-line) (newline))
-      (unless (save-excursion (forward-line -1) (looking-at-p "^\\s-*$"))
-        (newline))
-      (insert (make-string (max 1 level) ?#) " ")
-      (point)))
-
-  (defun dj/markdown-c-return (&optional _arg)
-    "Org-like C-RET in Markdown.
-
-- In a list item (or its continuation lines): insert a sibling item below
-  without splitting the current line.
-- Else: insert a new heading *after the current section* (same level as the
-  current heading). If not under any heading, insert a level-1 heading.
-
-Leaves point at the new heading."
-    (interactive "P")
-    (if (dj/md-in-list-p)
-        (progn
-          (end-of-line)
-          (call-interactively #'markdown-insert-list-item))
-      (let* ((lvl (dj/md-current-heading-level))
-             (dest
-              (if lvl
-                  (save-excursion
-                    (outline-back-to-heading t)
-                    (outline-end-of-subtree)
-                    (dj/md-insert-heading-at (point) lvl))
-                (save-excursion
-                  (end-of-line)
-                  (dj/md-insert-heading-at (point) 1)))))
-        (goto-char dest))))
-
-  (map! :map markdown-mode-map
-        :n "C-RET"     #'dj/markdown-c-return
-        :i "C-RET"     #'dj/markdown-c-return
-        :v "C-RET"     #'dj/markdown-c-return
-        :n [C-return]  #'dj/markdown-c-return
-        :i [C-return]  #'dj/markdown-c-return
-        :v [C-return]  #'dj/markdown-c-return))
-#+end_src
-** Export via =Makefile=
-#+begin_src emacs-lisp
-;;; Export current Markdown file via Makefile targets (pdf/html/tex)
-(after! markdown-mode
-  (require 'compile)
-
-  (defgroup dj/paper nil
-    "Pandoc/pandoc-crossref Makefile export helpers."
-    :group 'tools)
-
-  (defcustom dj/paper-open-after-build t
-    "Open the produced artifact if the build succeeds."
-    :type 'boolean :group 'dj/paper)
-
-  ;; If non-nil: don't show the compilation buffer unless there are errors.
-  (defcustom dj/paper-quiet-success t
-    "Hide compilation output on success; show only on errors."
-    :type 'boolean :group 'dj/paper)
-
-  (defun dj/paper--finish (buf status)
-    "On success, (optionally) open the artifact; on failure, show BUF."
-    (let ((success (string-match-p "\\`finished" status)))
-      (if success
-          (progn
-            (when dj/paper-open-after-build
-              (with-current-buffer buf
-                (when (and (boundp 'dj/paper--outfile)
-                           dj/paper--outfile
-                           (file-exists-p dj/paper--outfile))
-                  (dj/paper--open-file dj/paper--outfile))))
-            ;; Kill/bury the compilation buffer on success.
-            (when (buffer-live-p buf) (kill-buffer buf)))
-        ;; Failure: surface the buffer so you can see the errors.
-        (display-buffer buf))))
-
-  ;; Install a single global finish hook.
-  (add-hook 'compilation-finish-functions #'dj/paper--finish)
-
-  (defun dj/paper--find-root ()
-    "Find directory that contains a Makefile above current buffer."
-    (or (and buffer-file-name
-             (locate-dominating-file buffer-file-name "Makefile"))
-        (user-error "No Makefile found above %s" (or buffer-file-name default-directory))))
-
-  (defun dj/paper--basename ()
-    "Return file basename without extension for current buffer."
-    (or (and buffer-file-name (file-name-base buffer-file-name))
-        (user-error "Buffer is not visiting a file")))
-
-  (defun dj/paper--output-path (root base target)
-    "Compute expected output path, given ROOT, BASE and TARGET."
-    (expand-file-name
-     (pcase target
-       ("pdf"  (format "%s.pdf"  base))
-       ("html" (format "%s.html" base))
-       ("tex"  (format "%s.tex"  base))
-       (_ "")) ;; clean or unknown: nothing to open
-     root))
-
-  ;; Open a file with the OS default application (async).
-(defun dj/system-open (file)
-  "Open FILE with the system default app."
-  (when (and file (file-exists-p file))
-    (pcase system-type
-      ('darwin
-       (start-process "open" nil "open" file))
-      ('windows-nt
-       ;; Ensure backslashes for w32-shell-execute.
-       (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" file t t)))
-      (_
-       ;; Linux/BSD: prefer xdg-open; fall back to gio open/gnome-open/kde-open
-       (let* ((prog (or (executable-find "xdg-open")
-                        (executable-find "gio")
-                        (executable-find "gnome-open")
-                        (executable-find "kde-open")))
-              (args (cond
-                     ((null prog) nil)
-                     ((string-suffix-p "/gio" prog) (list "open" file))
-                     (t (list file)))))
-         (if prog
-             (apply #'start-process "sys-open" nil prog args)
-           (browse-url-of-file file)))))))
-
-(defun dj/paper--open-file (path)
-  "Open PATH sensibly: HTML in browser, PDF via system viewer, others via `org-open-file`."
-  (when (and path (file-exists-p path))
-    (let ((ext (downcase (or (file-name-extension path) ""))))
-      (cond
-       ((string= ext "html") (browse-url-of-file path))
-       ((string= ext "pdf")  (dj/system-open path))
-       (t                    (org-open-file path))))))
-
-  (defun dj/paper--make (target)
-    "Run `make TARGET PAPER=<basename>` at nearest Makefile root.
-Hides the compilation buffer immediately; only shows it on errors."
-    (interactive)
-    (let* ((root (dj/paper--find-root))
-           (base (dj/paper--basename))
-           (default-directory root)
-           (cmd  (format "make %s PAPER=%s"
-                         (shell-quote-argument target)
-                         (shell-quote-argument base)))
-           (outfile (dj/paper--output-path root base target)))
-      (save-some-buffers t)
-      (message "Building %s with PAPER=%s in %s" target base root)
-      (let ((buf (compile cmd)))
-        ;; Stash expected artifact path on the compilation buffer for the finish hook.
-        (when (bufferp buf)
-          (with-current-buffer buf
-            (setq-local dj/paper--outfile
-                        (and (not (string-empty-p outfile)) outfile))))
-        ;; Quiet mode: close the window immediately; we’ll re-show on error.
-        (when (and dj/paper-quiet-success (bufferp buf))
-          (when-let ((win (get-buffer-window buf)))
-            (delete-window win))))
-      ;; Return non-nil to placate callers.
-      t))
-
-  ;; Public entry points
-  (defun dj/paper-make-pdf  () (interactive) (dj/paper--make "pdf"))
-  (defun dj/paper-make-html () (interactive) (dj/paper--make "html"))
-  (defun dj/paper-make-tex  () (interactive) (dj/paper--make "tex"))
-  (defun dj/paper-make-clean() (interactive) (dj/paper--make "clean"))
-
-  ;; Optional: a small transient for discoverability (if available)
-  (when (require 'transient nil t)
-    (transient-define-prefix dj/paper-export-dispatch ()
-      "Pandoc Makefile export"
-      [["Targets"
-        ("p" "PDF"  dj/paper-make-pdf)
-        ("h" "HTML" dj/paper-make-html)
-        ("t" "TeX"  dj/paper-make-tex)
-        ("c" "Clean" dj/paper-make-clean)]
-       ["Options"
-        ("o" "Toggle open-after-build"
-         (lambda ()
-           (interactive)
-           (setq dj/paper-open-after-build (not dj/paper-open-after-build))
-           (message "Open after build: %s" dj/paper-open-after-build)))]]))
-
-  ;; Doom localleader bindings (Markdown)
-  (map! :map markdown-mode-map
-        :localleader
-        (:prefix ("e" . "export (Make)")
-         :desc "PDF (make pdf)"  "p" #'dj/paper-make-pdf
-         :desc "HTML (make html)" "h" #'dj/paper-make-html
-         :desc "TeX (make tex)"   "t" #'dj/paper-make-tex
-         :desc "Clean"            "c" #'dj/paper-make-clean
-         :desc "Dispatch (if available)" "e" (cmd! (call-interactively 'dj/paper-export-dispatch)))))
-#+end_src
 

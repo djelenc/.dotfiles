@@ -49,6 +49,14 @@ in {
 
     # dictionaries
     (aspellWithDicts (dicts: with dicts; [ sl en en-computers en-science ]))
+
+    # Java IDE
+    jdt-language-server
+    vscode-extensions.vscjava.vscode-java-debug
+    vscode-extensions.vscjava.vscode-java-test
+
+    # IDE tools
+    clang-tools
   ];
 
   programs = {
@@ -77,7 +85,8 @@ in {
       name = "Org Protocol";
       genericName = "Org capture via org-protocol";
       comment = "Handle org-protocol URLs";
-      exec = "env ALTERNATE_EDITOR= GDK_BACKEND=wayland ${pkgs.emacs}/bin/emacsclient -c %u";
+      exec =
+        "env ALTERNATE_EDITOR= GDK_BACKEND=wayland ${pkgs.emacs}/bin/emacsclient -c %u";
       terminal = false;
       categories = [ "Office" ];
       type = "Application";
