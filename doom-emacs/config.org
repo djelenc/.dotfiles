@@ -1437,6 +1437,7 @@ Hand-crafted (and GPT-assisted) bits that allows writing paper in Markdown, refe
 (use-package! dap-java :after dap-mode)
 #+end_src
 ** Run current file
+Only works in a maven project, does not accept command line arguments.
 #+begin_src emacs-lisp
 (defun dj/java--fqcn ()
   "package.ClassName (ClassName is the current file's basename)."
@@ -1452,19 +1453,23 @@ Hand-crafted (and GPT-assisted) bits that allows writing paper in Markdown, refe
     (locate-dominating-file f "pom.xml")))
 
 (defun dj/mvn-run-current-main ()
-  "Run current Java buffer main() via Maven from project root."
+  "Run current Java buffer main() via Maven from project root and focus output."
   (interactive)
-  (unless (derived-mode-p 'java-mode)
-    (user-error "Not a Java buffer"))
+  (unless (derived-mode-p 'java-mode) (user-error "Not a Java buffer"))
   (let* ((root (or (dj/java--pom-root)
                    (user-error "Couldn't find pom.xml above current file")))
          (fqcn (dj/java--fqcn))
          (default-directory root)
          (cmd (format
                "mvn -q -DskipTests org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.mainClass=%s"
-               fqcn)))
+               fqcn))
+         (compilation-scroll-output t))
     (save-some-buffers t)
-    (compile cmd)))
+    (let ((buf (compile cmd)))
+      (when (bufferp buf)
+        (pop-to-buffer buf)
+        (set-window-dedicated-p (selected-window) t)))))
+
 
 (map! :map java-mode-map
       :localleader
