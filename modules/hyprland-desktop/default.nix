@@ -77,7 +77,7 @@
     gedit # text editor
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
-    kdePackages.xwaylandvideobridge # to make screensharing work
+    # kdePackages.xwaylandvideobridge # to make screensharing work
     inputs.pyprland.packages.${pkgs.system}.pyprland # pyprland plugins
   ];
 
