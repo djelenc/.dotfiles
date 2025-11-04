@@ -52,7 +52,7 @@
     # SQL related
     postgresql # psql client, server is not started
     pgmodeler
-    mysql-client
+    mariadb.client
     mysql-workbench
     (import ../scripts/cfc.nix { inherit pkgs; })
 
