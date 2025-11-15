@@ -38,11 +38,10 @@ in {
   };
 
   # 4) Create ~/.marginaltool with the requested config
-  # TODO: Move it to sops-nix
   home.file.".marginaltool".text = ''
     [https://gcsign.uni-lj.si/BCSign/]
     engine = file
-    keyfile = /home/david/.pki/dj.key.pem
-    certfile = /home/david/.pki/dj.cert.pem
+    keyfile = /run/secrets/dj_key.pem
+    certfile = /run/secrets/dj_cert.pem
   '';
 }

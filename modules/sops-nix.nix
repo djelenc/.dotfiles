@@ -41,5 +41,18 @@ in {
       group = "users";
       mode = "0400";
     };
+
+    # cert
+    secrets."dj_cert.pem" = {
+      owner = userInfo.user;
+      group = "users";
+      mode = "0400";
+    };
+    # sk
+    secrets."dj_key.pem" = {
+      owner = userInfo.user;
+      group = "users";
+      mode = "0400";
+    };
   };
 }
