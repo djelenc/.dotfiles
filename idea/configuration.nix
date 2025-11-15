@@ -46,6 +46,7 @@
 
   # Caps as ctrl and esc
   services.xremap = {
+    enable = true;
     withWlroots = true;
     userName = userInfo.user;
     config.modmap = [{
