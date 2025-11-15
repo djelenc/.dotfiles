@@ -100,6 +100,7 @@
     ../modules/alacritty.nix
     ../modules/nixvim.nix
     ../modules/doom-emacs.nix
+    ../modules/marginaltool.nix
   ];
 
   programs.git = {
