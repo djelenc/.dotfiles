@@ -105,11 +105,14 @@
     ../modules/oauth2ms-config.nix
   ];
 
+  # Adb
+  programs.adb.enable = true;
+
   # user account
   users.users.${userInfo.user} = {
     isNormalUser = true;
     description = userInfo.name;
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "kvm" "adbusers" ];
     # packages = with pkgs; [ ];
   };
 
