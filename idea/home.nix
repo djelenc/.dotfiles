@@ -36,7 +36,8 @@
     python3
     jetbrains.pycharm-community-bin # python ide
     jetbrains.idea-community-bin # java ide
-    android-studio # ide andorid dev
+    android-studio # ide android dev
+    genymotion # android emulator
     maven # java DM
     vscodium.fhs # general editor
     meld # diff/merger
