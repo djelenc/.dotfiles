@@ -212,41 +212,42 @@ in {
     # execute on release
     bindr = "$mainMod, SUPER_L, exec, pkill fuzzel || fuzzel";
 
-    windowrulev2 = [
-      "float,class:^(com.saivert.pwvucontrol)$"
-      "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
-      "float,class:(blueman)"
-      "float,class:^(vlc)$"
-      "float,class:^(org.keepassxc.KeePassXC)$"
-      "float,initialTitle:(All Files)"
-      "float,initialTitle:.*wants to save$"
-      "float,initialTitle:^(Print)$"
-      "move 45% 2.9%,class:^(gsimplecal)$"
-      "float,initialTitle:.*Welcome to PyCharm"
-      "float, title:^Calc$" # calc always floats
-    ];
+    # TO-REMOVE: Old rules, check if new work OK, delete then
+    # windowrulev2 = [
+    #   "float,class:^(com.saivert.pwvucontrol)$"
+    #   "float,class:^(com.nextcloud.desktopclient.nextcloud)$"
+    #   "float,class:(blueman)"
+    #   "float,class:^(vlc)$"
+    #   "float,class:^(org.keepassxc.KeePassXC)$"
+    #   "float,initialTitle:(All Files)"
+    #   "float,initialTitle:.*wants to save$"
+    #   "float,initialTitle:^(Print)$"
+    #   "move 45% 2.9%,class:^(gsimplecal)$"
+    #   "float,initialTitle:.*Welcome to PyCharm"
+    #   "float, title:^Calc$" # calc always floats
+    # ];
 
     # To be used when upgrading
-    # windowrule = [
-    #   "float on, match:class ^(com.saivert.pwvucontrol)$"
-    #   "float on, match:class ^(com.nextcloud.desktopclient.nextcloud)$"
-    #   "float on, match:class blueman"
-    #   "float on, match:class ^(vlc)$"
-    #   "float on, match:class ^(org.keepassxc.KeePassXC)$"
+    windowrule = [
+      "float on, match:class ^(com.saivert.pwvucontrol)$"
+      "float on, match:class ^(com.nextcloud.desktopclient.nextcloud)$"
+      "float on, match:class blueman"
+      "float on, match:class ^(vlc)$"
+      "float on, match:class ^(org.keepassxc.KeePassXC)$"
 
-    #   # dialogs (titles often contain spaces; that's fine as a regex)
-    #   "float on, match:initial_title (All Files)"
-    #   "float on, match:initial_title .*wants to save$"
-    #   "float on, match:initial_title ^(Print)$"
-    #   "float on, match:initial_title .*Welcome to PyCharm"
+      # dialogs (titles often contain spaces; that's fine as a regex)
+      "float on, match:initial_title (All Files)"
+      "float on, match:initial_title .*wants to save$"
+      "float on, match:initial_title ^(Print)$"
+      "float on, match:initial_title .*Welcome to PyCharm"
 
-    #   # gsimplecal: old "move 45% 2.9%" often breaks with the new expression parser.
-    #   # Use monitor-local expressions instead:
-    #   "float on, move (monitor_w*0.45) (monitor_h*0.029), match:class ^(gsimplecal)$"
+      # gsimplecal: old "move 45% 2.9%" often breaks with the new expression parser.
+      # Use monitor-local expressions instead:
+      "float on, move (monitor_w*0.45) (monitor_h*0.029), match:class ^(gsimplecal)$"
 
-    #   # calc always floats
-    #   "float on, match:title ^Calc$"
-    # ];
+      # calc always floats
+      "float on, match:title ^Calc$"
+    ];
 
   };
 
