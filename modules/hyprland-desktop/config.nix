@@ -143,6 +143,7 @@ in {
     misc = {
       force_default_wallpaper = 0;
       disable_hyprland_logo = true;
+      on_focus_under_fullscreen = 1;
     };
 
     "$mainMod" = "SUPER";
@@ -184,7 +185,7 @@ in {
       # TODO: should include apps on all monitors
       # "$mainMod, Tab, cyclenext, visible hist" # <-- problem, ko je okno maksimizirano
       "$mainMod, Tab, cyclenext, "
-      "$mainMod, Tab, bringactivetotop, "
+      "$mainMod, Tab, alterzorder, top"
 
       ", xf86audiomute, exec, swayosd-client --output-volume mute-toggle"
       ", xf86audiomicmute, exec, swayosd-client --input-volume mute-toggle"
