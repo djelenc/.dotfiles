@@ -50,6 +50,9 @@
     teleport
     gnumake
 
+    # screen recorder
+    (import ../scripts/wf-recorder.nix { inherit pkgs; })
+
     # SQL related
     postgresql # psql client, server is not started
     pgmodeler
