@@ -276,7 +276,7 @@ in
     plugin {
       split-monitor-workspaces {
         count = 5
-        keep_focused = 0
+        keep_focused = 1
         enable_notifications = 0
         enable_persistent-workspaces = 1
       }
