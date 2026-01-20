@@ -17,7 +17,6 @@
 
   # Use latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  # boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # networking
   networking.hostName = "idea";
@@ -78,8 +77,8 @@
   virtualisation.virtualbox = {
     host = {
       enable = true;
-      enableKvm = true;
-      addNetworkInterface = false;
+      # enableKvm = true;
+      # addNetworkInterface = false;
     };
     guest = {
       enable = true;
