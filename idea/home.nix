@@ -1,4 +1,12 @@
-{ config, inputs, pkgs, lib, userInfo, ... }: rec {
+{
+  config,
+  inputs,
+  pkgs,
+  lib,
+  userInfo,
+  ...
+}:
+rec {
   programs.home-manager.enable = true;
 
   # enable BT headset media control buttons
@@ -6,23 +14,25 @@
 
   home.username = userInfo.user;
   home.homeDirectory = "/home/${home.username}";
-  home.sessionVariables = { EDITOR = "nvim"; };
+  home.sessionVariables = {
+    EDITOR = "nvim";
+  };
   home.stateVersion = "23.11";
 
   # browses the webs
   programs.brave = {
     enable = true;
-    commandLineArgs = [
-      "--ozone-platform=wayland"
-      "--use-gl=angle"
-      "--use-angle=gl"
-      "--enable-gpu-compositing"
-      "--enable-gpu-rasterization"
-      "--enable-hardware-overlays"
-      "--enable-native-gpu-memory-buffers"
-      "--ignore-gpu-blocklist"
-      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks"
-    ];
+    # commandLineArgs = [
+    #   "--ozone-platform=wayland"
+    #   "--use-gl=angle"
+    #   "--use-angle=gl"
+    #   "--enable-gpu-compositing"
+    #   "--enable-gpu-rasterization"
+    #   "--enable-hardware-overlays"
+    #   "--enable-native-gpu-memory-buffers"
+    #   "--ignore-gpu-blocklist"
+    #   "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks"
+    # ];
   };
 
   home.packages = with pkgs; [
@@ -92,8 +102,7 @@
 
   # links intellij vim config
   home.file.".ideavimrc".source =
-    config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles
-    + /intellij/.ideavimrc;
+    config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles + /intellij/.ideavimrc;
 
   # Java
   programs.java.enable = true;
