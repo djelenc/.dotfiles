@@ -34,8 +34,8 @@
     teams-for-linux
 
     python3
-    jetbrains.pycharm-community-bin # python ide
-    jetbrains.idea-community-bin # java ide
+    jetbrains.pycharm-oss # python ide
+    jetbrains.idea-oss # java ide
     android-studio # ide android dev
     genymotion # android emulator
     maven # java DM
@@ -77,7 +77,7 @@
 
     # nix-related
     nix-index
-    nixfmt-classic
+    nixfmt
 
     # latex, pandoc, publishing
     texlive.combined.scheme-full

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   # switch one workspace down on all monitors
   hyprland-switch-down = pkgs.writeShellScriptBin "hyprland-switch-down" ''
@@ -50,10 +56,13 @@ let
 
     hyprctl --batch "$cmds"
   '';
-in {
+in
+{
   # hyprland config
   wayland.windowManager.hyprland.settings = {
-    xwayland = { force_zero_scaling = true; };
+    xwayland = {
+      force_zero_scaling = true;
+    };
 
     exec-once = [
       "${pkgs.waybar}/bin/waybar"
@@ -78,6 +87,11 @@ in {
       # Deciding which screens are turned on/off is done with kanshi
     ];
 
+    # Workaround for missing cursors on other monitors
+    cursor = {
+      no_hardware_cursors = true;
+    };
+
     env = [
       # "GDK_SCALE,1.25"
       "GDK_SCALE,1.0"
@@ -91,7 +105,9 @@ in {
       numlock_by_default = true;
 
       follow_mouse = 2;
-      touchpad = { natural_scroll = "no"; };
+      touchpad = {
+        natural_scroll = "no";
+      };
       sensitivity = 0;
       repeat_rate = 50; # 25
       repeat_delay = 300; # 600
@@ -206,8 +222,10 @@ in {
       ", xf86monbrightnessdown, exec, swayosd-client --brightness lower"
     ];
 
-    bindm =
-      [ "$mainMod, mouse:272, movewindow" "$mainMod, mouse:273, resizewindow" ];
+    bindm = [
+      "$mainMod, mouse:272, movewindow"
+      "$mainMod, mouse:273, resizewindow"
+    ];
 
     # lock on lid-open
     bindl = [ ",switch:off:Lid Switch, exec, hyprlock" ];

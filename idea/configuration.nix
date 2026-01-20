@@ -104,9 +104,6 @@
     ../modules/oauth2ms-config.nix
   ];
 
-  # Adb
-  programs.adb.enable = true;
-
   # user account
   users.users.${userInfo.user} = {
     isNormalUser = true;
@@ -130,6 +127,7 @@
     smartmontools
     nvme-cli
     wineWowPackages.waylandFull
+    android-tools
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
 

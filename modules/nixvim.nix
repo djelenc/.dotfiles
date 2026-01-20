@@ -116,8 +116,11 @@ in {
 
       neo-tree = {
         enable = true;
-        enableGitStatus = true;
-        enableModifiedMarkers = true;
+
+        settings = {
+          enable_git_status = true;
+          enable_modified_markers = true;
+        };
       };
 
       telescope = {
