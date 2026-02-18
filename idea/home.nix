@@ -44,8 +44,8 @@ rec {
     teams-for-linux
 
     python3
-    jetbrains.pycharm-oss # python ide
-    jetbrains.idea-oss # java ide
+    jetbrains.pycharm # python ide
+    jetbrains.idea # java ide
     android-studio # ide android dev
     genymotion # android emulator
     maven # java DM

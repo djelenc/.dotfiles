@@ -1,4 +1,12 @@
-{ config, inputs, pkgs, lib, userInfo, ... }: {
+{
+  config,
+  inputs,
+  pkgs,
+  lib,
+  userInfo,
+  ...
+}:
+{
   # Persistent journal so the log survives reboots too
   services.journald.extraConfig = ''
     Storage=persistent
@@ -48,14 +56,16 @@
     enable = true;
     withWlroots = true;
     userName = userInfo.user;
-    config.modmap = [{
-      name = "main remaps";
-      remap.CapsLock = {
-        held = "leftctrl";
-        alone = "esc";
-        alone_timeout_milis = 150;
-      };
-    }];
+    config.modmap = [
+      {
+        name = "main remaps";
+        remap.CapsLock = {
+          held = "leftctrl";
+          alone = "esc";
+          alone_timeout_milis = 150;
+        };
+      }
+    ];
   };
 
   # firmware updater
@@ -74,18 +84,18 @@
   virtualisation.docker.enable = true;
 
   # virtualbox
-  virtualisation.virtualbox = {
-    host = {
-      enable = true;
-      # enableKvm = true;
-      # addNetworkInterface = false;
-    };
-    guest = {
-      enable = true;
-      dragAndDrop = true;
-      clipboard = true;
-    };
-  };
+  # virtualisation.virtualbox = {
+  #   host = {
+  #     enable = true;
+  #     # enableKvm = true;
+  #     # addNetworkInterface = false;
+  #   };
+  #   guest = {
+  #     enable = true;
+  #     dragAndDrop = true;
+  #     clipboard = true;
+  #   };
+  # };
 
   # virt-manager
   programs.virt-manager.enable = true;
@@ -108,7 +118,13 @@
   users.users.${userInfo.user} = {
     isNormalUser = true;
     description = userInfo.name;
-    extraGroups = [ "networkmanager" "wheel" "docker" "kvm" "adbusers" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "docker"
+      "kvm"
+      "adbusers"
+    ];
     # packages = with pkgs; [ ];
   };
 
@@ -167,22 +183,36 @@
         # Set sink priorities
         "20-priorities" = {
           # Bluetooth: highest priority
-          "monitor.bluez.rules" = [{
-            matches = [{ "node.name" = "~bluez_output.*"; }];
-            actions = { update-props = { "priority.session" = 4000; }; };
-          }];
+          "monitor.bluez.rules" = [
+            {
+              matches = [ { "node.name" = "~bluez_output.*"; } ];
+              actions = {
+                update-props = {
+                  "priority.session" = 4000;
+                };
+              };
+            }
+          ];
 
           # ALSA sinks: prefer analog, de-prioritize HDMI
           "monitor.alsa.rules" = [
             # Prefer internal analog outputs
             {
-              matches = [{ "alsa.id" = "*Analog*"; }];
-              actions = { update-props = { "priority.session" = 3000; }; };
+              matches = [ { "alsa.id" = "*Analog*"; } ];
+              actions = {
+                update-props = {
+                  "priority.session" = 3000;
+                };
+              };
             }
             # De-prioritize all HDMI sinks so they never become default
             {
-              matches = [{ "alsa.id" = "~HDMI*"; }];
-              actions = { update-props = { "priority.session" = 500; }; };
+              matches = [ { "alsa.id" = "~HDMI*"; } ];
+              actions = {
+                update-props = {
+                  "priority.session" = 500;
+                };
+              };
             }
           ];
         };
@@ -214,7 +244,10 @@
   services.blueman.enable = true;
 
   # flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # hyprlock
   security.pam.services.hyprlock = { };
@@ -230,8 +263,7 @@
 
   # FONTS
   # Allow installation of unfree corefonts package
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "corefonts" ];
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "corefonts" ];
 
   fonts = {
     fontDir.enable = true;
@@ -247,7 +279,6 @@
 
   nix.settings = {
     substituters = [ "https://hyprland.cachix.org" ];
-    trusted-public-keys =
-      [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
   };
 }
