@@ -144,6 +144,7 @@
     nvme-cli
     wineWowPackages.waylandFull
     android-tools
+    cifs-utils
     (import ../scripts/moss.nix { inherit pkgs config; })
   ];
 
