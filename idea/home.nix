@@ -118,13 +118,20 @@ rec {
 
   programs.git = {
     enable = true;
-    userName = userInfo.fullName;
-    userEmail = userInfo.email;
-    extraConfig.init.defaultBranch = "main";
+    settings = {
+      user = {
+        name = userInfo.fullName;
+        email = userInfo.email;
+      };
+      extraConfig.init.defaultBranch = "main";
+    };
   };
 
   # GTK and QT config
   gtk.enable = true;
+  gtk.gtk4.theme = null;
+  # gtk.gtk4.theme = config.gtk.theme;
+
   qt = {
     enable = true;
     # style.name = "adwaita-dark"; # "adwaita-dark";

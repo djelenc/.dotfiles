@@ -72,7 +72,7 @@ in
       "${pkgs.nextcloud-client}/bin/nextcloud"
       "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch cliphist store # Stores only text data"
       "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch cliphist store # Stores only image data"
-      "${inputs.pyprland.packages.${pkgs.system}.pyprland}/bin/pypr"
+      "${inputs.pyprland.packages.${pkgs.stdenv.hostPlatform.system}.pyprland}/bin/pypr"
     ];
 
     monitor = [

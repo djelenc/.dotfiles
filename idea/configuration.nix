@@ -142,7 +142,7 @@
     busybox
     smartmontools
     nvme-cli
-    wineWowPackages.waylandFull
+    wineWow64Packages.waylandFull
     android-tools
     cifs-utils
     (import ../scripts/moss.nix { inherit pkgs config; })
@@ -158,7 +158,8 @@
 
   # hyprland (configured by HM)
   programs.hyprland.enable = true;
-  programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  # programs.hyprland.package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  programs.hyprland.package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
   # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # yet another nix helper
