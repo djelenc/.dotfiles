@@ -35,6 +35,9 @@ in {
     # open_ai token
     secrets.open_ai_test.owner = userInfo.user;
 
+    # anthropic token
+    secrets.anthropic_api_key.owner = userInfo.user;
+
     # org-caldav-sync
     secrets."org-caldav.authinfo" = {
       owner = userInfo.user;
