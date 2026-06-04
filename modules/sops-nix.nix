@@ -38,6 +38,9 @@ in {
     # anthropic token
     secrets.anthropic_api_key.owner = userInfo.user;
 
+    # deepseek token
+    secrets.deepseek_api_key.owner = userInfo.user;
+
     # org-caldav-sync
     secrets."org-caldav.authinfo" = {
       owner = userInfo.user;
