@@ -170,6 +170,7 @@ in
       "$mainMod, Q, killactive,"
       "$mainMod, M, fullscreen, 1"
       "$mainMod SHIFT, Q, exit,"
+      "$mainMod SHIFT, R, exec, hyprctl reload"
       "$mainMod, F, exec, nautilus"
       "$mainMod, G, togglefloating,"
       "$mainMod, O, layoutmsg, togglesplit"
