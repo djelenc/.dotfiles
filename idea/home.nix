@@ -96,6 +96,7 @@ rec {
     haskellPackages.pandoc-crossref
     diff-pdf
     diffpdf
+    hallucinator-bin
   ];
 
   home.sessionPath = [ "/home/${userInfo.user}/.emacs.d/bin" ];

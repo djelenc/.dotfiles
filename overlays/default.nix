@@ -19,6 +19,10 @@
         inherit (goodPkgs) electron_39 electron_39-unwrapped;
       }
     )
+    # hallucinator for references
+    (final: prev: {
+      hallucinator-bin = final.callPackage ./hallucinator-bin.nix { };
+    })
     # run drawio under wayland
     (self: super: {
       drawio = super.drawio.overrideAttrs (oldAttrs: {
