@@ -12,7 +12,15 @@
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     xwayland.enable = true;
     systemd.enable = true;
-    # configType = "lua";
+    configType = "lua";
+
+    extraLuaFiles = {
+      animations = ./lua/animations.lua;
+      startup = ./lua/startup.lua;
+      binds = ./lua/binds.lua;
+      gestures = ./lua/gestures.lua;
+      window_rules = ./lua/window_rules.lua;
+    };
 
     plugins = [
       # inputs.split-monitor-workspaces.packages.${pkgs.stdenv.hostPlatform.system}.split-monitor-workspaces
@@ -33,8 +41,9 @@
     ]
   '';
 
-  xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
-    inputs.split-monitor-workspaces + "/lua";
+  # Temporarily disabled together with the split-monitor-workspaces plugin.
+  # xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
+  #   inputs.split-monitor-workspaces + "/lua";
 
   # Additional launcher commands
   xdg.desktopEntries = {
