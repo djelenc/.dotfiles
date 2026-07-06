@@ -1,12 +1,21 @@
-{ inputs, pkgs, lib, xdg, config, ... }: {
+{
+  inputs,
+  pkgs,
+  lib,
+  xdg,
+  config,
+  ...
+}:
+{
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     xwayland.enable = true;
     systemd.enable = true;
+    # configType = "lua";
 
     plugins = [
-      inputs.split-monitor-workspaces.packages.${pkgs.stdenv.hostPlatform.system}.split-monitor-workspaces
+      # inputs.split-monitor-workspaces.packages.${pkgs.stdenv.hostPlatform.system}.split-monitor-workspaces
     ];
   };
   # Let HM manage portals; add GTK for Print/FileChooser
@@ -23,6 +32,9 @@
     "magnify"
     ]
   '';
+
+  xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
+    inputs.split-monitor-workspaces + "/lua";
 
   # Additional launcher commands
   xdg.desktopEntries = {
@@ -53,7 +65,11 @@
     };
   };
 
-  imports = [ ./waybar.nix ./config.nix ./kanshi.nix ];
+  imports = [
+    ./waybar.nix
+    ./config.nix
+    ./kanshi.nix
+  ];
 
   # utilities
   home.packages = with pkgs; [
@@ -128,11 +144,13 @@
         no_fade_in = false;
       };
 
-      background = lib.mkForce [{
-        path = "screenshot";
-        blur_passes = 3;
-        blur_size = 8;
-      }];
+      background = lib.mkForce [
+        {
+          path = "screenshot";
+          blur_passes = 3;
+          blur_size = 8;
+        }
+      ];
     };
   };
 

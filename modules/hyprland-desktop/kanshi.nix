@@ -1,27 +1,37 @@
-{ config, lib, pkgs, userInfo, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  userInfo,
+  ...
+}:
 let
   hyprctl = lib.getExe' config.wayland.windowManager.hyprland.package "hyprctl";
-in {
+in
+{
   # Kanshi: Monitor configuration
   # Configuration is done together with hyprland (otherwise mirroring does not work)
   # - in hyprland, I set screen properties
   # - in here, I set which screens are on or off
   services.kanshi = {
-    enable = true;
+    # TODO
+    # enable = true;
+    enable = false;
     systemdTarget = "hyprland-session.target";
 
     settings = [
       {
         profile.name = "undocked";
-        profile.outputs = [{
-          criteria = "eDP-1";
-          status = "enable";
-          # scale = 1.25;
-          # adaptiveSync = true;
-          # position = "0,0";
-        }];
-        profile.exec =
-          "${pkgs.coreutils}/bin/sleep 1 && ${hyprctl} dispatch split-grabroguewindows";
+        profile.outputs = [
+          {
+            criteria = "eDP-1";
+            status = "enable";
+            # scale = 1.25;
+            # adaptiveSync = true;
+            # position = "0,0";
+          }
+        ];
+        profile.exec = "${pkgs.coreutils}/bin/sleep 1 && ${hyprctl} dispatch split-grabroguewindows";
       }
       {
         profile.name = "home";

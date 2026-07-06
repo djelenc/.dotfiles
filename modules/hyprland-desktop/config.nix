@@ -75,16 +75,23 @@ in
       "${inputs.pyprland.packages.${pkgs.stdenv.hostPlatform.system}.pyprland}/bin/pypr"
     ];
 
+    #   # DOMA
+    #   "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-center-up, 1"
+    #   "desc:Philips Consumer Electronics Company 231PQPY UHB1430018671, preferred, auto-center-right, 1, transform, 1"
+
     monitor = [
-      # name, resolution, position, scale
-      "eDP-1, preferred, auto, 1.25, vrr, 1"
-      "desc:AOC Q27P1B GNXL7HA167657, preferred, auto-center-up, 1"
-      "desc:Philips Consumer Electronics Company 231PQPY UHB1430018671, preferred, auto-center-right, 1, transform, 1"
-      "desc:AOC Q27P1B GNXL7HA167593, preferred, auto-center-left, 1"
-      "desc:Dell Inc. DELL U2412M 0FFXD4136Y1L, preferred, auto-center-right, 1, transform, 1"
-      # Philips Consumer Electronics Company 231PQPY UHB1430018671
+      # Laptop: below AOC, centered under it.
+      # Adjust 512 if it is not visually centered.
+      "eDP-1, preferred, 512x1440, 1.25, vrr, 1"
+
+      # AOC: main anchor, top-left of layout.
+      "desc:AOC Q27P1B GNXL7HA167593, preferred, 0x0, 1"
+
+      # Philips: to the right of AOC, rotated.
+      "desc:Dell Inc. DELL U2412M 0FFXD4136Y1L, preferred, 2560x0, 1, transform, 1"
+
+      # Fallback/mirror
       ", preferred, auto, 1, mirror, eDP-1"
-      # Deciding which screens are turned on/off is done with kanshi
     ];
 
     # Workaround for missing cursors on other monitors
@@ -197,8 +204,9 @@ in
       "$mainMod SHIFT, k, exec, ${hyprland-move-up}/bin/hyprland-move-up"
       "$mainMod SHIFT, h, movewindow, l"
       "$mainMod SHIFT, l, movewindow, r"
-      "$mainMod SHIFT, n, split-changemonitor, next"
-      "$mainMod SHIFT, p, split-changemonitor, prev"
+      # TODO
+      # "$mainMod SHIFT, n, split-changemonitor, next"
+      # "$mainMod SHIFT, p, split-changemonitor, prev"
 
       # TODO: should be MRU not cycling
       # TODO: should include apps on all monitors
@@ -273,14 +281,14 @@ in
 
   };
 
-  wayland.windowManager.hyprland.extraConfig = ''
-    plugin {
-      split-monitor-workspaces {
-        count = 5
-        keep_focused = 1
-        enable_notifications = 0
-        enable_persistent-workspaces = 1
-      }
-    }
-  '';
+  # wayland.windowManager.hyprland.extraConfig = ''
+  #   plugin {
+  #     split-monitor-workspaces {
+  #       count = 5
+  #       keep_focused = 1
+  #       enable_notifications = 0
+  #       enable_persistent-workspaces = 1
+  #     }
+  #   }
+  # '';
 }

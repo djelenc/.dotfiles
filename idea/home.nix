@@ -130,7 +130,7 @@ rec {
 
   # GTK and QT config
   gtk.enable = true;
-  gtk.gtk4.theme = null;
+  # gtk.gtk4.theme = null;
   # gtk.gtk4.theme = config.gtk.theme;
 
   qt = {
