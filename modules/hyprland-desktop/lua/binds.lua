@@ -3,6 +3,21 @@
 local mainMod = "SUPER"
 local smw = require("split_monitor_workspaces")
 
+local function move_to_linked_workspace(relative)
+  return function()
+    -- Avoid smw.move_to_workspace("+/-1") with link_monitors=true: that follows
+    -- the moved window first and then resolves the relative target once more on
+    -- the now-changed active monitor. A silent move followed by one linked cycle
+    -- preserves the intended old behavior.
+    smw.move_to_workspace_silent(relative)()
+    if relative:sub(1, 1) == "-" then
+      smw.cycle_workspaces("prev")()
+    else
+      smw.cycle_workspaces("next")()
+    end
+  end
+end
+
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("alacritty"))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
@@ -34,8 +49,8 @@ hl.bind(mainMod .. " + CONTROL + j", smw.cycle_workspaces("next"))
 hl.bind(mainMod .. " + CONTROL + k", smw.cycle_workspaces("prev"))
 
 -- Move active window to the next/previous linked workspace and follow it.
-hl.bind(mainMod .. " + SHIFT + j", smw.move_to_workspace("+1"))
-hl.bind(mainMod .. " + SHIFT + k", smw.move_to_workspace("-1"))
+hl.bind(mainMod .. " + SHIFT + j", move_to_linked_workspace("+1"))
+hl.bind(mainMod .. " + SHIFT + k", move_to_linked_workspace("-1"))
 
 -- Move windows between adjacent tiled positions / monitors.
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
