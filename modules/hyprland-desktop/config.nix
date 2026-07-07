@@ -143,16 +143,35 @@ in
         vrr = 1;
       }
 
-      # AOC: main anchor, top-left of layout.
+      # @ Home
       {
+        # AOC: main anchor, top-left of layout.
+        output = "desc:AOC Q27P1B GNXL7HA167657";
+        mode = "preferred";
+        position = "0x0";
+        scale = 1;
+      }
+
+      {
+        # Phillips: to the right of AOC, rotated.
+        output = "desc:Philips Consumer Electronics Company 231PQPY UHB1430018671";
+        mode = "preferred";
+        position = "2560x0";
+        scale = 1;
+        transform = 1;
+      }
+
+      # @ FRI
+      {
+        # AOC: main anchor, top-left of layout.
         output = "desc:AOC Q27P1B GNXL7HA167593";
         mode = "preferred";
         position = "0x0";
         scale = 1;
       }
 
-      # Dell: to the right of AOC, rotated.
       {
+        # Dell: to the right of AOC, rotated.
         output = "desc:Dell Inc. DELL U2412M 0FFXD4136Y1L";
         mode = "preferred";
         position = "2560x0";
