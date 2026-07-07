@@ -33,12 +33,6 @@
     # split-monitor-workspaces is now a Lua package, not a compiled Hyprland plugin.
     plugins = [ ];
   };
-  # Let HM manage portals; add GTK for Print/FileChooser
-  # xdg.portal.enable = true;
-  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-
-  # Helps GTK apps prefer portals on Wayland
-  home.sessionVariables.GTK_USE_PORTAL = "1";
 
   # pyprland -- hyprland extensions
   xdg.configFile."pypr/config.toml".text = ''
