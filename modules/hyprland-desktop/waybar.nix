@@ -34,7 +34,7 @@
         on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         all-outputs = false;
         warp-on-scroll = true;
-        on-click = "activate";
+        # on-click = "activate";
         format-icons = {
           urgent = "⧈";
           active = "▣";

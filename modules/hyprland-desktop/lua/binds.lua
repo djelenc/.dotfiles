@@ -56,6 +56,10 @@ hl.bind(mainMod .. " + SHIFT + k", move_to_linked_workspace("-1"))
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
 
+-- Move active window to next/previous monitor.
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.window.move({ monitor = "+1" }))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.window.move({ monitor = "-1" }))
+
 -- Direct workspace selection. Because link_monitors is enabled, every monitor switches to
 -- the corresponding workspace in its own monitor-specific range.
 for i = 1, smw.get_amount_of_workspaces() do
