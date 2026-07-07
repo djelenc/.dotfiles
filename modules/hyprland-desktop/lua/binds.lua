@@ -1,6 +1,7 @@
 -- Key and mouse bindings migrated from the old hyprlang bind lists.
 
 local mainMod = "SUPER"
+local smw = require("split_monitor_workspaces")
 
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("alacritty"))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
@@ -28,15 +29,26 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
--- Paired monitor/workspace navigation. These scripts still dispatch split-monitor-workspaces commands,
--- so they are useful again only when the plugin is re-enabled.
-hl.bind(mainMod .. " + CONTROL + j", hl.dsp.exec_cmd("hyprland-switch-down"))
-hl.bind(mainMod .. " + CONTROL + k", hl.dsp.exec_cmd("hyprland-switch-up"))
-hl.bind(mainMod .. " + SHIFT + j", hl.dsp.exec_cmd("hyprland-move-down"))
-hl.bind(mainMod .. " + SHIFT + k", hl.dsp.exec_cmd("hyprland-move-up"))
+-- GNOME-style linked workspace navigation across all monitors.
+hl.bind(mainMod .. " + CONTROL + j", smw.cycle_workspaces("next"))
+hl.bind(mainMod .. " + CONTROL + k", smw.cycle_workspaces("prev"))
 
+-- Move active window to the next/previous linked workspace and follow it.
+hl.bind(mainMod .. " + SHIFT + j", smw.move_to_workspace("+1"))
+hl.bind(mainMod .. " + SHIFT + k", smw.move_to_workspace("-1"))
+
+-- Move windows between adjacent tiled positions / monitors.
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
+
+-- Direct workspace selection. Because link_monitors is enabled, every monitor switches to
+-- the corresponding workspace in its own monitor-specific range.
+for i = 1, smw.get_amount_of_workspaces() do
+  local n = tostring(i)
+  if n == "10" then n = "0" end
+  hl.bind(mainMod .. " + " .. n, smw.workspace(n))
+  hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
+end
 
 -- TODO: should be MRU and include apps on all monitors.
 hl.bind(mainMod .. " + Tab", function()
