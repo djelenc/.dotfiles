@@ -1,8 +1,15 @@
-{ config, lib, pkgs, userInfo, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  userInfo,
+  ...
+}:
 let
   # mbsync with explicit XOATH2 support
   # https://github.com/NixOS/nixpkgs/issues/108480#issuecomment-1115108802
-  isync-oauth2 = with pkgs;
+  isync-oauth2 =
+    with pkgs;
     buildEnv {
       name = "isync-oauth2";
       paths = [ isync ];
@@ -13,10 +20,10 @@ let
           --prefix SASL_PATH : "${cyrus_sasl}/lib/sasl2:${cyrus-sasl-xoauth2}/lib/sasl2"
       '';
     };
-in {
+in
+{
   # links doom config; has to be absolute, otherwise it becomes read-only
-  home.file.".doom.d".source =
-    config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles + /doom-emacs;
+  home.file.".doom.d".source = config.lib.file.mkOutOfStoreSymlink userInfo.dotFiles + /doom-emacs;
 
   home.packages = with pkgs; [
     # doom emacs utils
@@ -48,7 +55,14 @@ in {
     (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
 
     # dictionaries
-    (aspellWithDicts (dicts: with dicts; [ sl en en-computers en-science ]))
+    (aspellWithDicts (
+      dicts: with dicts; [
+        sl
+        en
+        en-computers
+        en-science
+      ]
+    ))
 
     # Java IDE
     jdt-language-server
@@ -63,7 +77,7 @@ in {
     emacs = {
       enable = true;
       package = pkgs.emacs30-pgtk; # supports fractional scaling
-      extraPackages = (epkgs: [ pkgs.mu.mu4e epkgs.mu4e ]);
+      extraPackages = (epkgs: [ pkgs.mu.mu4e ]);
       overrides = self: super: { org = self.elpaPackages.org; };
     };
 
@@ -85,8 +99,7 @@ in {
       name = "Org Protocol";
       genericName = "Org capture via org-protocol";
       comment = "Handle org-protocol URLs";
-      exec =
-        "env ALTERNATE_EDITOR= GDK_BACKEND=wayland ${pkgs.emacs}/bin/emacsclient -c %u";
+      exec = "env ALTERNATE_EDITOR= GDK_BACKEND=wayland ${pkgs.emacs}/bin/emacsclient -c %u";
       terminal = false;
       categories = [ "Office" ];
       type = "Application";
@@ -100,8 +113,10 @@ in {
   };
 
   # required for org protocol
-  systemd.user.services.emacs.Service.Environment =
-    [ "XDG_SESSION_TYPE=wayland" "GDK_BACKEND=wayland" ];
+  systemd.user.services.emacs.Service.Environment = [
+    "XDG_SESSION_TYPE=wayland"
+    "GDK_BACKEND=wayland"
+  ];
 
   accounts.email = {
 

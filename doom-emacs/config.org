@@ -296,8 +296,6 @@ Used in reveal.js.
 * Mu4e
 #+begin_src emacs-lisp
 (after! mu4e
-  (require 'mu4e-compat)
-  (mu4e-compat-define-aliases-backwards)
   (require 'mu4e-org)
   (add-to-list 'mm-discouraged-alternatives "text/html")
   (add-to-list 'mm-discouraged-alternatives "text/richtext")

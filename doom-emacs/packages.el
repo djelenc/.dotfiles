@@ -54,7 +54,6 @@
 (package! org-ql)
 (package! org-reveal)
 (package! ox-reveal)
-(package! mu4e-compat :recipe (:host github :repo "tecosaur/mu4e-compat")) ;;  because org-mode composing in mu4e is weird
 (package! mu4e-alert :disable t)
 (package! citeproc)
 (package! gptel :recipe (:nonrecursive t))
