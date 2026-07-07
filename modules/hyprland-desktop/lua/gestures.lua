@@ -1,38 +1,29 @@
--- Trackpad gestures migrated from the old gesture list.
--- The SUPER split-cycle gestures are intentionally disabled while split-monitor-workspaces is disabled.
+-- Trackpad gestures for linked split-monitor-workspaces.
+
+local smw = require("split_monitor_workspaces")
 
 hl.gesture({
   fingers = 3,
   direction = "down",
-  action = function()
-    hl.dispatch(hl.dsp.exec_cmd("hyprland-switch-up"))
-  end,
+  action = smw.cycle_workspaces("prev"),
 })
 
 hl.gesture({
   fingers = 3,
   direction = "up",
-  action = function()
-    hl.dispatch(hl.dsp.exec_cmd("hyprland-switch-down"))
-  end,
+  action = smw.cycle_workspaces("next"),
 })
 
--- Disabled together with split-monitor-workspaces:
---
--- hl.gesture({
---   fingers = 3,
---   direction = "down",
---   mods = "SUPER",
---   action = function()
---     hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch split-cycleworkspaces prev"))
---   end,
--- })
---
--- hl.gesture({
---   fingers = 3,
---   direction = "up",
---   mods = "SUPER",
---   action = function()
---     hl.dispatch(hl.dsp.exec_cmd("hyprctl dispatch split-cycleworkspaces next"))
---   end,
--- })
+hl.gesture({
+  fingers = 3,
+  direction = "down",
+  mods = "SUPER",
+  action = smw.cycle_workspaces("prev"),
+})
+
+hl.gesture({
+  fingers = 3,
+  direction = "up",
+  mods = "SUPER",
+  action = smw.cycle_workspaces("next"),
+})
