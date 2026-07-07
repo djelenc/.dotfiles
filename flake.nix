@@ -20,7 +20,7 @@
     };
 
     nixvim.url = "github:nix-community/nixvim";
-    nixvim.inputs.nixpkgs.follows = "nixpkgs";
+    # nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     xremap-flake.url = "github:xremap/nix-flake";
 
