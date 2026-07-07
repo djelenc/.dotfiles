@@ -1,9 +1,9 @@
 -- GNOME-style linked workspaces across all monitors via split-monitor-workspaces.
 -- The package is symlinked to ~/.config/hypr/plugins/split-monitor-workspaces by Home Manager.
 
-package.path = package.path .. ";./plugins/split-monitor-workspaces/?.lua"
+package.path = package.path .. ";./?.lua;./?/init.lua"
 
-local smw = require("split-monitor-workspaces")
+local smw = require("plugins.split-monitor-workspaces.split-monitor-workspaces")
 
 smw.setup({
   -- Five user-facing workspaces; every monitor receives its own backing range.
