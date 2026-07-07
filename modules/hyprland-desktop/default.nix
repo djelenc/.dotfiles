@@ -17,14 +17,14 @@
     extraLuaFiles = {
       animations = ./lua/animations.lua;
       startup = ./lua/startup.lua;
+      split_monitor_workspaces = ./lua/split_monitor_workspaces.lua;
       binds = ./lua/binds.lua;
       gestures = ./lua/gestures.lua;
       window_rules = ./lua/window_rules.lua;
     };
 
-    plugins = [
-      # inputs.split-monitor-workspaces.packages.${pkgs.stdenv.hostPlatform.system}.split-monitor-workspaces
-    ];
+    # split-monitor-workspaces is now a Lua package, not a compiled Hyprland plugin.
+    plugins = [ ];
   };
   # Let HM manage portals; add GTK for Print/FileChooser
   xdg.portal.enable = true;
@@ -41,9 +41,8 @@
     ]
   '';
 
-  # Temporarily disabled together with the split-monitor-workspaces plugin.
-  # xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
-  #   inputs.split-monitor-workspaces + "/lua";
+  xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
+    inputs.split-monitor-workspaces + "/lua";
 
   # Additional launcher commands
   xdg.desktopEntries = {
