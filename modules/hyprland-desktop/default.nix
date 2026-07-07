@@ -34,10 +34,10 @@
   home.sessionVariables.GTK_USE_PORTAL = "1";
 
   # pyprland -- hyprland extensions
-  xdg.configFile."hypr/pyprland.toml".text = ''
+  xdg.configFile."pypr/config.toml".text = ''
     [pyprland]
     plugins = [
-    "magnify"
+      "magnify"
     ]
   '';
 
