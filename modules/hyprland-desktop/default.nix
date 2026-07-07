@@ -9,9 +9,16 @@
 {
   wayland.windowManager.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+
+    # Use the Hyprland/XDPH packages from the NixOS module.
+    package = null;
+    portalPackage = null;
+
     xwayland.enable = true;
-    systemd.enable = true;
+    systemd = {
+      enable = true;
+      variables = [ "--all" ];
+    };
     configType = "lua";
 
     extraLuaFiles = {
@@ -27,8 +34,8 @@
     plugins = [ ];
   };
   # Let HM manage portals; add GTK for Print/FileChooser
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  # xdg.portal.enable = true;
+  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   # Helps GTK apps prefer portals on Wayland
   home.sessionVariables.GTK_USE_PORTAL = "1";
@@ -102,6 +109,8 @@
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
     # kdePackages.xwaylandvideobridge # to make screensharing work
+    qt5.qtwayland
+    qt6.qtwayland
     inputs.pyprland.packages.${pkgs.stdenv.hostPlatform.system}.pyprland # pyprland plugins
   ];
 
