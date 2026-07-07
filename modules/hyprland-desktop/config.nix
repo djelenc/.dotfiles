@@ -1,68 +1,8 @@
 {
   lib,
-  pkgs,
   ...
 }:
-let
-  # switch one workspace down on all monitors
-  hyprland-switch-down = pkgs.writeShellScriptBin "hyprland-switch-down" ''
-    num_monitors=$(hyprctl monitors | grep -c "ID")
-
-    cmds=""
-    for ((i = 1; i <= num_monitors; i++)); do
-        cmds+="dispatch split-cycleworkspaces next; dispatch focusmonitor +1; "
-    done
-
-    hyprctl --batch "$cmds"
-  '';
-  # switch one workspace up on all monitors
-  hyprland-switch-up = pkgs.writeShellScriptBin "hyprland-switch-up" ''
-    num_monitors=$(hyprctl monitors | grep -c "ID")
-
-    cmds=""
-    for ((i = 1; i <= num_monitors; i++)); do
-        cmds+="dispatch split-cycleworkspaces prev; dispatch focusmonitor +1; "
-    done
-
-    hyprctl --batch "$cmds"
-  '';
-  # move window one workespace down and switch all workspace one down
-  hyprland-move-down = pkgs.writeShellScriptBin "hyprland-move-down" ''
-    num_monitors=$(hyprctl monitors | grep -c "ID")
-
-    # move
-    cmds="dispatch split-movetoworkspacesilent +1; "
-
-    # switch
-    for ((i = 1; i <= num_monitors; i++)); do
-        cmds+="dispatch split-cycleworkspaces next; dispatch focusmonitor +1; "
-    done
-
-    hyprctl --batch "$cmds"
-  '';
-  # move window one workespace up and switch all workspace one up
-  hyprland-move-up = pkgs.writeShellScriptBin "hyprland-move-up" ''
-    num_monitors=$(hyprctl monitors | grep -c "ID")
-
-    # move
-    cmds="dispatch split-movetoworkspacesilent -1; "
-
-    # switch
-    for ((i = 1; i <= num_monitors; i++)); do
-        cmds+="dispatch split-cycleworkspaces prev; dispatch focusmonitor +1; "
-    done
-
-    hyprctl --batch "$cmds"
-  '';
-in
 {
-  home.packages = [
-    hyprland-switch-down
-    hyprland-switch-up
-    hyprland-move-down
-    hyprland-move-up
-  ];
-
   # Static Hyprland options that map cleanly through Home Manager's Lua generator.
   # Dynamic/runtime pieces live in ./lua/*.lua and are loaded through extraLuaFiles.
   wayland.windowManager.hyprland.settings = {
