@@ -5,15 +5,26 @@ local smw = require("split_monitor_workspaces")
 
 local function move_to_linked_workspace(relative)
   return function()
+    local win = hl.get_active_window()
+    if not win then
+      return
+    end
+
     -- Avoid smw.move_to_workspace("+/-1") with link_monitors=true: that follows
     -- the moved window first and then resolves the relative target once more on
     -- the now-changed active monitor. A silent move followed by one linked cycle
     -- preserves the intended old behavior.
     smw.move_to_workspace_silent(relative)()
+
     if relative:sub(1, 1) == "-" then
       smw.cycle_workspaces("prev")()
     else
       smw.cycle_workspaces("next")()
+    end
+
+    -- Restore focus to the window we moved.
+    if win.mapped then
+      hl.dispatch(hl.dsp.focus({ window = win }))
     end
   end
 end
