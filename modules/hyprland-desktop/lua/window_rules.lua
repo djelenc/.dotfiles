@@ -13,6 +13,7 @@ floating("float-nextcloud", { class = "^(com.nextcloud.desktopclient.nextcloud)$
 floating("float-blueman", { class = "blueman" })
 floating("float-vlc", { class = "^(vlc)$" })
 floating("float-keepassxc", { class = "^(org.keepassxc.KeePassXC)$" })
+floating("zoom", { initial_class = "^(zoom)$" })
 
 -- Dialogs.
 floating("float-all-files-dialog", { initial_title = "(All Files)" })

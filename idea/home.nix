@@ -43,6 +43,19 @@ rec {
     nextcloud-client # remote file sync and backup
     teams-for-linux
 
+    # zoom -- scaled to 1.25
+    (pkgs.symlinkJoin {
+      name = "zoom-us-scaled";
+      paths = [ pkgs.zoom-us ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+
+      postBuild = ''
+        wrapProgram $out/bin/zoom \
+          --set QT_SCALE_FACTOR 1.25 \
+          --set QT_AUTO_SCREEN_SCALE_FACTOR 0
+      '';
+    })
+
     python3
     jetbrains.pycharm # python ide
     jetbrains.idea # java ide
