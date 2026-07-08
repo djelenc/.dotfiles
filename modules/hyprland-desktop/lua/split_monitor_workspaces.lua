@@ -123,4 +123,81 @@ hl.on("monitor.removed", function(monitor)
   schedule_evacuate(range)
 end)
 
+-- Monitor-connect cleanup:
+-- when a new monitor is connected, make it show the workspace that corresponds
+-- to the currently visible primary-monitor workspace slot.
+--
+-- Example:
+--   primary on 3, monitor 2 added -> monitor 2 shows 8
+--   primary on 3, monitor 3 added -> monitor 3 shows 13
+local connect_sync_scheduled = false
+
+local function get_primary_monitor()
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if helpers.calc_base_index(monitor.name) == 0 then
+      return monitor
+    end
+  end
+
+  return nil
+end
+
+local function workspace_slot_on_primary()
+  local primary = get_primary_monitor()
+  if not primary then
+    return nil
+  end
+
+  local ws = hl.get_active_workspace(primary)
+  local ws_id = ws and ws.id
+
+  if not ws_id then
+    return nil
+  end
+
+  -- Only sync from the primary monitor's own workspace range.
+  -- In your setup this means 1-5.
+  if ws_id < 1 or ws_id > primary_workspace_count then
+    return nil
+  end
+
+  return ws_id
+end
+
+local function sync_monitor_to_primary_slot(monitor)
+  if not monitor or not monitor.name then
+    return
+  end
+
+  local base = helpers.calc_base_index(monitor.name)
+
+  -- Do not sync the primary monitor to itself.
+  if not base or base < primary_workspace_count then
+    return
+  end
+
+  local slot = workspace_slot_on_primary()
+  if not slot then
+    return
+  end
+
+  local target_workspace = base + slot
+
+  monitor:set_workspace({ workspace = tostring(target_workspace) })
+
+  print(string.format(
+    "[split-monitor-workspaces] synced monitor %s to workspace %d",
+    monitor.name,
+    target_workspace
+  ))
+end
+
+hl.on("monitor.added", function(monitor)
+  -- Delay so split-monitor-workspaces can first map the monitor and create/move
+  -- its workspace range. This also avoids racing with persistent workspace setup.
+  hl.timer(function()
+    sync_monitor_to_primary_slot(monitor)
+  end, { timeout = 500, type = "oneshot" })
+end)
+
 return smw
