@@ -1,4 +1,11 @@
-{ config, lib, pkgs, userInfo, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  userInfo,
+  ...
+}:
+{
   stylix = {
     enable = true;
     autoEnable = true;

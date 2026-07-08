@@ -20,20 +20,7 @@ rec {
   home.stateVersion = "23.11";
 
   # browses the webs
-  programs.brave = {
-    enable = true;
-    # commandLineArgs = [
-    #   "--ozone-platform=wayland"
-    #   "--use-gl=angle"
-    #   "--use-angle=gl"
-    #   "--enable-gpu-compositing"
-    #   "--enable-gpu-rasterization"
-    #   "--enable-hardware-overlays"
-    #   "--enable-native-gpu-memory-buffers"
-    #   "--ignore-gpu-blocklist"
-    #   "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,VaapiIgnoreDriverChecks"
-    # ];
-  };
+  programs.brave.enable = true;
 
   home.packages = with pkgs; [
     firefox # browses the webs
@@ -143,13 +130,13 @@ rec {
 
   # GTK and QT config
   gtk.enable = true;
-  # gtk.gtk4.theme = null;
-  # gtk.gtk4.theme = config.gtk.theme;
+  qt.enable = true;
 
-  qt = {
+  # Cursor generation is still sourced from stylix.cursor.
+  # These flags only make Home Manager generate the relevant cursor config explicitly.
+  home.pointerCursor = {
     enable = true;
-    # style.name = "adwaita-dark"; # "adwaita-dark";
-    # platformTheme.name = "adwaita";
+    hyprcursor.enable = true;
   };
 
   # virt-manager
