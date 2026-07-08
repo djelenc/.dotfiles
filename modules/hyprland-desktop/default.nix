@@ -25,7 +25,6 @@
       animations = ./lua/animations.lua;
       startup = ./lua/startup.lua;
       split_monitor_workspaces = ./lua/split_monitor_workspaces.lua;
-      workspace_evacuate = ./lua/workspace_evacuate.lua;
       binds = ./lua/binds.lua;
       gestures = ./lua/gestures.lua;
       window_rules = ./lua/window_rules.lua;
