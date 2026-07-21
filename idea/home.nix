@@ -90,7 +90,7 @@ rec {
     nixfmt
 
     # latex, pandoc, publishing
-    texlive.combined.scheme-full
+    texliveFull
     ghostscript
     pandoc
     haskellPackages.pandoc-crossref
