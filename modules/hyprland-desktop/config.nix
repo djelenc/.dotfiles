@@ -11,11 +11,6 @@
         force_zero_scaling = true;
       };
 
-      # Workaround for missing cursors on other monitors
-      cursor = {
-        no_hardware_cursors = true;
-      };
-
       input = {
         kb_layout = "us,si";
         kb_options = "grp:win_space_toggle";
