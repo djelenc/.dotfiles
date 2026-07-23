@@ -2,6 +2,60 @@ package.path = package.path .. ";./?.lua;./?/init.lua"
 
 local smw = require("plugins.split-monitor-workspaces.split-monitor-workspaces")
 local helpers = require("plugins.split-monitor-workspaces.helpers")
+local globals = require("plugins.split-monitor-workspaces.globals")
+
+-- split-monitor-workspaces keeps configured monitor priorities in memory after
+-- those monitors disconnect. Before SMW handles a newly added monitor or a
+-- config reload, remove entries for monitors that are no longer connected so
+-- they cannot inflate the next monitor's workspace base index.
+local function prune_disconnected_monitor_state(added_monitor)
+  local connected = {}
+
+  for _, monitor in ipairs(hl.get_monitors()) do
+    connected[monitor.name] = true
+  end
+
+  -- Be defensive in case monitor.added fires before hl.get_monitors() includes
+  -- the newly added monitor.
+  if added_monitor and added_monitor.name then
+    connected[added_monitor.name] = true
+  end
+
+  local removed = 0
+
+  for monitor_name, _ in pairs(globals.monitor_priorities) do
+    if not connected[monitor_name] then
+      globals.monitor_priorities[monitor_name] = nil
+      removed = removed + 1
+    end
+  end
+
+  for monitor_name, _ in pairs(globals.monitor_max_ws_override) do
+    if not connected[monitor_name] then
+      globals.monitor_max_ws_override[monitor_name] = nil
+    end
+  end
+
+  if removed > 0 then
+    print(string.format(
+      "[split-monitor-workspaces] pruned %d disconnected monitor priority entr%s",
+      removed,
+      removed == 1 and "y" or "ies"
+    ))
+  end
+end
+
+-- These handlers must be registered before smw.setup(), because SMW registers
+-- its own monitor.added and config.reloaded handlers there. Hyprland executes
+-- Lua event callbacks in registration order, so stale priorities are removed
+-- before SMW calculates workspace ranges.
+hl.on("monitor.added", function(monitor)
+  prune_disconnected_monitor_state(monitor)
+end)
+
+hl.on("config.reloaded", function()
+  prune_disconnected_monitor_state()
+end)
 
 smw.setup({
   workspace_count = 5,
