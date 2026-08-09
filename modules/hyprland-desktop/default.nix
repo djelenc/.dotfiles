@@ -42,8 +42,17 @@
     ]
   '';
 
+  # Hyprland 0.56 changed HLMonitor:set_workspace() from a table argument
+  # ({ workspace = target }) to a workspace selector/object directly. Patch the
+  # Lua plugin until split-monitor-workspaces adopts the new API upstream.
   xdg.configFile."hypr/plugins/split-monitor-workspaces".source =
-    inputs.split-monitor-workspaces + "/lua";
+    pkgs.runCommand "split-monitor-workspaces-hyprland-0.56" { } ''
+      cp -R ${inputs.split-monitor-workspaces}/lua "$out"
+      chmod -R u+w "$out"
+      substituteInPlace "$out/dispatchers.lua" \
+        --replace-fail 'monitor:set_workspace({ workspace = target_workspace })' 'monitor:set_workspace(target_workspace)' \
+        --replace-fail 'monitor:set_workspace({ workspace = target })' 'monitor:set_workspace(target)'
+    '';
 
   # Additional launcher commands
   xdg.desktopEntries = {
