@@ -80,6 +80,7 @@ rec {
     vlc # videos
     obs-studio # video taking
     zotero # ref management
+    gramps
 
     # music
     audacious
