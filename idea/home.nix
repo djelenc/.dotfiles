@@ -47,7 +47,7 @@ rec {
     jetbrains.pycharm # python ide
     jetbrains.idea # java ide
     android-studio # ide android dev
-    genymotion # android emulator
+    # genymotion # android emulator
     maven # java DM
     vscodium.fhs # general editor
     meld # diff/merger
@@ -61,7 +61,7 @@ rec {
     gnumake
 
     # screen recorder
-    (import ../scripts/wf-recorder.nix { inherit pkgs; })
+    # (import ../scripts/wf-recorder.nix { inherit pkgs; })
 
     # SQL related
     postgresql # psql client, server is not started
