@@ -267,7 +267,8 @@ local function sync_monitor_to_primary_slot(monitor)
 
   local target_workspace = base + slot
 
-  monitor:set_workspace(tostring(target_workspace))
+  -- monitor:set_workspace(tostring(target_workspace))
+  monitor:set_workspace({ workspace = tostring(target_workspace) })
 
   print(string.format(
     "[split-monitor-workspaces] synced monitor %s to workspace %d",
