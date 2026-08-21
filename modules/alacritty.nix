@@ -1,4 +1,10 @@
-{ inputs, pkgs, lib, ... }: {
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
+{
   # https://hugoreeves.com/posts/2019/nix-home/
   programs.alacritty = {
     enable = true;
@@ -12,11 +18,23 @@
         dynamic_padding = true;
       };
 
-      env = { TERM = "xterm-256color"; };
+      env = {
+        TERM = "xterm-256color";
+      };
 
       scrolling.history = 100000;
       selection.save_to_clipboard = true;
       colors.draw_bold_text_with_bright_colors = true;
+    };
+  };
+
+  xdg.terminal-exec = {
+    enable = true;
+
+    settings = {
+      default = [
+        "Alacritty.desktop"
+      ];
     };
   };
 }

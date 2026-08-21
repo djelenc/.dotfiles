@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   marginaltoolSrc = pkgs.fetchgit {
@@ -8,19 +13,28 @@ let
   };
 
   # Python interpreter with the modules marginaltool imports
-  marginaltoolPython =
-    pkgs.python3.withPackages (ps: with ps; [ ps.requests ps.tkinter ]);
+  marginaltoolPython = pkgs.python3.withPackages (
+    ps: with ps; [
+      ps.requests
+      ps.tkinter
+    ]
+  );
 
   # Wrapper so "marginaltool" is a normal command in PATH
   marginaltool = pkgs.writeShellScriptBin "marginaltool" ''
     exec ${marginaltoolPython}/bin/python3 \
       ${marginaltoolSrc}/marginaltool "$@"
   '';
-in {
+in
+{
   # 1) Make the command available
-  home.packages = [ marginaltool pkgs.openssl pkgs.opensc ];
+  home.packages = [
+    marginaltool
+    pkgs.openssl
+    pkgs.opensc
+  ];
 
-  # 2) Install the .desktop file 
+  # 2) Install the .desktop file
   xdg.desktopEntries.marginaltool = {
     name = "marginaltool";
     exec = "marginaltool %u";
@@ -32,6 +46,11 @@ in {
   # 3) Set marginaltool as default handler for bc-digsign URLs
   xdg.mimeApps = {
     enable = true;
+
+    associations.added = {
+      "x-scheme-handler/bc-digsign" = [ "marginaltool.desktop" ];
+    };
+
     defaultApplications = {
       "x-scheme-handler/bc-digsign" = [ "marginaltool.desktop" ];
     };
