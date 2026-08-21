@@ -11,7 +11,7 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=91f29f23bb691462f8aa6171b964069aebc37910";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     pyprland.url = "github:hyprland-community/pyprland";
 
     split-monitor-workspaces = {
