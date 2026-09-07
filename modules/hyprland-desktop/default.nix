@@ -14,15 +14,18 @@ let
       pkgs.procps
     ];
     text = ''
+      fuzzel_processes='fuzzel|[.]fuzzel-wrapped'
+      waybar_processes='waybar|[.]waybar-wrapped'
+
       hide_waybar() {
-        pkill --signal USR2 --exact waybar 2>/dev/null || true
+        pkill --signal USR2 --exact "$waybar_processes" 2>/dev/null || true
       }
 
-      if pgrep --exact fuzzel >/dev/null; then
+      if pgrep --exact "$fuzzel_processes" >/dev/null; then
         hide_waybar
-        pkill --exact fuzzel || true
+        pkill --exact "$fuzzel_processes" || true
       else
-        pkill --signal USR1 --exact waybar 2>/dev/null || true
+        pkill --signal USR1 --exact "$waybar_processes" 2>/dev/null || true
         trap hide_waybar EXIT
         fuzzel
       fi
