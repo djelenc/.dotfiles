@@ -6,6 +6,29 @@
   config,
   ...
 }:
+let
+  fuzzel-with-waybar = pkgs.writeShellApplication {
+    name = "fuzzel-with-waybar";
+    runtimeInputs = [
+      pkgs.fuzzel
+      pkgs.procps
+    ];
+    text = ''
+      hide_waybar() {
+        pkill --signal USR2 --exact waybar 2>/dev/null || true
+      }
+
+      if pgrep --exact fuzzel >/dev/null; then
+        hide_waybar
+        pkill --exact fuzzel || true
+      else
+        pkill --signal USR1 --exact waybar 2>/dev/null || true
+        trap hide_waybar EXIT
+        fuzzel
+      fi
+    '';
+  };
+in
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -91,6 +114,7 @@
 
   # utilities
   home.packages = with pkgs; [
+    fuzzel-with-waybar
     networkmanagerapplet # network applet
     gnome-disk-utility # disks utility
     gsimplecal # calendar applet
