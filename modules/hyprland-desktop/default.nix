@@ -103,6 +103,7 @@
     libnotify # notifications
     wl-clipboard # fix clipboard
     cliphist
+    hyprshot # screen shots
     slurp # screen shots
     grim # screen shots
     qimgv # images
@@ -116,6 +117,9 @@
     qt6.qtwayland
     inputs.pyprland.packages.${pkgs.stdenv.hostPlatform.system}.pyprland # pyprland plugins
   ];
+
+  home.sessionVariables.HYPRSHOT_DIR =
+    "${config.home.homeDirectory}/Pictures/Screenshots";
 
   # zathura (PDF reader)
   programs.zathura = {
