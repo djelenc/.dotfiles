@@ -94,6 +94,11 @@ hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("pypr zoom ++0.5"))
 hl.bind(mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd("pypr zoom"))
 
+-- Screenshots.
+hl.bind("Print", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprshot -m window"))
+
 -- Repeat while held.
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise"), { repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"), { repeating = true })
