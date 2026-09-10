@@ -76,7 +76,7 @@ in
   programs = {
     emacs = {
       enable = true;
-      package = pkgs.emacs30-pgtk; # supports fractional scaling
+      package = pkgs.emacs-pgtk; # supports fractional scaling
       extraPackages = (epkgs: [ pkgs.mu.mu4e ]);
       overrides = self: super: { org = self.elpaPackages.org; };
     };

@@ -8,10 +8,10 @@
 }:
 {
   # Persistent journal so the log survives reboots too
-  services.journald.extraConfig = ''
-    Storage=persistent
-    SystemMaxUse=2G
-  '';
+  services.journald.settings.Journal = {
+    Storage = "persistent";
+    SystemMaxUse = "2G";
+  };
   # NVMe APST issues: set to 0 if they return
   boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=500" ];
 
