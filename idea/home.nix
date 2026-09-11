@@ -93,6 +93,7 @@ rec {
     # latex, pandoc, publishing
     texliveFull
     ghostscript
+    poppler-utils
     pandoc
     haskellPackages.pandoc-crossref
     diff-pdf
