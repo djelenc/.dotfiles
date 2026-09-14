@@ -67,7 +67,7 @@ rec {
     postgresql # psql client, server is not started
     pgmodeler
     mariadb.client
-    mysql-workbench
+    # mysql-workbench
     (import ../scripts/cfc.nix { inherit pkgs; })
 
     caligula # burning utility
