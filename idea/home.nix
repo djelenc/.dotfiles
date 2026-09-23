@@ -59,6 +59,7 @@ rec {
     aider-chat-full
     teleport
     gnumake
+    httrack
 
     # screen recorder
     # (import ../scripts/wf-recorder.nix { inherit pkgs; })
