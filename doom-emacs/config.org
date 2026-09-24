@@ -1008,6 +1008,12 @@ Usually the default, but ensure it
   (unless (fboundp 'find-if) (defalias 'find-if #'cl-find-if))
   (unless (fboundp 'getf)    (defalias 'getf    #'cl-getf)))
 #+end_src
+** Set page scroll line number
+#+begin_src elisp
+(add-hook 'pdf-view-mode-hook
+          (lambda ()
+            (setq-local next-screen-context-lines 6)))
+#+end_src
 * Markdown paper authoring
 Hand-crafted (and GPT-assisted) bits that allows writing paper in Markdown, referencing bibtex bibliography and cross-referencing images, tables, equations and sections.
 # ** Citation helpers
