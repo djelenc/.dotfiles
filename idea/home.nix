@@ -60,6 +60,7 @@ rec {
     teleport
     gnumake
     httrack
+    freecad
 
     # screen recorder
     # (import ../scripts/wf-recorder.nix { inherit pkgs; })
