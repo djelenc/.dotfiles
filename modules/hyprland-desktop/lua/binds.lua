@@ -112,5 +112,5 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Lock on lid-open.
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
--- Execute on release.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
+-- Show and hide the launcher together with Waybar on Super release.
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("fuzzel-with-waybar"), { release = true })

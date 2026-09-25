@@ -11,9 +11,13 @@
   programs.waybar = {
     enable = true;
     settings.mainBar = {
-      layer = "top";
+      layer = "overlay";
       position = "top";
       height = 26;
+      exclusive = false;
+      start_hidden = true;
+      on-sigusr1 = "show";
+      on-sigusr2 = "hide";
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
