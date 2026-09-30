@@ -50,6 +50,8 @@ rec {
     # genymotion # android emulator
     maven # java DM
     vscodium.fhs # general editor
+    opencode # code agent: foss
+    codex # code agent: openai
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
