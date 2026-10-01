@@ -312,7 +312,8 @@ Used in reveal.js.
         mu4e-sent-messages-behavior 'delete
         mu4e-search-skip-duplicates nil ;; t
         mu4e-attachment-dir  "~/Downloads"
-        mu4e-get-mail-command "mbsync -a"
+        ;; mu4e-get-mail-command "mbsync -a"
+        mu4e-get-mail-command "mbsync-safe"
         mu4e-update-interval 60
 
         ;; debugging stuff

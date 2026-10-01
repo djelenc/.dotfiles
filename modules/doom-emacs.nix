@@ -53,6 +53,9 @@ in
     isync-oauth2
     oauth2ms
     (import ../scripts/maildir-timestamp-fix.nix { inherit pkgs; })
+    (import ../scripts/mbsync-safe.nix {
+      inherit pkgs isync-oauth2;
+    })
 
     # dictionaries
     (aspellWithDicts (
