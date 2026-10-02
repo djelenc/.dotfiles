@@ -7,16 +7,17 @@
 }:
 {
   nixpkgs.overlays = [
+    # zotero update fail: keep it working
     (
       final: prev:
       let
-        goodPkgs = import inputs.nixpkgs-electron-good {
+        zoteroPkgs = import inputs.nixpkgs-zotero-good {
           system = prev.stdenv.hostPlatform.system;
           config = prev.config;
         };
       in
       {
-        inherit (goodPkgs) electron_39 electron_39-unwrapped;
+        zotero = zoteroPkgs.zotero;
       }
     )
     # hallucinator for references

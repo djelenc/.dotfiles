@@ -52,17 +52,18 @@ rec {
     vscodium.fhs # general editor
     opencode # code agent: foss
     codex # code agent: openai
+    # aider-chat-full # llm pair programming
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
     zip
     unrar-wrapper # zipping and similar
     nvtopPackages.amd # gpu-top
-    aider-chat-full
     teleport
     gnumake
     httrack
     freecad
+    speedtest
 
     # screen recorder
     # (import ../scripts/wf-recorder.nix { inherit pkgs; })

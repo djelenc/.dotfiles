@@ -62,8 +62,6 @@ in
       dicts: with dicts; [
         sl
         en
-        en-computers
-        en-science
       ]
     ))
 
