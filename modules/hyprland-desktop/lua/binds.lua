@@ -80,7 +80,7 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- Windows-style MRU cycling for windows assigned to the active monitor.
+-- Windows-style MRU cycling on the active monitor's current workspace.
 -- Freeze the MRU order while Super is held, so repeated Tab presses walk one
 -- stable snapshot instead of immediately bouncing between the two newest windows.
 local mru_windows = nil
@@ -106,16 +106,12 @@ local function begin_mru_cycle()
     return
   end
 
-  -- "Current monitor" means all ordinary mapped windows assigned to this
-  -- monitor, not only windows on its currently visible workspace.
-  local windows = hl.get_windows({ monitor = monitor, mapped = true })
-  mru_windows = {}
-
-  for _, win in ipairs(windows) do
-    if win.workspace and not win.workspace.special then
-      table.insert(mru_windows, win)
-    end
+  if not monitor.active_workspace then
+    return
   end
+
+  -- Cycle only windows on the current workspace of the active monitor.
+  mru_windows = hl.get_workspace_windows(monitor.active_workspace)
 
   table.sort(mru_windows, function(a, b)
     return a.focus_history_id < b.focus_history_id
