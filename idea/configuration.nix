@@ -26,6 +26,12 @@
   # Use latest kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Compressed RAM swap
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
+
   # networking
   networking.hostName = "idea";
   networking.networkmanager.enable = true;
