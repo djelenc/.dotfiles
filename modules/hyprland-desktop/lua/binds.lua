@@ -80,11 +80,53 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- TODO: should be MRU and include apps on all monitors.
-hl.bind(mainMod .. " + Tab", function()
-  hl.dispatch(hl.dsp.window.cycle_next())
-  hl.dispatch(hl.dsp.window.bring_to_top())
-end)
+-- Windows-style MRU cycling on the active monitor's current workspace.
+-- Freeze the MRU order for the duration of the Super hold so repeated Tab
+-- presses walk the snapshot instead of reordering it after every focus change.
+local mru_windows = nil
+local mru_index = 0
+
+local function reset_mru_cycle()
+  local was_active = mru_windows ~= nil
+  mru_windows = nil
+  mru_index = 0
+  return was_active
+end
+
+local function begin_mru_cycle()
+  local monitor = hl.get_active_monitor()
+  if not monitor or not monitor.active_workspace then
+    return
+  end
+
+  mru_windows = hl.get_workspace_windows(monitor.active_workspace)
+  table.sort(mru_windows, function(a, b)
+    return a.focus_history_id < b.focus_history_id
+  end)
+  mru_index = 1
+end
+
+local function focus_next_mru_window()
+  if not mru_windows then
+    begin_mru_cycle()
+  end
+
+  if not mru_windows or #mru_windows < 2 then
+    return
+  end
+
+  -- Skip windows that disappeared while the Super-Tab sequence was active.
+  for _ = 1, #mru_windows do
+    mru_index = (mru_index % #mru_windows) + 1
+    local win = mru_windows[mru_index]
+    if win.mapped then
+      hl.dispatch(hl.dsp.focus({ window = win }))
+      return
+    end
+  end
+end
+
+hl.bind(mainMod .. " + Tab", focus_next_mru_window)
 
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"))
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"))
@@ -113,4 +155,12 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
 -- Execute on release.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
+hl.bind(mainMod .. " + SUPER_L", function()
+  -- Super is also the launcher key. Do not open fuzzel after a Super-Tab cycle.
+  if not reset_mru_cycle() then
+    hl.dispatch(hl.dsp.exec_cmd("pkill fuzzel || fuzzel"))
+  end
+end, { release = true })
+
+-- Also terminate the MRU session when using the right Super key.
+hl.bind(mainMod .. " + SUPER_R", reset_mru_cycle, { release = true })
