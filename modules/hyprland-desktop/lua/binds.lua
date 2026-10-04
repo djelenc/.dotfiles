@@ -80,11 +80,80 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- TODO: should be MRU and include apps on all monitors.
-hl.bind(mainMod .. " + Tab", function()
-  hl.dispatch(hl.dsp.window.cycle_next())
-  hl.dispatch(hl.dsp.window.bring_to_top())
-end)
+-- Windows-style MRU cycling across the active workspace on every monitor.
+-- Freeze the MRU order while Super is held, so repeated Tab presses walk one
+-- stable snapshot instead of immediately bouncing between the two newest windows.
+local mru_windows = nil
+local mru_index = 0
+local mru_release_timer = nil
+
+local function reset_mru_cycle()
+  mru_windows = nil
+  mru_index = 0
+
+  if mru_release_timer then
+    mru_release_timer:set_enabled(false)
+  end
+end
+
+local function super_is_down()
+  return hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
+end
+
+local function begin_mru_cycle()
+  mru_windows = {}
+
+  -- The workspace-switching layer already keeps each monitor on the linked
+  -- workspace (for example 1/6/11, 2/7/12, ...). Collect the currently active
+  -- workspace from every connected monitor; no knowledge of that mapping is
+  -- needed here.
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if monitor.active_workspace then
+      for _, win in ipairs(hl.get_workspace_windows(monitor.active_workspace)) do
+        table.insert(mru_windows, win)
+      end
+    end
+  end
+
+  table.sort(mru_windows, function(a, b)
+    return a.focus_history_id < b.focus_history_id
+  end)
+
+  mru_index = 1
+  mru_release_timer:set_enabled(true)
+end
+
+local function focus_next_mru_window()
+  if not mru_windows then
+    begin_mru_cycle()
+  end
+
+  if not mru_windows or #mru_windows < 2 then
+    return
+  end
+
+  -- Skip windows that disappeared while the Super-Tab sequence was active.
+  for _ = 1, #mru_windows do
+    mru_index = (mru_index % #mru_windows) + 1
+    local win = mru_windows[mru_index]
+    if win.mapped then
+      hl.dispatch(hl.dsp.focus({ window = win }))
+      return
+    end
+  end
+end
+
+-- A plain Super release binding is a sub-chord of SUPER+Tab and Hyprland can
+-- suppress it after the larger chord fires. Poll the actual key state only
+-- while an MRU session is active instead, and reset once Super is really up.
+mru_release_timer = hl.timer(function()
+  if mru_windows and not super_is_down() then
+    reset_mru_cycle()
+  end
+end, { timeout = 20, type = "repeat" })
+mru_release_timer:set_enabled(false)
+
+hl.bind(mainMod .. " + Tab", focus_next_mru_window)
 
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"))
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"))
