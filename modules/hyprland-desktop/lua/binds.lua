@@ -80,30 +80,49 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- Windows-style MRU cycling on the active monitor's current workspace.
--- Freeze the MRU order for the duration of the Super hold so repeated Tab
--- presses walk the snapshot instead of reordering it after every focus change.
+-- Windows-style MRU cycling for windows assigned to the active monitor.
+-- Freeze the MRU order while Super is held, so repeated Tab presses walk one
+-- stable snapshot instead of immediately bouncing between the two newest windows.
 local mru_windows = nil
 local mru_index = 0
+local mru_release_timer = nil
 
 local function reset_mru_cycle()
-  local was_active = mru_windows ~= nil
   mru_windows = nil
   mru_index = 0
-  return was_active
+
+  if mru_release_timer then
+    mru_release_timer:set_enabled(false)
+  end
+end
+
+local function super_is_down()
+  return hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
 end
 
 local function begin_mru_cycle()
   local monitor = hl.get_active_monitor()
-  if not monitor or not monitor.active_workspace then
+  if not monitor then
     return
   end
 
-  mru_windows = hl.get_workspace_windows(monitor.active_workspace)
+  -- "Current monitor" means all ordinary mapped windows assigned to this
+  -- monitor, not only windows on its currently visible workspace.
+  local windows = hl.get_windows({ monitor = monitor, mapped = true })
+  mru_windows = {}
+
+  for _, win in ipairs(windows) do
+    if win.workspace and not win.workspace.special then
+      table.insert(mru_windows, win)
+    end
+  end
+
   table.sort(mru_windows, function(a, b)
     return a.focus_history_id < b.focus_history_id
   end)
+
   mru_index = 1
+  mru_release_timer:set_enabled(true)
 end
 
 local function focus_next_mru_window()
@@ -125,6 +144,16 @@ local function focus_next_mru_window()
     end
   end
 end
+
+-- A plain Super release binding is a sub-chord of SUPER+Tab and Hyprland can
+-- suppress it after the larger chord fires. Poll the actual key state only
+-- while an MRU session is active instead, and reset once Super is really up.
+mru_release_timer = hl.timer(function()
+  if mru_windows and not super_is_down() then
+    reset_mru_cycle()
+  end
+end, { timeout = 20, type = "repeat" })
+mru_release_timer:set_enabled(false)
 
 hl.bind(mainMod .. " + Tab", focus_next_mru_window)
 
@@ -155,12 +184,4 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
 -- Execute on release.
-hl.bind(mainMod .. " + SUPER_L", function()
-  -- Super is also the launcher key. Do not open fuzzel after a Super-Tab cycle.
-  if not reset_mru_cycle() then
-    hl.dispatch(hl.dsp.exec_cmd("pkill fuzzel || fuzzel"))
-  end
-end, { release = true })
-
--- Also terminate the MRU session when using the right Super key.
-hl.bind(mainMod .. " + SUPER_R", reset_mru_cycle, { release = true })
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
