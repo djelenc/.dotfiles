@@ -26,7 +26,6 @@
       startup = ./lua/startup.lua;
       monitor_config = ./lua/monitor_config.lua;
       split_monitor_workspaces = ./lua/split_monitor_workspaces.lua;
-      monitor_mirror = ./lua/monitor_mirror.lua;
       binds = ./lua/binds.lua;
       gestures = ./lua/gestures.lua;
       window_rules = ./lua/window_rules.lua;
@@ -90,6 +89,10 @@
     ./waybar.nix
     ./config.nix
     ./kanshi.nix
+
+    # TEMPORARY WORKAROUND: aspect-preserving mirroring for unknown projectors.
+    # Remove this import once Hyprland native mirroring supports letterboxing.
+    ./projector-mirror.nix
   ];
 
   # utilities
@@ -115,8 +118,6 @@
     gedit # text editor
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
-    wl-mirror # aspect-ratio-preserving mirror for temporary displays/projectors
-    procps # pkill used to stop a per-output wl-mirror instance
     # kdePackages.xwaylandvideobridge # to make screensharing work
     qt5.qtwayland
     qt6.qtwayland
