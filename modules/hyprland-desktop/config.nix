@@ -66,11 +66,6 @@
         on_focus_under_fullscreen = 1;
       };
 
-      binds = {
-        # The wl-mirror fallback is pinned so it remains visible while linked
-        # workspaces are switched on the other monitors.
-        allow_pin_fullscreen = true;
-      };
     };
 
     monitor = [
@@ -120,8 +115,15 @@
         transform = 1;
       }
 
-      # Fallback for temporary/unknown displays. wl-mirror handles mirroring
-      # from eDP-1 at runtime so aspect ratio is preserved with letterboxing.
+      # Fallback for temporary/unknown displays.
+      #
+      # TEMPORARY WORKAROUND: this intentionally is NOT native Hyprland
+      # mirroring. See projector-mirror.nix. Once Hyprland supports
+      # aspect-preserving mirroring with letterboxing, remove that module and
+      # restore:
+      #
+      #   mirror = "eDP-1";
+      #
       {
         output = "";
         mode = "preferred";
