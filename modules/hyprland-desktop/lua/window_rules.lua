@@ -31,15 +31,3 @@ hl.window_rule({
 
 -- Calc always floats.
 floating("float-calc", { title = "^Calc$" })
-
--- wl-mirror fallback for temporary/unknown displays. wl-mirror itself selects
--- the target output; pinning keeps the fullscreen mirror visible when linked
--- workspaces change.
-hl.window_rule({
-  name = "projector-mirror",
-  match = { initial_title = "^hypr-projector-mirror:.*$" },
-  float = true,
-  pin = true,
-  fullscreen = true,
-  no_initial_focus = true,
-})
