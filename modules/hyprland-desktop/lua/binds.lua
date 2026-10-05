@@ -86,6 +86,11 @@ end
 local mru_windows = nil
 local mru_index = 0
 local mru_release_timer = nil
+local mirror_title_prefix = "hypr-projector-mirror:"
+
+local function is_projector_mirror(win)
+  return win.title and win.title:sub(1, #mirror_title_prefix) == mirror_title_prefix
+end
 
 local function reset_mru_cycle()
   mru_windows = nil
@@ -110,7 +115,9 @@ local function begin_mru_cycle()
   for _, monitor in ipairs(hl.get_monitors()) do
     if monitor.active_workspace then
       for _, win in ipairs(hl.get_workspace_windows(monitor.active_workspace)) do
-        table.insert(mru_windows, win)
+        if not is_projector_mirror(win) then
+          table.insert(mru_windows, win)
+        end
       end
     end
   end
