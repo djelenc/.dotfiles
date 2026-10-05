@@ -115,6 +115,7 @@
     fontpreview # display fonts
     hyprcursor # cursor for hyprland
     wl-mirror # aspect-ratio-preserving mirror for temporary displays/projectors
+    procps # pkill used to stop a per-output wl-mirror instance
     # kdePackages.xwaylandvideobridge # to make screensharing work
     qt5.qtwayland
     qt6.qtwayland
