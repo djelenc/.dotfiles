@@ -24,6 +24,7 @@
     extraLuaFiles = {
       animations = ./lua/animations.lua;
       startup = ./lua/startup.lua;
+      monitor_config = ./lua/monitor_config.lua;
       split_monitor_workspaces = ./lua/split_monitor_workspaces.lua;
       monitor_mirror = ./lua/monitor_mirror.lua;
       binds = ./lua/binds.lua;
