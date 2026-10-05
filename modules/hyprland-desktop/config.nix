@@ -65,6 +65,12 @@
         disable_hyprland_logo = true;
         on_focus_under_fullscreen = 1;
       };
+
+      binds = {
+        # The wl-mirror fallback is pinned so it remains visible while linked
+        # workspaces are switched on the other monitors.
+        allow_pin_fullscreen = true;
+      };
     };
 
     monitor = [
