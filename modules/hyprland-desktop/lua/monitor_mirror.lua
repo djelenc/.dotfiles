@@ -2,15 +2,9 @@
 -- Hyprland's native monitor mirroring. This preserves the source aspect ratio
 -- and produces real black letterboxing/pillarboxing where needed.
 
-local source_output = "eDP-1"
+local monitor_config = require("monitor_config")
+local source_output = monitor_config.source_output
 local mirror_title_prefix = "hypr-projector-mirror:"
-
-local known_descriptions = {
-  ["AOC Q27P1B GNXL7HA167657"] = true,
-  ["Philips Consumer Electronics Company 231PQPY UHB1430018671"] = true,
-  ["AOC Q27P1B GNXL7HA167593"] = true,
-  ["Dell Inc. DELL U2412M 0FFXD4136Y1L"] = true,
-}
 
 local mirrors = {}
 
@@ -19,7 +13,7 @@ local function is_unknown_external(monitor)
     return false
   end
 
-  return not known_descriptions[monitor.description or ""]
+  return not monitor_config.is_known_monitor(monitor)
 end
 
 local function start_mirror(monitor)
