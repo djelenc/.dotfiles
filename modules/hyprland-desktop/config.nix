@@ -114,13 +114,13 @@
         transform = 1;
       }
 
-      # Fallback/mirror
+      # Fallback for temporary/unknown displays. wl-mirror handles mirroring
+      # from eDP-1 at runtime so aspect ratio is preserved with letterboxing.
       {
         output = "";
         mode = "preferred";
         position = "auto";
         scale = 1;
-        mirror = "eDP-1";
       }
     ];
 
