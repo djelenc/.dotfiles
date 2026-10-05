@@ -37,7 +37,7 @@ floating("float-calc", { title = "^Calc$" })
 -- workspaces change.
 hl.window_rule({
   name = "projector-mirror",
-  match = { initial_title = "^hypr-projector-mirror:" },
+  match = { initial_title = "^hypr-projector-mirror:.*$" },
   float = true,
   pin = true,
   fullscreen = true,
