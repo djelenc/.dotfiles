@@ -19,6 +19,7 @@
       modules-center = [ "clock" ];
       modules-right = [
         "pulseaudio"
+        "custom/voxtype"
         "network"
         # "cpu"
         # "memory"
@@ -91,6 +92,15 @@
           "🔋"
         ];
         # format-icons = [ "" "" "" "" "" ];
+      };
+
+      # Voxtype writes its state to $XDG_RUNTIME_DIR/voxtype/state.
+      # Follow changes immediately instead of polling once per second.
+      "custom/voxtype" = {
+        exec = "${lib.getExe config.services.voxtype.package} status --follow --format json --icon-theme text";
+        return-type = "json";
+        format = "{}";
+        tooltip = true;
       };
 
       "network" = {
@@ -169,6 +179,34 @@
         #clock, #battery, #cpu, #memory, #pulseaudio, #tray, #mode {
             padding-left: 5px;
             padding-right: 5px;
+        }
+
+        #custom-voxtype {
+          padding-left: 8px;
+          padding-right: 8px;
+          font-family: ${monospace.name};
+          color: #${base04};
+        }
+
+        #custom-voxtype.recording {
+          color: #${base08};
+          background-color: alpha(#${base08}, 0.2);
+          font-weight: bold;
+          animation-name: voxtype-pulse;
+          animation-duration: 0.8s;
+          animation-iteration-count: infinite;
+          animation-direction: alternate;
+        }
+
+        #custom-voxtype.transcribing {
+          color: #${base0A};
+          font-weight: bold;
+        }
+
+        @keyframes voxtype-pulse {
+          to {
+            opacity: 0.5;
+          }
         }
 
         #language, #network  {
