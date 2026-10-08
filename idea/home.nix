@@ -121,6 +121,7 @@ rec {
     ../modules/alacritty.nix
     ../modules/nixvim.nix
     ../modules/doom-emacs.nix
+    ../modules/voxtype.nix
     ../modules/marginaltool.nix
   ];
 
