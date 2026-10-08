@@ -19,8 +19,8 @@
 
       output = {
         mode = "paste";
-        # Paste via CLIPBOARD in GUI apps and GNOME-style Alacritty configuration.
-        paste_keys = "shift+insert";
+        # Ctrl+Shift+V pastes CLIPBOARD in Alacritty and plain text in Brave.
+        paste_keys = "ctrl+shift+v";
         # Keep the transcript on the clipboard for inspection and manual paste.
         restore_clipboard = false;
         notification.on_recording_start = true;
