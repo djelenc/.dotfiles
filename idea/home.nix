@@ -153,6 +153,11 @@ rec {
       autoconnect = [ "qemu:///system" ];
       uris = [ "qemu:///system" ];
     };
+
+    # Enable PRIMARY selection paste by middle-click in GTK/Chromium apps.
+    "org/gnome/desktop/interface" = {
+      gtk-enable-primary-paste = true;
+    };
   };
 
   xdg.mimeApps = {
