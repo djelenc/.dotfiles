@@ -19,9 +19,8 @@
 
       output = {
         mode = "paste";
-        # Ctrl+V reads the regular CLIPBOARD selection in browsers and GUI apps.
-        # Shift+Insert can read PRIMARY (old selected text) instead.
-        paste_keys = "ctrl+v";
+        # Paste via CLIPBOARD in GUI apps and GNOME-style Alacritty configuration.
+        paste_keys = "shift+insert";
         # Keep the transcript on the clipboard for inspection and manual paste.
         restore_clipboard = false;
         notification.on_recording_start = true;
