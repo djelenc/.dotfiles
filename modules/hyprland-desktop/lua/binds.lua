@@ -159,6 +159,9 @@ hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-to
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"))
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
+-- Toggle offline speech-to-text dictation (start / stop recording).
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("voxtype record toggle"))
+
 -- Zooming.
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("pypr zoom ++0.5"))
 hl.bind(mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd("pypr zoom"))
