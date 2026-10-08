@@ -53,6 +53,7 @@ rec {
     opencode # code agent: foss
     codex # code agent: openai
     # aider-chat-full # llm pair programming
+    gh # github
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
