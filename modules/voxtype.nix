@@ -19,8 +19,11 @@
 
       output = {
         mode = "paste";
-        paste_keys = "shift+insert";
-        restore_clipboard = true;
+        # Ctrl+V reads the regular CLIPBOARD selection in browsers and GUI apps.
+        # Shift+Insert can read PRIMARY (old selected text) instead.
+        paste_keys = "ctrl+v";
+        # Keep the transcript on the clipboard for inspection and manual paste.
+        restore_clipboard = false;
         notification.on_recording_start = true;
       };
     };
