@@ -3,6 +3,7 @@ package.path = package.path .. ";./?.lua;./?/init.lua"
 local smw = require("plugins.split-monitor-workspaces.split-monitor-workspaces")
 local helpers = require("plugins.split-monitor-workspaces.helpers")
 local globals = require("plugins.split-monitor-workspaces.globals")
+local monitor_config = require("monitor_config")
 
 -- split-monitor-workspaces keeps configured monitor priorities in memory after
 -- those monitors disconnect. Before SMW handles a newly added monitor or a
@@ -64,13 +65,7 @@ smw.setup({
   enable_persistent_workspaces = true,
   enable_wrapping = true,
   link_monitors = true,
-  monitor_priority = {
-    "eDP-1",
-    "desc:AOC Q27P1B GNXL7HA167657",
-    "desc:Philips Consumer Electronics Company 231PQPY UHB1430018671",
-    "desc:AOC Q27P1B GNXL7HA167593",
-    "desc:Dell Inc. DELL U2412M 0FFXD4136Y1L",
-  },
+  monitor_priority = monitor_config.monitor_priority,
 })
 
 -- Layer 1 monitor-disconnect cleanup:

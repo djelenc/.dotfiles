@@ -24,6 +24,7 @@
     extraLuaFiles = {
       animations = ./lua/animations.lua;
       startup = ./lua/startup.lua;
+      monitor_config = ./lua/monitor_config.lua;
       split_monitor_workspaces = ./lua/split_monitor_workspaces.lua;
       binds = ./lua/binds.lua;
       gestures = ./lua/gestures.lua;
@@ -88,6 +89,10 @@
     ./waybar.nix
     ./config.nix
     ./kanshi.nix
+
+    # TEMPORARY WORKAROUND: aspect-preserving mirroring for unknown projectors.
+    # Remove this import once Hyprland native mirroring supports letterboxing.
+    ./projector-mirror.nix
   ];
 
   # utilities
