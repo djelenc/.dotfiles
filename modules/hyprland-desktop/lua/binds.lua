@@ -86,6 +86,12 @@ end
 local mru_windows = nil
 local mru_index = 0
 local mru_release_timer = nil
+-- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
+-- from the custom Super+Tab MRU list. Remove this together with
+-- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
+local function is_projector_mirror(win)
+  return win.title and win.title:match("^hypr%-projector%-mirror:")
+end
 
 local function reset_mru_cycle()
   mru_windows = nil
@@ -110,7 +116,9 @@ local function begin_mru_cycle()
   for _, monitor in ipairs(hl.get_monitors()) do
     if monitor.active_workspace then
       for _, win in ipairs(hl.get_workspace_windows(monitor.active_workspace)) do
-        table.insert(mru_windows, win)
+        if not is_projector_mirror(win) then
+          table.insert(mru_windows, win)
+        end
       end
     end
   end

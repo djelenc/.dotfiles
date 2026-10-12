@@ -65,6 +65,7 @@
         disable_hyprland_logo = true;
         on_focus_under_fullscreen = 1;
       };
+
     };
 
     monitor = [
@@ -114,13 +115,20 @@
         transform = 1;
       }
 
-      # Fallback/mirror
+      # Fallback for temporary/unknown displays.
+      #
+      # TEMPORARY WORKAROUND: this intentionally is NOT native Hyprland
+      # mirroring. See projector-mirror.nix. Once Hyprland supports
+      # aspect-preserving mirroring with letterboxing, remove that module and
+      # restore:
+      #
+      #   mirror = "eDP-1";
+      #
       {
         output = "";
         mode = "preferred";
         position = "auto";
         scale = 1;
-        mirror = "eDP-1";
       }
     ];
 
