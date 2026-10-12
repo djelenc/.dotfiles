@@ -53,6 +53,7 @@ rec {
     opencode # code agent: foss
     codex # code agent: openai
     # aider-chat-full # llm pair programming
+    gh # github
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
@@ -121,6 +122,7 @@ rec {
     ../modules/alacritty.nix
     ../modules/nixvim.nix
     ../modules/doom-emacs.nix
+    ../modules/voxtype.nix
     ../modules/marginaltool.nix
   ];
 
@@ -151,6 +153,11 @@ rec {
     "org/virt-manager/virt-manager/connections" = {
       autoconnect = [ "qemu:///system" ];
       uris = [ "qemu:///system" ];
+    };
+
+    # Enable PRIMARY selection paste by middle-click in GTK/Chromium apps.
+    "org/gnome/desktop/interface" = {
+      gtk-enable-primary-paste = true;
     };
   };
 

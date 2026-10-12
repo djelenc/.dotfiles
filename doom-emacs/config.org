@@ -49,6 +49,10 @@ Update buffers when changed by other programs
 #+begin_src emacs-lisp
 (global-auto-revert-mode)
 #+end_src
+** Paste from system clipboard
+#+begin_src emacs-lisp
+(map! "C-S-v" #'clipboard-yank)
+#+end_src
 * Better navigation
 ** Basic shortcuts
 #+begin_src emacs-lisp

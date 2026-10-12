@@ -23,7 +23,8 @@
       };
 
       scrolling.history = 100000;
-      selection.save_to_clipboard = true;
+      # Like GNOME Terminal: selection goes to PRIMARY, explicit copy to CLIPBOARD.
+      selection.save_to_clipboard = false;
       colors.draw_bold_text_with_bright_colors = true;
     };
   };
