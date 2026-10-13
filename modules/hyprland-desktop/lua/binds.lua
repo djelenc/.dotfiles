@@ -85,6 +85,8 @@ end
 -- so those intermediate visits do not change which window is next next time.
 local mru_windows, mru_index, mru_release_timer
 local mru_original_dim = nil
+local undim_rules = {}
+local active_undim_rules = {}
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
 -- from the custom Super+Tab MRU list. Remove this together with
 -- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
@@ -127,11 +129,38 @@ local function reset_mru_cycle()
   mru_windows = nil
   mru_release_timer:set_enabled(false)
 
-  -- Restore the settings that were in effect before Super+Tab.
+  -- Restore global dimming first, then disable the temporary exemptions.
   if mru_original_dim then
     hl.config({ decoration = mru_original_dim })
     mru_original_dim = nil
   end
+  for _, rule in ipairs(active_undim_rules) do
+    rule:set_enabled(false)
+  end
+  active_undim_rules = {}
+end
+
+-- The global dim_inactive setting would dim windows on all monitors. Temporarily
+-- exempt active workspaces on the other monitors using reversible window rules.
+-- Cache one rule per workspace rather than accumulating rules on every switch.
+local function exempt_workspace_from_dimming(workspace)
+  if not workspace then
+    return
+  end
+
+  local selector = workspace.addressable_name
+  local rule = undim_rules[selector]
+  if rule then
+    rule:set_enabled(true)
+  else
+    rule = hl.window_rule({
+      name = "super-tab-no-dim-" .. selector,
+      match = { workspace = selector },
+      no_dim = true,
+    })
+    undim_rules[selector] = rule
+  end
+  active_undim_rules[#active_undim_rules + 1] = rule
 end
 
 local function super_is_down()
@@ -170,12 +199,22 @@ local function begin_mru_cycle()
 
   mru_index = 1
 
-  -- Only highlight a selection when there is actually another window to cycle to.
+  -- Highlight only the currently selected monitor. Other monitors keep their
+  -- normal appearance, even though dim_inactive itself is a global setting.
   if #mru_windows > 1 then
     mru_original_dim = {
       dim_inactive = hl.get_config("decoration.dim_inactive"),
       dim_strength = hl.get_config("decoration.dim_strength"),
     }
+
+    local selected_monitor = hl.get_active_monitor()
+    for _, monitor in ipairs(hl.get_monitors()) do
+      if monitor ~= selected_monitor then
+        exempt_workspace_from_dimming(monitor.active_workspace)
+        exempt_workspace_from_dimming(monitor.active_special_workspace)
+      end
+    end
+
     hl.config({ decoration = { dim_inactive = true, dim_strength = 0.3 } })
   end
 
