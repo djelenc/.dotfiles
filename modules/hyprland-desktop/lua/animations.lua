@@ -15,3 +15,5 @@ hl.animation({ leaf = "fadeDim", enabled = true, speed = 1.5, bezier = "default"
 hl.animation({ leaf = "borderangle", enabled = true, speed = 8, bezier = "default" })
 hl.animation({ leaf = "fade", enabled = true, speed = 7, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "default", style = "slidevert" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 3.5, bezier = "default" })
+hl.animation({ leaf = "fadeSwitch", enabled = true, speed = 3.5, bezier = "default" })
