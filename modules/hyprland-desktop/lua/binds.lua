@@ -80,7 +80,7 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- Windows-style MRU cycling across the active workspace on every monitor.
+-- Super+Tab cycles windows by MRU on the focused monitor's active workspace.
 -- Freeze the MRU order while Super is held, so repeated Tab presses walk one
 -- stable snapshot instead of immediately bouncing between the two newest windows.
 local mru_windows = nil
@@ -107,19 +107,15 @@ local function super_is_down()
 end
 
 local function begin_mru_cycle()
-  mru_windows = {}
+  local workspace = hl.get_active_workspace()
+  if not workspace then
+    return
+  end
 
-  -- The workspace-switching layer already keeps each monitor on the linked
-  -- workspace (for example 1/6/11, 2/7/12, ...). Collect the currently active
-  -- workspace from every connected monitor; no knowledge of that mapping is
-  -- needed here.
-  for _, monitor in ipairs(hl.get_monitors()) do
-    if monitor.active_workspace then
-      for _, win in ipairs(hl.get_workspace_windows(monitor.active_workspace)) do
-        if not is_projector_mirror(win) then
-          table.insert(mru_windows, win)
-        end
-      end
+  mru_windows = {}
+  for _, win in ipairs(hl.get_workspace_windows(workspace)) do
+    if not is_projector_mirror(win) then
+      mru_windows[#mru_windows + 1] = win
     end
   end
 
