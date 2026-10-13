@@ -2,6 +2,7 @@
 
 local mainMod = "SUPER"
 local smw = require("split_monitor_workspaces")
+local monitor_config = require("monitor_config")
 
 local function move_to_linked_workspace(relative)
   return function()
@@ -85,6 +86,7 @@ end
 -- so those intermediate visits do not change which window is next next time.
 local mru_windows, mru_index, mru_release_timer
 local mru_original_dim = nil
+local mru_highlight_active = false
 local undim_rules = {}
 local active_undim_rules = {}
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
@@ -122,22 +124,31 @@ hl.on("window.active", function(win)
   end
 end)
 
+local function end_mru_highlight()
+  if not mru_highlight_active then
+    return
+  end
+
+  -- Return all presentation settings to their pre-switch values.
+  hl.config({ decoration = mru_original_dim })
+  mru_original_dim = nil
+  for _, rule in ipairs(active_undim_rules) do
+    rule:set_enabled(false)
+  end
+  active_undim_rules = {}
+
+  -- Matches the normal border animation declared in animations.lua.
+  hl.animation({ leaf = "border", enabled = true, speed = 10, bezier = "default" })
+  mru_highlight_active = false
+end
+
 local function reset_mru_cycle()
   if mru_windows then
     record_focus(hl.get_active_window())
   end
   mru_windows = nil
   mru_release_timer:set_enabled(false)
-
-  -- Restore global dimming first, then disable the temporary exemptions.
-  if mru_original_dim then
-    hl.config({ decoration = mru_original_dim })
-    mru_original_dim = nil
-  end
-  for _, rule in ipairs(active_undim_rules) do
-    rule:set_enabled(false)
-  end
-  active_undim_rules = {}
+  end_mru_highlight()
 end
 
 -- The global dim_inactive setting would dim windows on all monitors. Temporarily
@@ -161,6 +172,18 @@ local function exempt_workspace_from_dimming(workspace)
     undim_rules[selector] = rule
   end
   active_undim_rules[#active_undim_rules + 1] = rule
+end
+
+-- projector_mirror.lua mirrors eDP-1 to unknown external outputs. Its
+-- screen capture includes Hyprland's focus effects, so leave presentation
+-- completely unchanged whenever such an output is connected.
+local function projector_connected()
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if monitor.name ~= monitor_config.source_output and not monitor_config.is_known_monitor(monitor) then
+      return true
+    end
+  end
+  return false
 end
 
 local function super_is_down()
@@ -199,9 +222,9 @@ local function begin_mru_cycle()
 
   mru_index = 1
 
-  -- Highlight only the currently selected monitor. Other monitors keep their
-  -- normal appearance, even though dim_inactive itself is a global setting.
-  if #mru_windows > 1 then
+  -- Do not alter captured pixels or focus animations while projecting eDP-1.
+  -- This affects only the highlight; MRU cycling still works normally.
+  if #mru_windows > 1 and not projector_connected() then
     mru_original_dim = {
       dim_inactive = hl.get_config("decoration.dim_inactive"),
       dim_strength = hl.get_config("decoration.dim_strength"),
@@ -216,6 +239,8 @@ local function begin_mru_cycle()
     end
 
     hl.config({ decoration = { dim_inactive = true, dim_strength = 0.3 } })
+    hl.animation({ leaf = "border", enabled = true, speed = 1.5, bezier = "default" })
+    mru_highlight_active = true
   end
 
   mru_release_timer:set_enabled(true)
@@ -247,6 +272,9 @@ end
 mru_release_timer = hl.timer(function()
   if mru_windows and not super_is_down() then
     reset_mru_cycle()
+  elseif mru_highlight_active and projector_connected() then
+    -- Also handle a projector connected in the middle of a Super+Tab session.
+    end_mru_highlight()
   end
 end, { timeout = 20, type = "repeat" })
 mru_release_timer:set_enabled(false)
