@@ -80,9 +80,9 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- Super+Tab cycles windows by MRU on the focused monitor's active workspace.
--- Freeze the MRU order while Super is held, so repeated Tab presses walk one
--- stable snapshot instead of immediately bouncing between the two newest windows.
+-- Super+Tab cycles only the active workspace, committing MRU focus on Super release.
+-- Hyprland records each previewed window as focused. Track our own focus history
+-- so those intermediate visits do not change which window is next next time.
 local mru_windows, mru_index, mru_release_timer
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
 -- from the custom Super+Tab MRU list. Remove this together with
@@ -91,7 +91,38 @@ local function is_projector_mirror(win)
   return win.title and win.title:match("^hypr%-projector%-mirror:")
 end
 
+-- Initialize from Hyprland's existing history; thereafter only completed
+-- switches (or ordinary focus changes) alter this ordering.
+local focus_order = hl.get_windows()
+table.sort(focus_order, function(a, b)
+  local ah, bh = a.focus_history_id, b.focus_history_id
+  return (ah < 0 and math.huge or ah) < (bh < 0 and math.huge or bh)
+end)
+
+local function record_focus(win)
+  if not win or not win.mapped or is_projector_mirror(win) then
+    return
+  end
+
+  for i = #focus_order, 1, -1 do
+    if not focus_order[i].mapped or focus_order[i] == win then
+      table.remove(focus_order, i)
+    end
+  end
+  table.insert(focus_order, 1, win)
+end
+
+-- Ignore focus changes caused by previewing windows within Super+Tab.
+hl.on("window.active", function(win)
+  if not mru_windows then
+    record_focus(win)
+  end
+end)
+
 local function reset_mru_cycle()
+  if mru_windows then
+    record_focus(hl.get_active_window())
+  end
   mru_windows = nil
   mru_release_timer:set_enabled(false)
 end
@@ -113,8 +144,21 @@ local function begin_mru_cycle()
     end
   end
 
+  local ranks = {}
+  for i, win in ipairs(focus_order) do
+    if win.mapped then
+      ranks[win.address] = i
+    end
+  end
+
   table.sort(mru_windows, function(a, b)
-    return a.focus_history_id < b.focus_history_id
+    local ar, br = ranks[a.address], ranks[b.address]
+    if ar and br then return ar < br end
+    if ar then return true end
+    if br then return false end
+    -- Fallback for windows not yet recorded in our own focus history.
+    local ah, bh = a.focus_history_id, b.focus_history_id
+    return (ah < 0 and math.huge or ah) < (bh < 0 and math.huge or bh)
   end)
 
   mru_index = 1
