@@ -83,9 +83,7 @@ end
 -- Super+Tab cycles windows by MRU on the focused monitor's active workspace.
 -- Freeze the MRU order while Super is held, so repeated Tab presses walk one
 -- stable snapshot instead of immediately bouncing between the two newest windows.
-local mru_windows = nil
-local mru_index = 0
-local mru_release_timer = nil
+local mru_windows, mru_index, mru_release_timer
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
 -- from the custom Super+Tab MRU list. Remove this together with
 -- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
@@ -95,11 +93,7 @@ end
 
 local function reset_mru_cycle()
   mru_windows = nil
-  mru_index = 0
-
-  if mru_release_timer then
-    mru_release_timer:set_enabled(false)
-  end
+  mru_release_timer:set_enabled(false)
 end
 
 local function super_is_down()
