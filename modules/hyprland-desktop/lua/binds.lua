@@ -31,7 +31,26 @@ end
 
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("alacritty"))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+-- Super+M toggles the layout of the current workspace instead of maximizing
+-- one window. Monocle keeps tiled windows at their full workspace size, so
+-- Super+Tab can switch focus without repeatedly resizing applications.
+hl.bind(mainMod .. " + M", function()
+  local workspace = hl.get_active_special_workspace() or hl.get_active_workspace()
+  if not workspace then
+    return
+  end
+
+  -- Clear any maximize state left over from the old binding. Otherwise the
+  -- focused window could continue covering the other monocle windows.
+  hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "unset" }))
+
+  local layout = workspace.tiled_layout == "monocle" and "dwindle" or "monocle"
+  local selector = workspace.special and workspace.name or tostring(workspace.id)
+
+  -- Updating just layout preserves split-monitor-workspaces' monitor and
+  -- persistent workspace rules for this workspace.
+  hl.workspace_rule({ workspace = selector, layout = layout })
+end)
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exit())
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd("nautilus"))
