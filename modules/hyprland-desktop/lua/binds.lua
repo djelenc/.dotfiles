@@ -80,12 +80,13 @@ for i = 1, smw.get_amount_of_workspaces() do
   hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
 end
 
--- Windows-style MRU cycling across the active workspace on every monitor.
--- Freeze the MRU order while Super is held, so repeated Tab presses walk one
--- stable snapshot instead of immediately bouncing between the two newest windows.
-local mru_windows = nil
-local mru_index = 0
-local mru_release_timer = nil
+-- Super+Tab cycles only the active workspace, committing MRU focus on Super release.
+-- Hyprland records each previewed window as focused. Track our own focus history
+-- so those intermediate visits do not change which window is next next time.
+local mru_windows, mru_index, mru_release_timer
+local mru_original_dim = nil
+local undim_rules = {}
+local active_undim_rules = {}
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
 -- from the custom Super+Tab MRU list. Remove this together with
 -- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
@@ -93,13 +94,73 @@ local function is_projector_mirror(win)
   return win.title and win.title:match("^hypr%-projector%-mirror:")
 end
 
-local function reset_mru_cycle()
-  mru_windows = nil
-  mru_index = 0
+-- Initialize from Hyprland's existing history; thereafter only completed
+-- switches (or ordinary focus changes) alter this ordering.
+local focus_order = hl.get_windows()
+table.sort(focus_order, function(a, b)
+  local ah, bh = a.focus_history_id, b.focus_history_id
+  return (ah < 0 and math.huge or ah) < (bh < 0 and math.huge or bh)
+end)
 
-  if mru_release_timer then
-    mru_release_timer:set_enabled(false)
+local function record_focus(win)
+  if not win or not win.mapped or is_projector_mirror(win) then
+    return
   end
+
+  for i = #focus_order, 1, -1 do
+    if not focus_order[i].mapped or focus_order[i] == win then
+      table.remove(focus_order, i)
+    end
+  end
+  table.insert(focus_order, 1, win)
+end
+
+-- Ignore focus changes caused by previewing windows within Super+Tab.
+hl.on("window.active", function(win)
+  if not mru_windows then
+    record_focus(win)
+  end
+end)
+
+local function reset_mru_cycle()
+  if mru_windows then
+    record_focus(hl.get_active_window())
+  end
+  mru_windows = nil
+  mru_release_timer:set_enabled(false)
+
+  -- Restore global dimming first, then disable the temporary exemptions.
+  if mru_original_dim then
+    hl.config({ decoration = mru_original_dim })
+    mru_original_dim = nil
+  end
+  for _, rule in ipairs(active_undim_rules) do
+    rule:set_enabled(false)
+  end
+  active_undim_rules = {}
+end
+
+-- The global dim_inactive setting would dim windows on all monitors. Temporarily
+-- exempt active workspaces on the other monitors using reversible window rules.
+-- Cache one rule per workspace rather than accumulating rules on every switch.
+local function exempt_workspace_from_dimming(workspace)
+  if not workspace then
+    return
+  end
+
+  local selector = workspace.addressable_name
+  local rule = undim_rules[selector]
+  if rule then
+    rule:set_enabled(true)
+  else
+    rule = hl.window_rule({
+      name = "super-tab-no-dim-" .. selector,
+      match = { workspace = selector },
+      no_dim = true,
+    })
+    undim_rules[selector] = rule
+  end
+  active_undim_rules[#active_undim_rules + 1] = rule
 end
 
 local function super_is_down()
@@ -107,27 +168,56 @@ local function super_is_down()
 end
 
 local function begin_mru_cycle()
-  mru_windows = {}
+  local workspace = hl.get_active_workspace()
+  if not workspace then
+    return
+  end
 
-  -- The workspace-switching layer already keeps each monitor on the linked
-  -- workspace (for example 1/6/11, 2/7/12, ...). Collect the currently active
-  -- workspace from every connected monitor; no knowledge of that mapping is
-  -- needed here.
-  for _, monitor in ipairs(hl.get_monitors()) do
-    if monitor.active_workspace then
-      for _, win in ipairs(hl.get_workspace_windows(monitor.active_workspace)) do
-        if not is_projector_mirror(win) then
-          table.insert(mru_windows, win)
-        end
-      end
+  mru_windows = {}
+  for _, win in ipairs(hl.get_workspace_windows(workspace)) do
+    if not is_projector_mirror(win) then
+      mru_windows[#mru_windows + 1] = win
+    end
+  end
+
+  local ranks = {}
+  for i, win in ipairs(focus_order) do
+    if win.mapped then
+      ranks[win.address] = i
     end
   end
 
   table.sort(mru_windows, function(a, b)
-    return a.focus_history_id < b.focus_history_id
+    local ar, br = ranks[a.address], ranks[b.address]
+    if ar and br then return ar < br end
+    if ar then return true end
+    if br then return false end
+    -- Fallback for windows not yet recorded in our own focus history.
+    local ah, bh = a.focus_history_id, b.focus_history_id
+    return (ah < 0 and math.huge or ah) < (bh < 0 and math.huge or bh)
   end)
 
   mru_index = 1
+
+  -- Highlight only the currently selected monitor. Other monitors keep their
+  -- normal appearance, even though dim_inactive itself is a global setting.
+  if #mru_windows > 1 then
+    mru_original_dim = {
+      dim_inactive = hl.get_config("decoration.dim_inactive"),
+      dim_strength = hl.get_config("decoration.dim_strength"),
+    }
+
+    local selected_monitor = hl.get_active_monitor()
+    for _, monitor in ipairs(hl.get_monitors()) do
+      if monitor ~= selected_monitor then
+        exempt_workspace_from_dimming(monitor.active_workspace)
+        exempt_workspace_from_dimming(monitor.active_special_workspace)
+      end
+    end
+
+    hl.config({ decoration = { dim_inactive = true, dim_strength = 0.3 } })
+  end
+
   mru_release_timer:set_enabled(true)
 end
 
