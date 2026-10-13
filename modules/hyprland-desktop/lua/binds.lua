@@ -84,6 +84,7 @@ end
 -- Hyprland records each previewed window as focused. Track our own focus history
 -- so those intermediate visits do not change which window is next next time.
 local mru_windows, mru_index, mru_release_timer
+local mru_original_dim = nil
 -- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
 -- from the custom Super+Tab MRU list. Remove this together with
 -- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
@@ -125,6 +126,12 @@ local function reset_mru_cycle()
   end
   mru_windows = nil
   mru_release_timer:set_enabled(false)
+
+  -- Restore the settings that were in effect before Super+Tab.
+  if mru_original_dim then
+    hl.config({ decoration = mru_original_dim })
+    mru_original_dim = nil
+  end
 end
 
 local function super_is_down()
@@ -162,6 +169,16 @@ local function begin_mru_cycle()
   end)
 
   mru_index = 1
+
+  -- Only highlight a selection when there is actually another window to cycle to.
+  if #mru_windows > 1 then
+    mru_original_dim = {
+      dim_inactive = hl.get_config("decoration.dim_inactive"),
+      dim_strength = hl.get_config("decoration.dim_strength"),
+    }
+    hl.config({ decoration = { dim_inactive = true, dim_strength = 0.3 } })
+  end
+
   mru_release_timer:set_enabled(true)
 end
 
