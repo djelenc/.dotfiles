@@ -54,6 +54,7 @@ rec {
     codex # code agent: openai
     # aider-chat-full # llm pair programming
     gh # github
+    subversion
     meld # diff/merger
     drawio # draw graphs
     inkscape # vector drawings
