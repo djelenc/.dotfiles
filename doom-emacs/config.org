@@ -284,6 +284,84 @@ Used in reveal.js.
       new))
   (advice-add #'org-export-new-reference :override #'org-export-deterministic-reference))
 #+end_src
+** Delete files and buffers on refile from =org/gtd-ingress=
+#+begin_src emacs-lisp
+(require 'org)
+(require 'org-refile)
+
+(defvar gtd-chatgpt-inbox-directory
+  (expand-file-name "~/nextcloud/org/gtd-ingress/")
+  "Directory of individually imported Org files.")
+
+(defvar gtd-chatgpt--refile-target nil
+  "Dynamically bound destination buffer of current refile.")
+
+(defun gtd-chatgpt--capture-target ()
+  "Record the target buffer before the source entry is removed."
+  (setq gtd-chatgpt--refile-target (current-buffer)))
+
+(add-hook 'org-after-refile-insert-hook
+          #'gtd-chatgpt--capture-target)
+
+(defun gtd-chatgpt--source-p (file)
+  "Return non-nil when FILE is an Org file directly in ingress."
+  (and file
+       (string-equal (file-name-extension file) "org")
+       (file-directory-p gtd-chatgpt-inbox-directory)
+       (file-equal-p (file-name-directory file)
+                     gtd-chatgpt-inbox-directory)))
+
+(defun gtd-chatgpt--after-refile (original &rest args)
+  "Run ORIGINAL refile, then remove an emptied GTD ingress file."
+  (let* ((source (current-buffer))
+         (source-file (buffer-file-name source))
+         (eligible (and (gtd-chatgpt--source-p source-file)
+                        (not org-refile-keep)
+                        (not (equal (car args) 3))))
+         (gtd-chatgpt--refile-target nil))
+    (prog1 (apply original args)
+      (when (and eligible
+                 (buffer-live-p source)
+                 (buffer-live-p gtd-chatgpt--refile-target)
+                 (not (eq source gtd-chatgpt--refile-target)))
+
+        ;; Save the destination before touching the source.
+        (with-current-buffer gtd-chatgpt--refile-target
+          (unless (buffer-file-name)
+            (error "Refile destination has no associated file"))
+          (save-buffer))
+
+        (with-current-buffer source
+          (save-restriction
+            (widen)
+            (if (string-match-p
+                 "\\`[[:space:]]*\\'"
+                 (buffer-substring-no-properties
+                  (point-min) (point-max)))
+
+                ;; The source is empty: delete file and buffer.
+                (progn
+                  (unless
+                      (and (file-exists-p source-file)
+                           (verify-visited-file-modtime source))
+                    (error "Ingress file changed on disk: %s"
+                           source-file))
+
+                  (delete-file source-file)
+                  (set-buffer-modified-p nil)
+                  (kill-buffer source)
+
+                  (message "GTD ingress removed: %s"
+                           source-file))
+
+              ;; Still contains data: keep and save the source.
+              (save-buffer))))))))
+
+(unless (advice-member-p #'gtd-chatgpt--after-refile
+                         'org-refile)
+  (advice-add 'org-refile :around
+              #'gtd-chatgpt--after-refile))
+#+end_src
 * Projectile
 #+begin_src emacs-lisp
 (with-eval-after-load 'project
@@ -459,6 +537,7 @@ For syncing calendars with Google
                                        (alltodo "" ((org-agenda-overriding-header "")
                                                     (org-agenda-files '("~/nextcloud/org/refile.org"
                                                                         "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/gtd-ingress/"
                                                                         "~/nextcloud/org/active.org"))
                                                     (org-super-agenda-groups
                                                      '((:discard (:tag "private"))
@@ -467,7 +546,7 @@ For syncing calendars with Google
                                                               :not (:scheduled t :deadline t))
                                                         :order 3)
                                                        (:name "To refile"
-                                                        :file-path ".*refile\\.org"
+                                                        :file-path "\\(refile\\.org\\|gtd-ingress/\\)"
                                                         :order 1)
                                                        (:discard (:not (:todo "NEXT")))
                                                        (:discard (:file-path "tickler\\.org"))
@@ -494,6 +573,7 @@ For syncing calendars with Google
                                        (alltodo "" ((org-agenda-overriding-header "")
                                                     (org-agenda-files '("~/nextcloud/org/refile.org"
                                                                         "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/gtd-ingress/"
                                                                         "~/nextcloud/org/zasebno.org"))
                                                     (org-super-agenda-groups
                                                      '((:discard (:tag "work"))
@@ -502,7 +582,7 @@ For syncing calendars with Google
                                                               :not (:scheduled t :deadline t))
                                                         :order 3)
                                                        (:name "To refile"
-                                                        :file-path ".*refile\\.org"
+                                                        :file-path "\\(refile\\.org\\|gtd-ingress/\\)"
                                                         :order 1)
                                                        (:discard (:not (:todo "NEXT")))
                                                        (:discard (:file-path "tickler\\.org"))
@@ -529,6 +609,7 @@ For syncing calendars with Google
                                        (alltodo "" ((org-agenda-overriding-header "")
                                                     (org-agenda-files '("~/nextcloud/org/refile.org"
                                                                         "~/nextcloud/org/mobile-refile.org"
+                                                                        "~/nextcloud/org/gtd-ingress/"
                                                                         "~/nextcloud/org/reka.org"))
                                                     (org-super-agenda-groups
                                                      '(;(:discard (:tag "work"))
@@ -537,7 +618,7 @@ For syncing calendars with Google
                                                               :not (:scheduled t :deadline t))
                                                         :order 3)
                                                        (:name "To refile"
-                                                        :file-path ".*refile\\.org"
+                                                        :file-path "\\(refile\\.org\\|gtd-ingress/\\)"
                                                         :order 1)
                                                        (:discard (:not (:todo "NEXT")))
                                                        (:discard (:file-path "tickler\\.org"))
