@@ -390,7 +390,7 @@ Used in reveal.js.
   (add-to-list 'mm-discouraged-alternatives "text/html")
   (add-to-list 'mm-discouraged-alternatives "text/richtext")
   (setq sendmail-program (executable-find "msmtp")
-        ; https://github.com/djcb/mu/issues/2662#issuecomment-2147205731
+                                        ; https://github.com/djcb/mu/issues/2662#issuecomment-2147205731
         rfc2047-quote-decoded-words-containing-tspecials t
         mu4e-org-link-query-in-headers-mode t
         send-mail-function #'smtpmail-send-it
@@ -429,13 +429,13 @@ Used in reveal.js.
                         (mu4e-refile-folder     . "/fri/Archive")
                         (smtpmail-smtp-user     . "david.jelenc@fri.uni-lj.si"))
                       t)
-  ;; (set-email-account! "Gmail"
-  ;;                     '((mu4e-sent-folder       . "/gmail/Sent Mail")
-  ;;                       (mu4e-drafts-folder     . "/gmail/Drafts")
-  ;;                       (mu4e-trash-folder      . "/gmail/Trash")
-  ;;                       (mu4e-refile-folder     . "/gmail/All Mail")
-  ;;                       (smtpmail-smtp-user     . "djelenc.fri@gmail.com"))
-  ;;                     t)
+  (set-email-account! "Gmail"
+                      '((mu4e-sent-folder   . "/gmail/[Gmail]/Sent Mail")
+                        (mu4e-drafts-folder . "/gmail/[Gmail]/Drafts")
+                        (mu4e-trash-folder  . "/gmail/[Gmail]/Trash")
+                        (mu4e-refile-folder . "/gmail/[Gmail]/All Mail")
+                        (smtpmail-smtp-user . "djelenc.test@gmail.com")))
+                      
 
   ;; finds duplicate emails
   ;; https://emacs.stackexchange.com/questions/435/how-do-i-delete-duplicate-messages-in-mu4e
