@@ -181,7 +181,6 @@ If visiting a remote TRAMP file, copy it to a temporary local file first."
 
         org-capture-templates '(("n" "Todo" entry (file "refile.org") "* TODO %i%?")
                                 ("j" "Linked Todo" entry (file "refile.org") "* TODO %? %a\n\n")
-                                ("f" "Email follow-up" entry (file "refile.org") "%i")
                                 ("p" "Protocol" entry (file "refile.org")
                                  "* TODO [[%:link][%:description]]\n%U\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?" :immediate-finish t)
                                 ("L" "Protocol Link" entry (file "refile.org")
@@ -401,7 +400,12 @@ Used in reveal.js.
                                         (org-read-date nil t "+3d")))
          (entry (format "* WAITING Odgovor: %s: %s\nSCHEDULED: <%s>\n"
                         recipient link scheduled)))
-    (org-capture-string entry "f")))
+    ;; Keep this special-purpose template out of the global capture menu.
+    (let ((org-capture-templates
+           (cons '("f" "Email follow-up" entry
+                   (file "~/nextcloud/org/refile.org") "%i")
+                 org-capture-templates)))
+      (org-capture-string entry "f"))))
 
 (defun dj/mu4e-send-and-exit (follow-up)
   "Send mail, with an editable follow-up Org capture when prefixed."
