@@ -381,7 +381,7 @@ Used in reveal.js.
   (require 'mu4e-org)
   ;; Avoid cycling through a few partial contact matches on TAB.
   ;; Keep full-address completion for a unique match, and show the
-  ;; candidate list when multiple addresses match (e.g. denis.trcek).
+  ;; candidate list when multiple addresses match.
   (add-hook 'mu4e-compose-mode-hook
             (lambda ()
               (setq-local completion-cycle-threshold nil
