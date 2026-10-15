@@ -379,6 +379,14 @@ Used in reveal.js.
 #+begin_src emacs-lisp
 (after! mu4e
   (require 'mu4e-org)
+  ;; Avoid cycling through a few partial contact matches on TAB.
+  ;; Keep full-address completion for a unique match, and show the
+  ;; candidate list when multiple addresses match (e.g. denis.trcek).
+  (add-hook 'mu4e-compose-mode-hook
+            (lambda ()
+              (setq-local completion-cycle-threshold nil
+                          completion-styles '(orderless basic)
+                          orderless-expand-substring nil)))
   (add-to-list 'mm-discouraged-alternatives "text/html")
   (add-to-list 'mm-discouraged-alternatives "text/richtext")
   (setq sendmail-program (executable-find "msmtp")
