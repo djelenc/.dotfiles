@@ -398,7 +398,7 @@ Used in reveal.js.
          ;; Org handles calendar days, including daylight-saving transitions.
          (scheduled (format-time-string "%Y-%m-%d %a"
                                         (org-read-date nil t "+3d")))
-         (entry (format "* WAITING Odgovor: %s: %s\nSCHEDULED: <%s>\n"
+         (entry (format "* WAITING %s: %s\nSCHEDULED: <%s>\n"
                         recipient link scheduled)))
     ;; Keep this special-purpose template out of the global capture menu.
     (let ((org-capture-templates
