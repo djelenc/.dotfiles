@@ -152,7 +152,12 @@ If visiting a remote TRAMP file, copy it to a temporary local file first."
 ** Main
 #+begin_src emacs-lisp
 (after! org
-  ; (require 'org-mu4e) ;; required to have working links to mail
+  ;; required to have working links to mail
+  (autoload 'mu4e-org-open "mu4e-org")
+  (autoload 'mu4e-org-store-link "mu4e-org")
+  (org-link-set-parameters "mu4e"
+                           :follow #'mu4e-org-open
+                           :store #'mu4e-org-store-link)
   (require 'oc)
   (require 'oc-csl)
   (require 'org-checklist) ;; required for automatic deselection of checkboxes for recurrent tasks
@@ -376,66 +381,9 @@ Used in reveal.js.
   (add-to-list 'projectile-globally-ignored-directories "*org-attachments"))
 #+end_src
 * Mu4e
+** Main
 #+begin_src emacs-lisp
-(defun dj/mu4e--follow-up-recipient (to)
-  "Return the display name or email address of the first recipient in TO."
-  (require 'mail-extr)
-  (let* ((parts (mail-extract-address-components (or to "")))
-         (name (string-trim (or (car parts) "")))
-         (address (string-trim (or (cadr parts) ""))))
-    (cond ((not (string-empty-p name)) name)
-          ((not (string-empty-p address)) address)
-          (t "Neznan naslovnik"))))
-
-(defun dj/mu4e--capture-sent-follow-up (to subject message-id)
-  "Capture an editable WAITING task for the message just sent."
-  (require 'org-capture)
-  (let* ((recipient (dj/mu4e--follow-up-recipient to))
-         (subject (replace-regexp-in-string
-                   "[\r\n]+" " " (or subject "Brez zadeve")))
-         (id (string-trim message-id "<" ">"))
-         (link (org-link-make-string (concat "mu4e:msgid:" id) subject))
-         ;; Org handles calendar days, including daylight-saving transitions.
-         (scheduled (format-time-string "%Y-%m-%d %a"
-                                        (org-read-date nil t "+3d")))
-         (entry (format "* WAITING %s: %s\nSCHEDULED: <%s>\n"
-                        recipient link scheduled)))
-    ;; Keep this special-purpose template out of the global capture menu.
-    (let ((org-capture-templates
-           (cons '("f" "Email follow-up" entry
-                   (file "~/nextcloud/org/refile.org") "%i")
-                 org-capture-templates)))
-      (org-capture-string entry "f"))))
-
-(defun dj/mu4e-send-and-exit (follow-up)
-  "Send mail, with an editable follow-up Org capture when prefixed."
-  (interactive "P")
-  (if (not follow-up)
-      (message-send-and-exit)
-    (let* ((to (message-fetch-field "To"))
-           (subject (message-fetch-field "Subject"))
-           (sent-id nil)
-           ;; ID is generated during sending, before message-sent-hook runs.
-           (message-sent-hook
-            (cons (lambda ()
-                    (setq sent-id (message-fetch-field "Message-ID")))
-                  message-sent-hook)))
-      (when (message-send-and-exit)
-        (if (not sent-id)
-            (message "Email sent, but follow-up not created: missing Message-ID")
-          (condition-case err
-              (dj/mu4e--capture-sent-follow-up to subject sent-id)
-            (error
-             (message "Email sent, but follow-up capture failed: %s"
-                      (error-message-string err)))))))))
-
 (after! mu4e
-  ;; C-c C-c sends normally, SPC u C-c C-c sends and captures a follow-up.
-  (define-key mu4e-compose-mode-map (kbd "C-c C-c")
-              #'dj/mu4e-send-and-exit)
-
-
-  (require 'mu4e-org)
   ;; Avoid cycling through a few partial contact matches on TAB.
   ;; Keep full-address completion for a unique match, and show the
   ;; candidate list when multiple addresses match.
@@ -552,6 +500,67 @@ The beginning of line position for the first of each duplicated messages set is 
            (mu4e-headers-mark-for-something))
          (my-mu4e-headers-bol-dups)))))
   )
+#+end_src
+** Send and follow up
+Create a scheduled =WAITING= task with link to just sent email when sending with prefix =SPC-u C-c C-c=
+
+#+begin_src emacs-lisp
+(defun dj/mu4e--follow-up-recipient (to)
+  "Return the display name or email address of the first recipient in TO."
+  (require 'mail-extr)
+  (let* ((parts (mail-extract-address-components (or to "")))
+         (name (string-trim (or (car parts) "")))
+         (address (string-trim (or (cadr parts) ""))))
+    (cond ((not (string-empty-p name)) name)
+          ((not (string-empty-p address)) address)
+          (t "Neznan naslovnik"))))
+
+(defun dj/mu4e--capture-sent-follow-up (to subject message-id)
+  "Capture an editable WAITING task for the message just sent."
+  (require 'org-capture)
+  (let* ((recipient (dj/mu4e--follow-up-recipient to))
+         (subject (replace-regexp-in-string
+                   "[\r\n]+" " " (or subject "Brez zadeve")))
+         (id (string-trim message-id "<" ">"))
+         (link (org-link-make-string (concat "mu4e:msgid:" id) subject))
+         ;; Org handles calendar days, including daylight-saving transitions.
+         (scheduled (format-time-string "%Y-%m-%d %a"
+                                        (org-read-date nil t "+3d")))
+         (entry (format "* WAITING %s: %s\nSCHEDULED: <%s>\n"
+                        recipient link scheduled)))
+    ;; Keep this special-purpose template out of the global capture menu.
+    (let ((org-capture-templates
+           (cons '("f" "Email follow-up" entry
+                   (file "~/nextcloud/org/refile.org") "%i")
+                 org-capture-templates)))
+      (org-capture-string entry "f"))))
+
+(defun dj/mu4e-send-and-exit (follow-up)
+  "Send mail, with an editable follow-up Org capture when prefixed."
+  (interactive "P")
+  (if (not follow-up)
+      (message-send-and-exit)
+    (let* ((to (message-fetch-field "To"))
+           (subject (message-fetch-field "Subject"))
+           (sent-id nil)
+           ;; ID is generated during sending, before message-sent-hook runs.
+           (message-sent-hook
+            (cons (lambda ()
+                    (setq sent-id (message-fetch-field "Message-ID")))
+                  message-sent-hook)))
+      (when (message-send-and-exit)
+        (if (not sent-id)
+            (message "Email sent, but follow-up not created: missing Message-ID")
+          (condition-case err
+              (dj/mu4e--capture-sent-follow-up to subject sent-id)
+            (error
+             (message "Email sent, but follow-up capture failed: %s"
+                      (error-message-string err)))))))))
+
+(after! mu4e
+  ;; C-c C-c sends normally, SPC u C-c C-c sends and captures a follow-up.
+  (define-key mu4e-compose-mode-map (kbd "C-c C-c")
+              #'dj/mu4e-send-and-exit))
 #+end_src
 * Org-caldav sync
 For syncing calendars with Google
