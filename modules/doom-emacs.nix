@@ -157,24 +157,22 @@ in
       mu.enable = true;
     };
 
-    # accounts.gmail = rec {
-    #   flavor = "gmail.com";
-    #   realName = "David Jelenc";
-    #   userName = "djelenc.fri";
-    #   address = "djelenc.fri@gmail.com";
-    #   passwordCommand = "cat /home/david/.certs/gmail.pass";
+    accounts.gmail = rec {
+      flavor = "gmail.com";
+      realName = "David Jelenc";
+      address = "djelenc.test@gmail.com";
+      passwordCommand = "cat /run/secrets/djelenc_test_app_pass";
 
-    #   mbsync = {
-    #     enable = true;
-    #     create = "maildir";
-    #     expunge = "maildir";
-    #     patterns = [ "*" ];
-    #     extraConfig.account.AuthMechs = "LOGIN";
-    #     extraConfig.channel.CopyArrivalDate = "yes";
-    #   };
-
-    #   msmtp.enable = true;
-    #   mu.enable = true;
-    # };
+      mbsync = {
+        enable = true;
+        create = "maildir";
+        expunge = "maildir";
+        patterns = [ "*" ];
+        extraConfig.account.AuthMechs = "LOGIN";
+        extraConfig.channel.CopyArrivalDate = "yes";
+      };
+      msmtp.enable = true;
+      mu.enable = true;
+    };
   };
 }

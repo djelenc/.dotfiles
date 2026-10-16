@@ -185,7 +185,8 @@
        :email
        ;;(mu4e +org +gmail)
        ;; (mu4e +org)
-       mu4e
+       ;; mu4e
+       (mu4e +gmail)
        ;;notmuch
        ;;(wanderlust +gmail)
 

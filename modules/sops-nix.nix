@@ -1,11 +1,23 @@
-{ config, lib, pkgs, inputs, userInfo, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  userInfo,
+  ...
+}:
 let
   path = "/home/${userInfo.user}/.config/sops/age";
   file = "keys.txt";
-in {
+in
+{
   imports = [ inputs.sops-nix.nixosModules.sops ];
 
-  environment.systemPackages = with pkgs; [ sops age ssh-to-age ];
+  environment.systemPackages = with pkgs; [
+    sops
+    age
+    ssh-to-age
+  ];
 
   home-manager.users.${userInfo.user}.home.activation = {
     # TODO Generates an AGE key from SSH ED25519 key
@@ -40,6 +52,9 @@ in {
 
     # deepseek token
     secrets.deepseek_api_key.owner = userInfo.user;
+
+    # djelenc.test app password
+    secrets.djelenc_test_app_pass.owner = userInfo.user;
 
     # org-caldav-sync
     secrets."org-caldav.authinfo" = {
