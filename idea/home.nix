@@ -9,6 +9,9 @@
 rec {
   programs.home-manager.enable = true;
 
+  # Set false and rebuild/reload to use native Hyprland projector mirroring.
+  my.hyprland.wlMirror.enable = true;
+
   # enable BT headset media control buttons
   services.mpris-proxy.enable = true;
 

@@ -2,70 +2,42 @@ package.path = package.path .. ";./?.lua;./?/init.lua"
 
 local smw = require("plugins.split-monitor-workspaces.split-monitor-workspaces")
 local helpers = require("plugins.split-monitor-workspaces.helpers")
-local globals = require("plugins.split-monitor-workspaces.globals")
+local monitors = require("plugins.split-monitor-workspaces.monitors")
 local monitor_config = require("monitor_config")
 
--- split-monitor-workspaces keeps configured monitor priorities in memory after
--- those monitors disconnect. Before SMW handles a newly added monitor or a
--- config reload, remove entries for monitors that are no longer connected so
--- they cannot inflate the next monitor's workspace base index.
-local function prune_disconnected_monitor_state(added_monitor)
-  local connected = {}
-
-  for _, monitor in ipairs(hl.get_monitors()) do
-    connected[monitor.name] = true
-  end
-
-  -- Be defensive in case monitor.added fires before hl.get_monitors() includes
-  -- the newly added monitor.
-  if added_monitor and added_monitor.name then
-    connected[added_monitor.name] = true
-  end
-
-  local removed = 0
-
-  for monitor_name, _ in pairs(globals.monitor_priorities) do
-    if not connected[monitor_name] then
-      globals.monitor_priorities[monitor_name] = nil
-      removed = removed + 1
-    end
-  end
-
-  for monitor_name, _ in pairs(globals.monitor_max_ws_override) do
-    if not connected[monitor_name] then
-      globals.monitor_max_ws_override[monitor_name] = nil
-    end
-  end
-
-  if removed > 0 then
-    print(string.format(
-      "[split-monitor-workspaces] pruned %d disconnected monitor priority entr%s",
-      removed,
-      removed == 1 and "y" or "ies"
-    ))
-  end
+-- Apply fixed ranges where configured, retaining SMW's default allocation for
+-- other desktop outputs. Native mirrored outputs are skipped by SMW itself.
+local monitor_ranges = {}
+local calc_base_index = helpers.calc_base_index
+helpers.calc_base_index = function(name)
+  return monitor_ranges[name] and monitor_ranges[name].first - 1 or calc_base_index(name)
+end
+local get_monitor_max_ws = helpers.get_monitor_max_ws
+helpers.get_monitor_max_ws = function(name)
+  return monitor_ranges[name] and monitor_ranges[name].count or get_monitor_max_ws(name)
 end
 
--- These handlers must be registered before smw.setup(), because SMW registers
--- its own monitor.added and config.reloaded handlers there. Hyprland executes
--- Lua event callbacks in registration order, so stale priorities are removed
--- before SMW calculates workspace ranges.
-hl.on("monitor.added", function(monitor)
-  prune_disconnected_monitor_state(monitor)
-end)
-
-hl.on("config.reloaded", function()
-  prune_disconnected_monitor_state()
-end)
+local map_monitor = monitors.map_monitor
+monitors.map_monitor = function(monitor)
+  if monitor.is_mirror then return map_monitor(monitor) end
+  local first, count, identifier = monitor_config.workspace_range(monitor)
+  if not first then return map_monitor(monitor) end
+  monitor_ranges[monitor.name] = { first = first, count = count }
+  local switched = map_monitor(monitor)
+  -- Do not let another display on the same connector inherit known workspaces.
+  for i = first, first + count - 1 do
+    hl.workspace_rule({ workspace = tostring(i), monitor = identifier, persistent = true })
+  end
+  return switched
+end
 
 smw.setup({
-  workspace_count = 5,
+  workspace_count = monitor_config.workspace_count,
   keep_focused = true,
   enable_notifications = false,
   enable_persistent_workspaces = true,
   enable_wrapping = true,
   link_monitors = true,
-  monitor_priority = monitor_config.monitor_priority,
 })
 
 -- Layer 1 monitor-disconnect cleanup:
@@ -87,21 +59,16 @@ local function target_workspace_id(source_workspace_id)
 end
 
 local function source_workspace_range_for_monitor(monitor)
-  if not monitor or not monitor.name then
-    return nil
-  end
-
-  local base = helpers.calc_base_index(monitor.name)
-  local max_ws = helpers.get_monitor_max_ws(monitor.name)
+  local workspace = monitor_config.known_workspace(monitor)
 
   -- The primary monitor owns the first range. Do not evacuate it.
-  if not base or base < primary_workspace_count then
+  if not workspace or workspace.first == 1 then
     return nil
   end
 
   return {
-    first = base + 1,
-    last = base + max_ws,
+    first = workspace.first,
+    last = workspace.first + primary_workspace_count - 1,
   }
 end
 
@@ -212,13 +179,7 @@ end)
 --   primary on 3, monitor 2 added -> monitor 2 shows 8
 --   primary on 3, monitor 3 added -> monitor 3 shows 13
 local function get_primary_monitor()
-  for _, monitor in ipairs(hl.get_monitors()) do
-    if helpers.calc_base_index(monitor.name) == 0 then
-      return monitor
-    end
-  end
-
-  return nil
+  return hl.get_monitor(monitor_config.source_output)
 end
 
 local function workspace_slot_on_primary()
@@ -244,14 +205,10 @@ local function workspace_slot_on_primary()
 end
 
 local function sync_monitor_to_primary_slot(monitor)
-  if not monitor or not monitor.name then
-    return
-  end
-
-  local base = helpers.calc_base_index(monitor.name)
+  local range = source_workspace_range_for_monitor(monitor)
 
   -- Do not sync the primary monitor to itself.
-  if not base or base < primary_workspace_count then
+  if not range then
     return
   end
 
@@ -260,7 +217,7 @@ local function sync_monitor_to_primary_slot(monitor)
     return
   end
 
-  local target_workspace = base + slot
+  local target_workspace = range.first + slot - 1
 
   monitor:set_workspace(tostring(target_workspace))
 
@@ -311,9 +268,15 @@ local function restore_evacuated_windows_for_monitor(monitor)
 end
 
 hl.on("monitor.added", function(monitor)
+  if not monitor_config.is_known_monitor(monitor) then
+    return
+  end
   -- Delay so split-monitor-workspaces can first map the monitor and create/move
   -- its workspace range. This also avoids racing with persistent workspace setup.
   hl.timer(function()
+    if not monitor.name or hl.get_monitor(monitor.name) ~= monitor then
+      return
+    end
     sync_monitor_to_primary_slot(monitor)
     restore_evacuated_windows_for_monitor(monitor)
   end, { timeout = 500, type = "oneshot" })

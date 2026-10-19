@@ -90,9 +90,7 @@
     ./config.nix
     ./kanshi.nix
 
-    # TEMPORARY WORKAROUND: aspect-preserving mirroring for unknown projectors.
-    # Remove this import once Hyprland native mirroring supports letterboxing.
-    ./projector-mirror.nix
+    ./workarounds/wl-mirror
   ];
 
   # utilities

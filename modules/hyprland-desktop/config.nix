@@ -1,11 +1,25 @@
 {
+  config,
   lib,
   ...
 }:
 {
+  # Generic fallback policy. Optional desktop modules may override this rule.
+  options.my.hyprland.fallbackMonitor = lib.mkOption {
+    type = lib.types.attrsOf lib.types.anything;
+    default = {
+      output = "";
+      mode = "preferred";
+      position = "auto";
+      scale = 1;
+      mirror = "eDP-1";
+    };
+    description = "Hyprland monitor rule for otherwise unconfigured displays.";
+  };
+
   # Static Hyprland options that map cleanly through Home Manager's Lua generator.
   # Dynamic/runtime pieces live in ./lua/*.lua and are loaded through extraLuaFiles.
-  wayland.windowManager.hyprland.settings = {
+  config.wayland.windowManager.hyprland.settings = {
     config = {
       xwayland = {
         force_zero_scaling = true;
@@ -115,21 +129,7 @@
         transform = 1;
       }
 
-      # Fallback for temporary/unknown displays.
-      #
-      # TEMPORARY WORKAROUND: this intentionally is NOT native Hyprland
-      # mirroring. See projector-mirror.nix. Once Hyprland supports
-      # aspect-preserving mirroring with letterboxing, remove that module and
-      # restore:
-      #
-      #   mirror = "eDP-1";
-      #
-      {
-        output = "";
-        mode = "preferred";
-        position = "auto";
-        scale = 1;
-      }
+      config.my.hyprland.fallbackMonitor
     ];
 
     env = [

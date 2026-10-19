@@ -2,6 +2,23 @@
 
 local mainMod = "SUPER"
 local smw = require("split_monitor_workspaces")
+local monitor_config = require("monitor_config")
+
+local function move_to_work_monitor(delta)
+  return function()
+    local win = hl.get_active_window()
+    if not monitor_config.is_work_window(win) then return end
+    local monitors = monitor_config.get_work_monitors()
+    if #monitors < 2 then return end
+    for i, monitor in ipairs(monitors) do
+      if monitor == win.monitor then
+        local target = monitors[((i - 1 + delta) % #monitors) + 1]
+        hl.dispatch(hl.dsp.window.move({ window = win, monitor = target }))
+        return
+      end
+    end
+  end
+end
 
 local function move_to_linked_workspace(relative)
   return function()
@@ -74,7 +91,7 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
--- GNOME-style linked workspace navigation across all monitors.
+-- GNOME-style linked workspace navigation across the regular work monitors.
 hl.bind(mainMod .. " + CONTROL + j", smw.cycle_workspaces("next"))
 hl.bind(mainMod .. " + CONTROL + k", smw.cycle_workspaces("prev"))
 
@@ -86,9 +103,9 @@ hl.bind(mainMod .. " + SHIFT + k", move_to_linked_workspace("-1"))
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
 
--- Move active window to next/previous monitor.
-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.window.move({ monitor = "+1" }))
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.window.move({ monitor = "-1" }))
+-- Move active window to next/previous desktop monitor.
+hl.bind(mainMod .. " + SHIFT + N", move_to_work_monitor(1))
+hl.bind(mainMod .. " + SHIFT + P", move_to_work_monitor(-1))
 
 -- Direct workspace selection. Because link_monitors is enabled, every monitor switches to
 -- the corresponding workspace in its own monitor-specific range.
@@ -106,13 +123,6 @@ local mru_windows, mru_index, mru_release_timer
 local mru_original_dim = nil
 local undim_rules = {}
 local active_undim_rules = {}
--- TEMPORARY WORKAROUND: wl-mirror is a normal Wayland window, so exclude it
--- from the custom Super+Tab MRU list. Remove this together with
--- projector-mirror.nix once native Hyprland mirroring supports letterboxing.
-local function is_projector_mirror(win)
-  return win.title and win.title:match("^hypr%-projector%-mirror:")
-end
-
 -- Initialize from Hyprland's existing history; thereafter only completed
 -- switches (or ordinary focus changes) alter this ordering.
 local focus_order = hl.get_windows()
@@ -122,7 +132,7 @@ table.sort(focus_order, function(a, b)
 end)
 
 local function record_focus(win)
-  if not win or not win.mapped or is_projector_mirror(win) then
+  if not monitor_config.is_work_window(win) then
     return
   end
 
@@ -194,7 +204,7 @@ local function begin_mru_cycle()
 
   mru_windows = {}
   for _, win in ipairs(hl.get_workspace_windows(workspace)) do
-    if not is_projector_mirror(win) then
+    if monitor_config.is_work_window(win) then
       mru_windows[#mru_windows + 1] = win
     end
   end
