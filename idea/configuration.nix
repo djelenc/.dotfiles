@@ -36,6 +36,9 @@
   networking.hostName = "idea";
   networking.networkmanager.enable = true;
 
+  # Per-connection DNS and split DNS routing
+  services.resolved.enable = true;
+
   # localization
   time.timeZone = "Europe/Ljubljana";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -111,7 +114,7 @@
     ../modules/stylix.nix
     ../modules/regreet.nix
     ../modules/sops-nix.nix
-
+    ../modules/networkmanager-profiles.nix
     ../modules/oauth2ms-config.nix
   ];
 

@@ -5,3 +5,7 @@ creation_rules:
     key_groups:
     - age:
       - *primary
+  - path_regex: ^secrets/wireguard/.*\.nmconnection\.enc$
+    key_groups:
+      - age:
+          - *primary
