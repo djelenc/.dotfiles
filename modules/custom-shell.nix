@@ -7,6 +7,13 @@
 
   programs.starship.enable = true;
 
+  # Use project-specific Nix development shells in Zsh and Emacs (via envrc).
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   programs.zsh = {
     enable = true;
     autocd = true;
