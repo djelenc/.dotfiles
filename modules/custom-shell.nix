@@ -1,4 +1,11 @@
-{ config, lib, pkgs, userInfo, ... }: {
+{
+  config,
+  lib,
+  pkgs,
+  userInfo,
+  ...
+}:
+{
   programs.eza = {
     enable = true;
     git = true;
@@ -12,6 +19,7 @@
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
+    config.global.hide_env_diff = true;
   };
 
   programs.zsh = {
@@ -62,8 +70,7 @@
       # managing nixos configuration
       cedit = "nvim -c 'cd ${userInfo.dotFiles}' ${userInfo.dotFiles}";
       cdiff = "git -C ${userInfo.dotFiles} diff";
-      csave = ''
-        git -C ${userInfo.dotFiles} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
+      csave = ''git -C ${userInfo.dotFiles} commit -aem "$(hostname)@$(readlink /nix/var/nix/profiles/system | cut -d- -f2)"'';
       cpush = "git -C ${userInfo.dotFiles} push origin main";
       cpull = "git -C ${userInfo.dotFiles} pull origin main";
       cst = "git -C ${userInfo.dotFiles} status";
