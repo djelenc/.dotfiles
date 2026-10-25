@@ -72,6 +72,10 @@ in
 
     # IDE tools
     clang-tools
+
+    # Python IDE fallbacks (project devShell tools take precedence).
+    pyright
+    ruff
   ];
 
   programs = {
