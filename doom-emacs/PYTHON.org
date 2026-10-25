@@ -1,0 +1,122 @@
+#+title: Python IDE with Nix development shells
+#+startup: overview
+
+* Overview
+
+The Doom configuration enables Python language support, Pyright LSP, Ruff
+format-on-save, pytest integration, and the existing debugger. Doom's
+=:tools direnv= module (=envrc=) imports each project's environment into its
+Emacs buffers. Home Manager installs =direnv= and =nix-direnv= and enables
+the Zsh integration.
+
+* Setting up a project
+
+For each trusted project whose =flake.nix= provides a =devShell=, create an
+=.envrc= in the project root:
+
+#+begin_src sh
+use flake
+#+end_src
+
+Authorize it once:
+
+#+begin_src sh
+direnv allow
+#+end_src
+
+Alternatively, call =M-x envrc-allow= from a project buffer in Emacs. For a
+named development shell, use e.g. =use flake .#myShell=.
+
+An approved =.envrc= is required: the presence of =flake.nix= alone does
+*not* activate the development shell. If =.envrc= already exists, extend it
+rather than replacing it.
+
+You ordinarily run =direnv allow= only once per project. Editing =.envrc=
+invalidates the approval and requires another =direnv allow=. Changes to
+=flake.nix= or =flake.lock= do *not* require another approval. In a new shell
+prompt, =direnv= picks up the changed Nix environment; in an already running
+Emacs session, run =M-x envrc-reload=.
+
+Only allow project configurations you trust. The =.envrc= and the Nix
+development environment can execute code while being evaluated.
+
+* Development-shell dependencies
+
+The project's =devShell= should provide its Python interpreter, application
+dependencies, and whichever development tools need to run in that same
+environment:
+
+- =pytest= for test execution.
+- =debugpy= for Python debugging (importable by the interpreter used by Dape).
+- =pyright= and =ruff= optionally for project-specific versions.
+
+Pyright and Ruff are also installed by Home Manager as fallbacks. They are
+resolved from the project's =PATH= first, if the devShell provides them.
+Installing =debugpy= for a different interpreter is not sufficient.
+
+An example =devShell= package list:
+
+#+begin_src nix
+packages = [
+  (pkgs.python3.withPackages (ps: with ps; [ pytest debugpy ]))
+  pkgs.ruff
+];
+#+end_src
+
+Adapt the Python packages to the needs of each project.
+
+After =direnv allow=, check the environment in a new terminal opened inside
+the project:
+
+#+begin_src sh
+command -v python
+command -v pyright-langserver
+command -v ruff
+python -m pytest --version
+python -c 'import debugpy.adapter'
+#+end_src
+
+Depending on the project's Python environment, Pyright may need additional
+configuration to resolve Python imports correctly.
+
+* Using Python in Emacs
+
+- Open a Python file. Doom starts Pyright via =:lang python +lsp +pyright=.
+- =M-x lsp-describe-session= checks the connected language server.
+- =M-x python-pytest= or =SPC m t a= runs the project's pytest suite;
+  =SPC m t f= tests the current file; =SPC m t t= runs the test at point.
+- =M-x +python/open-repl= starts the Python REPL with the buffer's environment.
+- =M-x +debugger/start= starts the debugger. With a newer Doom revision,
+  select Dape's =debugpy= (current file) or =debugpy-module= (module).
+- Saving a Python buffer formats it with Ruff when the executable is available.
+
+=envrc= holds a project environment for each Emacs buffer, so different
+projects can use different interpreters within the same Emacs daemon.
+
+* Reloading environments
+
+When =flake.nix= or =flake.lock= changes, run =M-x envrc-reload= in a project
+buffer. Doom's =:tools direnv= module reconnects associated LSP clients after
+a successful reload.
+
+The Zsh hook reevaluates =direnv= when a shell prompt is displayed.
+=nix-direnv= caches the Nix evaluation, but the first activation may still
+take some time. =envrc= loads synchronously by default, which may temporarily
+block Emacs while a new environment is being evaluated.
+
+* Applying the dotfiles changes
+
+After merging the PR:
+
+#+begin_src sh
+sudo nixos-rebuild switch --flake ~/.dotfiles#idea
+~/.emacs.d/bin/doom sync
+systemctl --user restart emacs.service
+#+end_src
+
+Open a new Zsh session to activate the =direnv= shell hook. The Doom config
+is literate (=config.org=); its generated =config.el= need not be edited.
+
+The current PR does not change the Java IDE / =dap-java= configuration.
+Whether it works with the locally installed Doom debugger revision should
+be checked independently.
