@@ -18,6 +18,7 @@ import time
 
 POLL_SECONDS = 0.15
 REFRESH_SECONDS = 3.0
+LAYER_REFRESH_SECONDS = 0.2  # Fuzzel may not emit a reliable layer-open event.
 BAR_HEIGHT = 26
 LEAVE_GRACE_SECONDS = 0.45
 STARTUP_GRACE_SECONDS = 1.0
@@ -49,7 +50,7 @@ def fuzzel_outputs(layers):
     return {
         output for output, info in layers.items()
         if any(
-            str(layer.get("namespace", "")).lower().startswith("fuzzel")
+            str(layer.get("namespace", "")).lower() in ("fuzzel", "launcher")
             for level in info.get("levels", {}).values()
             for layer in level
         )
@@ -114,6 +115,7 @@ def main():
     clients = []
     layers = {}
     next_refresh = 0.0
+    next_layer_refresh = 0.0
     dirty = True
     socket_buffer = b""
     events = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -124,15 +126,20 @@ def main():
             if dirty or now >= next_refresh:
                 new_monitors = query("monitors")
                 new_clients = query("clients")
-                new_layers = query("layers")
                 if isinstance(new_monitors, list):
                     monitors = active_outputs(new_monitors)
                 if isinstance(new_clients, list):
                     clients = new_clients
-                if isinstance(new_layers, dict):
-                    layers = new_layers
                 dirty = False
                 next_refresh = now + REFRESH_SECONDS
+
+            # Layer events are not guaranteed to arrive for short-lived launchers.
+            # Refresh them independently so opening Fuzzel reveals Waybar quickly.
+            if now >= next_layer_refresh:
+                new_layers = query("layers")
+                if isinstance(new_layers, dict):
+                    layers = new_layers
+                next_layer_refresh = now + LAYER_REFRESH_SECONDS
 
             for output in list(bars):
                 if output not in monitors or bars[output].process.poll() is not None:
