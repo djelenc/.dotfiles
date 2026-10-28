@@ -18,7 +18,6 @@ import time
 
 POLL_SECONDS = 0.15
 REFRESH_SECONDS = 3.0
-BAR_HEIGHT = 26
 LEAVE_GRACE_SECONDS = 0.45
 STARTUP_GRACE_SECONDS = 1.0
 WORKSPACE_REVEAL_SECONDS = 1.0
@@ -57,14 +56,14 @@ def active_outputs(monitors):
     }
 
 
-def pointer_on_bar(pos, monitor):
+def pointer_on_bar(pos, monitor, bar_height):
     if not isinstance(pos, dict):
         return False
     scale = monitor.get("scale") or 1
     width = monitor["width"] / scale
     return (
         monitor["x"] <= pos.get("x", -1) < monitor["x"] + width
-        and monitor["y"] <= pos.get("y", -1) < monitor["y"] + BAR_HEIGHT
+        and monitor["y"] <= pos.get("y", -1) < monitor["y"] + bar_height
     )
 
 
@@ -72,7 +71,6 @@ class Bar:
     def __init__(self, output, base_config):
         config = dict(base_config)
         config["output"] = output
-        config["start_hidden"] = True
         path = RUNTIME_DIR / (output.replace("/", "_") + ".json")
         path.write_text(json.dumps(config))
         self.process = subprocess.Popen(
@@ -109,6 +107,7 @@ def main():
     if not isinstance(source, list) or len(source) != 1:
         raise RuntimeError("Expected exactly one Home Manager Waybar configuration")
     base_config = source[0]
+    bar_height = base_config["height"]
 
     bars = {}
     monitors = {}
@@ -149,7 +148,7 @@ def main():
             occupied = {c.get("workspace", {}).get("id") for c in clients}
             for output, monitor in monitors.items():
                 bar = bars[output]
-                if bar.visible and pointer_on_bar(cursor, monitor):
+                if bar.visible and pointer_on_bar(cursor, monitor, bar_height):
                     bar.hover_until = now + LEAVE_GRACE_SECONDS
                 empty = monitor.get("activeWorkspace", {}).get("id") not in occupied
                 show = (
