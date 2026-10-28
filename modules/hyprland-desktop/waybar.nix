@@ -8,12 +8,25 @@
 {
   stylix.targets.waybar.enable = false;
 
+  # One Waybar process per output is controlled by the Hyprland visibility helper.
+  home.packages = [
+    (pkgs.writeShellScriptBin "waybar-visibility" ''
+      exec ${lib.getExe pkgs.python3} ${./waybar-visibility.py}
+    '')
+  ];
+
   programs.waybar = {
     enable = true;
+    systemd.enable = false; # Launched by waybar-visibility from Hyprland.
     settings.mainBar = {
       layer = "top";
       position = "top";
       height = 26;
+      exclusive = false;
+      passthrough = false;
+      start_hidden = true;
+      on-sigusr1 = "hide";
+      on-sigusr2 = "show";
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
