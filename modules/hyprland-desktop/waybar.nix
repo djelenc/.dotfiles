@@ -100,7 +100,6 @@
           "🪫"
           "🔋"
         ];
-        # format-icons = [ "" "" "" "" "" ];
       };
 
       # Voxtype writes its state to $XDG_RUNTIME_DIR/voxtype/state.
@@ -142,7 +141,6 @@
         on-click = "pwvucontrol";
         min-length = 8;
       };
-
     };
 
     style =
@@ -162,13 +160,6 @@
             color: #${base05};
         }
 
-        #window {
-            font-weight: bold;
-        }
-
-        #workspaces {
-        }
-
         #workspaces button {
             padding: 2px 2px 2px 2px;
             color: #${base04};
@@ -179,12 +170,7 @@
             color: #${base05};
         }
 
-        #mode {
-            background: #${base00};
-            border-bottom: 2px solid #${base05};
-        }
-
-        #clock, #battery, #cpu, #memory, #pulseaudio, #tray, #mode {
+        #clock, #battery, #pulseaudio, #tray {
             padding-left: 5px;
             padding-right: 5px;
         }
@@ -230,14 +216,8 @@
           font-weight: bold;
         }
 
-        #battery {
-        }
-
         #battery icon {
             color: red;
-        }
-
-        #battery.charging {
         }
 
         @keyframes blink {
@@ -256,25 +236,11 @@
             animation-direction: alternate;
         }
 
-        #cpu {
-        }
-
-        #memory {
-        }
-
-        #network {
-        }
-
-        #pulseaudio {
-        }
-
         #network.disconnected, #pulseaudio.muted {
             background-color: transparent;
             color: #${base0A};
         }
 
-        #tray {
-        }
       '';
   };
 }
