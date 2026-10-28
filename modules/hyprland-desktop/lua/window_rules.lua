@@ -15,11 +15,52 @@ floating("float-vlc", { class = "^(vlc)$" })
 floating("float-keepassxc", { class = "^(org.keepassxc.KeePassXC)$" })
 floating("zoom", { initial_class = "^(zoom)$" })
 
--- Dialogs.
+-- Dialogs marked modal by their application float at their preferred size.
+hl.window_rule({
+  name = "float-modal-dialogs",
+  match = { modal = true },
+  float = true,
+  center = true,
+})
+
+-- Some applications do not advertise their dialogs as modal/transient.
+-- Fall back to common file chooser names and "application - Settings" titles.
+-- Keep the title match narrow so ordinary application windows stay tiled.
+hl.window_rule({
+  name = "float-common-dialogs",
+  match = { initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser|.+ - (Settings|Preferences))$" },
+  float = true,
+  center = true,
+})
+
+-- Welcome/start screens are separate top-level windows in many IDEs, not
+-- modal dialogs. Float these without affecting actual project/editor windows.
+hl.window_rule({
+  name = "float-welcome-windows",
+  match = { initial_title = "^Welcome to .+$" },
+  float = true,
+  center = true,
+})
+
+-- GTK's portal file chooser can restore a huge saved window geometry from
+-- an earlier tiled/monocle session. Float it at a sensible size and cap later
+-- client-side resizes, regardless of which application opened the dialog.
+hl.window_rule({
+  name = "size-gtk-portal-file-chooser",
+  match = {
+    class = "^xdg-desktop-portal-gtk$",
+    initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser|Enter name of file.*)$",
+  },
+  float = true,
+  size = { 1000, 700 },
+  max_size = { 1200, 800 },
+  center = true,
+})
+
+-- Fallbacks for dialogs that do not advertise modal state.
 floating("float-all-files-dialog", { initial_title = "(All Files)" })
 floating("float-save-dialog", { initial_title = ".*wants to save$" })
 floating("float-print-dialog", { initial_title = "^(Print)$" })
-floating("float-pycharm-welcome", { initial_title = ".*Welcome to PyCharm" })
 
 -- gsimplecal: use monitor-local expressions.
 hl.window_rule({
