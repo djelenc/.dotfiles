@@ -342,6 +342,8 @@ hl.bind("mouse:272", function()
   end
 end, { non_consuming = true, ignore_mods = true })
 
--- Execute on release.
--- Explicit CLI focus mode avoids relying on an older/stale fuzzel.ini on reload.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill -x fuzzel || { waybar-visibility --reveal-launcher; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; }"), { release = true })
+-- Fuzzel is only launched here. Notify the bar controller on both entry and exit,
+-- so it never needs to poll Hyprland's layer list.
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd(
+  "pkill -x fuzzel || { waybar-visibility launcher-open; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; waybar-visibility launcher-close; }"
+), { release = true })
