@@ -1,13 +1,5 @@
 -- Window rules migrated from the old windowrule list.
 
--- Fuzzel is a layer-shell surface. Do not animate its appearance: on some
--- renderers the transient rectangular animation produces colored artifacts.
-hl.layer_rule({
-  name = "fuzzel-no-animation",
-  match = { namespace = "^fuzzel$" },
-  no_anim = true,
-})
-
 local function floating(name, match)
   hl.window_rule({
     name = name,
