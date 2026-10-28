@@ -23,6 +23,16 @@ hl.window_rule({
   center = true,
 })
 
+-- Some file choosers are not advertised as modal/transient. Match common
+-- dialog titles so they stay floating even on monocle workspaces. This is a
+-- fallback, not a reliable way to identify every dialog.
+hl.window_rule({
+  name = "float-common-file-dialogs",
+  match = { initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser)$" },
+  float = true,
+  center = true,
+})
+
 -- Fallbacks for dialogs that do not advertise modal state.
 floating("float-all-files-dialog", { initial_title = "(All Files)" })
 floating("float-save-dialog", { initial_title = ".*wants to save$" })
