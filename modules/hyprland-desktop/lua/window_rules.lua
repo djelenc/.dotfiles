@@ -33,6 +33,21 @@ hl.window_rule({
   center = true,
 })
 
+-- GTK's portal file chooser can restore a huge saved window geometry from
+-- an earlier tiled/monocle session. Float it at a sensible size and cap later
+-- client-side resizes, regardless of which application opened the dialog.
+hl.window_rule({
+  name = "size-gtk-portal-file-chooser",
+  match = {
+    class = "^xdg-desktop-portal-gtk$",
+    initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser|Enter name of file.*)$",
+  },
+  float = true,
+  size = { 1000, 700 },
+  max_size = { 1200, 800 },
+  center = true,
+})
+
 -- Fallbacks for dialogs that do not advertise modal state.
 floating("float-all-files-dialog", { initial_title = "(All Files)" })
 floating("float-save-dialog", { initial_title = ".*wants to save$" })
