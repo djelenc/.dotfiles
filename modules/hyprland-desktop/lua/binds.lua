@@ -91,45 +91,53 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
--- While cycling linked workspaces, keep the bars visible until either
--- Ctrl or Super is released. As with Super+Tab below, poll key state only
--- during an active shortcut, not continuously.
-local workspace_hold_active = false
+-- Keep Waybar on all monitors while navigating linked workspaces or moving
+-- a window between them. Stop as soon as Super or the relevant modifier is
+-- released. Poll key state only during an active shortcut (as for Super+Tab).
+local workspace_hold_modifier = nil
 local workspace_hold_timer
+
+local function key_pair_down(left, right)
+  return hl.is_key_down(left) or hl.is_key_down(right)
+end
+
 local function workspace_modifiers_down()
-  local super_down = hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
-  local ctrl_down = hl.is_key_down("Control_L") or hl.is_key_down("Control_R")
-  return super_down and ctrl_down
+  local super_down = key_pair_down("Super_L", "Super_R")
+  if workspace_hold_modifier == "control" then
+    return super_down and key_pair_down("Control_L", "Control_R")
+  elseif workspace_hold_modifier == "shift" then
+    return super_down and key_pair_down("Shift_L", "Shift_R")
+  end
+  return false
 end
 
 workspace_hold_timer = hl.timer(function()
-  if workspace_hold_active and not workspace_modifiers_down() then
-    workspace_hold_active = false
+  if workspace_hold_modifier and not workspace_modifiers_down() then
+    workspace_hold_modifier = nil
     workspace_hold_timer:set_enabled(false)
     hl.exec_cmd("waybar-visibility workspace-hold-end")
   end
 end, { timeout = 20, type = "repeat" })
 workspace_hold_timer:set_enabled(false)
 
-local function cycle_linked_workspaces(direction)
-  local cycle = smw.cycle_workspaces(direction)
+local function with_workspace_hold(modifier, action)
   return function()
-    if not workspace_hold_active then
-      workspace_hold_active = true
+    if not workspace_hold_modifier then
       hl.exec_cmd("waybar-visibility workspace-hold-start")
       workspace_hold_timer:set_enabled(true)
     end
-    cycle()
+    workspace_hold_modifier = modifier
+    action()
   end
 end
 
 -- GNOME-style linked workspace navigation across the regular work monitors.
-hl.bind(mainMod .. " + CONTROL + j", cycle_linked_workspaces("next"))
-hl.bind(mainMod .. " + CONTROL + k", cycle_linked_workspaces("prev"))
+hl.bind(mainMod .. " + CONTROL + j", with_workspace_hold("control", smw.cycle_workspaces("next")))
+hl.bind(mainMod .. " + CONTROL + k", with_workspace_hold("control", smw.cycle_workspaces("prev")))
 
 -- Move active window to the next/previous linked workspace and follow it.
-hl.bind(mainMod .. " + SHIFT + j", move_to_linked_workspace("+1"))
-hl.bind(mainMod .. " + SHIFT + k", move_to_linked_workspace("-1"))
+hl.bind(mainMod .. " + SHIFT + j", with_workspace_hold("shift", move_to_linked_workspace("+1")))
+hl.bind(mainMod .. " + SHIFT + k", with_workspace_hold("shift", move_to_linked_workspace("-1")))
 
 -- Move windows between adjacent tiled positions / monitors.
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
