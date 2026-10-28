@@ -91,13 +91,53 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
+-- Keep Waybar on all monitors while navigating linked workspaces or moving
+-- a window between them. Stop as soon as Super or the relevant modifier is
+-- released. Poll key state only during an active shortcut (as for Super+Tab).
+local workspace_hold_modifier = nil
+local workspace_hold_timer
+
+local function key_pair_down(left, right)
+  return hl.is_key_down(left) or hl.is_key_down(right)
+end
+
+local function workspace_modifiers_down()
+  local super_down = key_pair_down("Super_L", "Super_R")
+  if workspace_hold_modifier == "control" then
+    return super_down and key_pair_down("Control_L", "Control_R")
+  elseif workspace_hold_modifier == "shift" then
+    return super_down and key_pair_down("Shift_L", "Shift_R")
+  end
+  return false
+end
+
+workspace_hold_timer = hl.timer(function()
+  if workspace_hold_modifier and not workspace_modifiers_down() then
+    workspace_hold_modifier = nil
+    workspace_hold_timer:set_enabled(false)
+    hl.exec_cmd("waybar-visibility workspace-hold-end")
+  end
+end, { timeout = 20, type = "repeat" })
+workspace_hold_timer:set_enabled(false)
+
+local function with_workspace_hold(modifier, action)
+  return function()
+    if not workspace_hold_modifier then
+      hl.exec_cmd("waybar-visibility workspace-hold-start")
+      workspace_hold_timer:set_enabled(true)
+    end
+    workspace_hold_modifier = modifier
+    action()
+  end
+end
+
 -- GNOME-style linked workspace navigation across the regular work monitors.
-hl.bind(mainMod .. " + CONTROL + j", smw.cycle_workspaces("next"))
-hl.bind(mainMod .. " + CONTROL + k", smw.cycle_workspaces("prev"))
+hl.bind(mainMod .. " + CONTROL + j", with_workspace_hold("control", smw.cycle_workspaces("next")))
+hl.bind(mainMod .. " + CONTROL + k", with_workspace_hold("control", smw.cycle_workspaces("prev")))
 
 -- Move active window to the next/previous linked workspace and follow it.
-hl.bind(mainMod .. " + SHIFT + j", move_to_linked_workspace("+1"))
-hl.bind(mainMod .. " + SHIFT + k", move_to_linked_workspace("-1"))
+hl.bind(mainMod .. " + SHIFT + j", with_workspace_hold("shift", move_to_linked_workspace("+1")))
+hl.bind(mainMod .. " + SHIFT + k", with_workspace_hold("shift", move_to_linked_workspace("-1")))
 
 -- Move windows between adjacent tiled positions / monitors.
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
@@ -192,10 +232,6 @@ local function exempt_workspace_from_dimming(workspace)
   active_undim_rules[#active_undim_rules + 1] = rule
 end
 
-local function super_is_down()
-  return hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
-end
-
 local function begin_mru_cycle()
   local workspace = hl.get_active_workspace()
   if not workspace then
@@ -274,7 +310,7 @@ end
 -- suppress it after the larger chord fires. Poll the actual key state only
 -- while an MRU session is active instead, and reset once Super is really up.
 mru_release_timer = hl.timer(function()
-  if mru_windows and not super_is_down() then
+  if mru_windows and not key_pair_down("Super_L", "Super_R") then
     reset_mru_cycle()
   end
 end, { timeout = 20, type = "repeat" })
@@ -311,5 +347,39 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Lock on lid-open.
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
--- Execute on release.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
+-- Fuzzel is a layer surface, so losing keyboard focus on a normal mouse click
+-- is compositor-dependent. Explicitly dismiss it on clicks outside its bounds.
+-- The bind is non-consuming: applications still receive the original click.
+-- Only query compositor state in this callback; no blocking shell commands.
+local function inside_rect(x, y, rx, ry, rw, rh)
+  return x >= rx and y >= ry and x < rx + rw and y < ry + rh
+end
+
+hl.bind("mouse:272", function()
+  local pos = hl.get_cursor_pos()
+  if not pos then return end
+
+  for _, layer in ipairs(hl.get_layers()) do
+    if layer.mapped and layer.namespace == "fuzzel" then
+      local monitor = layer.monitor
+
+      -- On some compositor builds, layer coordinates are monitor-relative;
+      -- on others they are already in the global layout. Accept both.
+      local x, y, w, h = layer.x, layer.y, layer.w, layer.h
+      if inside_rect(pos.x, pos.y, x, y, w, h) then return end
+      if monitor and inside_rect(pos.x, pos.y, x + monitor.x, y + monitor.y, w, h) then
+        return
+      end
+
+      -- The layer is not under the pointer: close Fuzzel, not the app below.
+      hl.exec_cmd("pkill -x fuzzel")
+      return
+    end
+  end
+end, { non_consuming = true, ignore_mods = true })
+
+-- Fuzzel is only launched here. Notify the bar controller on both entry and exit,
+-- so it never needs to poll Hyprland's layer list.
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd(
+  "pkill -x fuzzel || { waybar-visibility launcher-open; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; waybar-visibility launcher-close; }"
+), { release = true })

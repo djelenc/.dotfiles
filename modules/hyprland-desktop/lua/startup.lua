@@ -1,7 +1,7 @@
 -- Runtime startup commands migrated from exec-once.
 
 hl.on("hyprland.start", function()
-  hl.exec_cmd("waybar")
+  hl.exec_cmd("waybar-visibility")
   hl.exec_cmd("wlsunset -l 46 -L 14.5")
   hl.exec_cmd("nm-applet --indicator")
   hl.exec_cmd("blueman-applet")

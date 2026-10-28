@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   pkgs,
   lib,
   ...
@@ -8,12 +7,25 @@
 {
   stylix.targets.waybar.enable = false;
 
+  # One Waybar process per output is controlled by the Hyprland visibility helper.
+  home.packages = [
+    (pkgs.writeShellScriptBin "waybar-visibility" ''
+      exec ${lib.getExe pkgs.python3} ${./waybar-visibility.py} "$@"
+    '')
+  ];
+
   programs.waybar = {
     enable = true;
+    systemd.enable = false; # Launched by waybar-visibility from Hyprland.
     settings.mainBar = {
       layer = "top";
       position = "top";
-      height = 26;
+      height = 44;
+      exclusive = false;
+      passthrough = false;
+      start_hidden = true;
+      on-sigusr1 = "hide";
+      on-sigusr2 = "show";
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
@@ -21,8 +33,6 @@
         "pulseaudio"
         "custom/voxtype"
         "network"
-        # "cpu"
-        # "memory"
         "battery"
         "hyprland/language"
         "tray"
@@ -35,7 +45,6 @@
         on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         all-outputs = false;
         warp-on-scroll = true;
-        # on-click = "activate";
         format-icons = {
           urgent = "⧈";
           active = "▣";
@@ -44,7 +53,7 @@
       };
 
       tray = {
-        icon-size = 20;
+        icon-size = 24;
         spacing = 10;
       };
 
@@ -91,7 +100,6 @@
           "🪫"
           "🔋"
         ];
-        # format-icons = [ "" "" "" "" "" ];
       };
 
       # Voxtype writes its state to $XDG_RUNTIME_DIR/voxtype/state.
@@ -113,7 +121,6 @@
         interval = 10;
       };
       "pulseaudio" = {
-        # scroll-step = 1;
         format = "{volume} % {icon}";
         format-bluetooth = "{volume} % {icon} ";
         format-muted = "Muted 🔇";
@@ -133,7 +140,6 @@
         on-click = "pwvucontrol";
         min-length = 8;
       };
-
     };
 
     style =
@@ -149,16 +155,8 @@
         }
 
         window#waybar {
-            background: alpha(#${base04}, 0.25);
-            /* background: shade(alpha(#${base04}, 0.2), 1.0); */
+            background: #${base00};
             color: #${base05};
-        }
-
-        #window {
-            font-weight: bold;
-        }
-
-        #workspaces {
         }
 
         #workspaces button {
@@ -166,17 +164,12 @@
             color: #${base04};
         }
 
-        #workspaces button.focused {
+        #workspaces button.active {
             padding: 2px 2px 2px 2px;
             color: #${base05};
         }
 
-        #mode {
-            background: #${base00};
-            border-bottom: 2px solid #${base05};
-        }
-
-        #clock, #battery, #cpu, #memory, #pulseaudio, #tray, #mode {
+        #clock, #battery, #pulseaudio, #tray {
             padding-left: 5px;
             padding-right: 5px;
         }
@@ -222,16 +215,6 @@
           font-weight: bold;
         }
 
-        #battery {
-        }
-
-        #battery icon {
-            color: red;
-        }
-
-        #battery.charging {
-        }
-
         @keyframes blink {
             to {
                 background-color: #ffffff;
@@ -248,25 +231,11 @@
             animation-direction: alternate;
         }
 
-        #cpu {
-        }
-
-        #memory {
-        }
-
-        #network {
-        }
-
-        #pulseaudio {
-        }
-
         #network.disconnected, #pulseaudio.muted {
             background-color: transparent;
             color: #${base0A};
         }
 
-        #tray {
-        }
       '';
   };
 }

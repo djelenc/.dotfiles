@@ -2,7 +2,6 @@
   inputs,
   pkgs,
   lib,
-  xdg,
   config,
   ...
 }:
@@ -185,10 +184,13 @@
   programs.fuzzel = {
     enable = true;
     settings = {
+      border.width = 0;
       main = {
+        # Fuzzel's focus and namespace are set by the Super binding.
+        # Also dismiss the launcher when another surface takes keyboard focus.
+        exit-on-keyboard-focus-loss = "yes";
         font = lib.mkForce "CaskaydiaMono Nerd Font";
         dpi-aware = lib.mkForce "yes";
-        # icon-theme = "hicolor";
         icons-enabled = "yes";
         lines = 10;
         width = 35;
@@ -204,7 +206,6 @@
         selection = lib.mkForce "${base02}40";
         selection-text = lib.mkForce "${base0A}FF";
         selection-match = lib.mkForce "${base09}FF";
-        border = lib.mkForce "${base0D}FF";
       };
     };
   };
