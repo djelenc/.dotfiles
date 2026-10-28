@@ -34,7 +34,7 @@ def notify_controller(command):
         with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as client:
             client.sendto(command.encode(), str(CONTROL_SOCKET))
     except OSError:
-        # Fuzzel should still work if the Waybar controller is unavailable.
+        # Shortcut actions must still work if the controller is unavailable.
         pass
 
 
