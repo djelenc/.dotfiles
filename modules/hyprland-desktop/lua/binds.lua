@@ -232,10 +232,6 @@ local function exempt_workspace_from_dimming(workspace)
   active_undim_rules[#active_undim_rules + 1] = rule
 end
 
-local function super_is_down()
-  return hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
-end
-
 local function begin_mru_cycle()
   local workspace = hl.get_active_workspace()
   if not workspace then
@@ -314,7 +310,7 @@ end
 -- suppress it after the larger chord fires. Poll the actual key state only
 -- while an MRU session is active instead, and reset once Super is really up.
 mru_release_timer = hl.timer(function()
-  if mru_windows and not super_is_down() then
+  if mru_windows and not key_pair_down("Super_L", "Super_R") then
     reset_mru_cycle()
   end
 end, { timeout = 20, type = "repeat" })
@@ -364,7 +360,7 @@ hl.bind("mouse:272", function()
   if not pos then return end
 
   for _, layer in ipairs(hl.get_layers()) do
-    if layer.mapped and (layer.namespace == "fuzzel" or layer.namespace == "launcher") then
+    if layer.mapped and layer.namespace == "fuzzel" then
       local monitor = layer.monitor
 
       -- On some compositor builds, layer coordinates are monitor-relative;
