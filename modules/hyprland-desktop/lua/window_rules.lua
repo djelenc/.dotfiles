@@ -5,6 +5,7 @@
 hl.layer_rule({
   name = "fuzzel-no-animation",
   match = { namespace = "^fuzzel$" },
+  no_anim = true,
 })
 
 local function floating(name, match)
