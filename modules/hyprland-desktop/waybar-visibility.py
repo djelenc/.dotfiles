@@ -190,7 +190,7 @@ def main():
                         workspace_reveal_until = time.monotonic() + WORKSPACE_REVEAL_SECONDS
                 if any(
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
-                                     b"fullscreen>>", b"workspace>>", b"workspacev2>>", b"focusedmon>>",
+                                     b"workspace>>", b"workspacev2>>", b"focusedmon>>",
                                      b"moveworkspace>>", b"activespecial>>",
                                      b"monitoradded", b"monitorremoved", b"movewindowv2>>"))
                     for line in lines
