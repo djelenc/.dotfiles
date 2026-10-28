@@ -91,9 +91,41 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
+-- While cycling linked workspaces, keep the bars visible until either
+-- Ctrl or Super is released. As with Super+Tab below, poll key state only
+-- during an active shortcut, not continuously.
+local workspace_hold_active = false
+local workspace_hold_timer
+local function workspace_modifiers_down()
+  local super_down = hl.is_key_down("Super_L") or hl.is_key_down("Super_R")
+  local ctrl_down = hl.is_key_down("Control_L") or hl.is_key_down("Control_R")
+  return super_down and ctrl_down
+end
+
+workspace_hold_timer = hl.timer(function()
+  if workspace_hold_active and not workspace_modifiers_down() then
+    workspace_hold_active = false
+    workspace_hold_timer:set_enabled(false)
+    hl.exec_cmd("waybar-visibility workspace-hold-end")
+  end
+end, { timeout = 20, type = "repeat" })
+workspace_hold_timer:set_enabled(false)
+
+local function cycle_linked_workspaces(direction)
+  local cycle = smw.cycle_workspaces(direction)
+  return function()
+    if not workspace_hold_active then
+      workspace_hold_active = true
+      hl.exec_cmd("waybar-visibility workspace-hold-start")
+      workspace_hold_timer:set_enabled(true)
+    end
+    cycle()
+  end
+end
+
 -- GNOME-style linked workspace navigation across the regular work monitors.
-hl.bind(mainMod .. " + CONTROL + j", smw.cycle_workspaces("next"))
-hl.bind(mainMod .. " + CONTROL + k", smw.cycle_workspaces("prev"))
+hl.bind(mainMod .. " + CONTROL + j", cycle_linked_workspaces("next"))
+hl.bind(mainMod .. " + CONTROL + k", cycle_linked_workspaces("prev"))
 
 -- Move active window to the next/previous linked workspace and follow it.
 hl.bind(mainMod .. " + SHIFT + j", move_to_linked_workspace("+1"))
