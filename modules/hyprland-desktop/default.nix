@@ -191,7 +191,6 @@
         exit-on-keyboard-focus-loss = "yes";
         font = lib.mkForce "CaskaydiaMono Nerd Font";
         dpi-aware = lib.mkForce "yes";
-        # icon-theme = "hicolor";
         icons-enabled = "yes";
         lines = 10;
         width = 35;
