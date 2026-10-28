@@ -312,4 +312,5 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
 -- Execute on release.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel"), { release = true })
+-- Explicit CLI focus mode avoids relying on an older/stale fuzzel.ini on reload.
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel --keyboard-focus=on-demand --namespace=fuzzel"), { release = true })
