@@ -20,7 +20,7 @@
     settings.mainBar = {
       layer = "top";
       position = "top";
-      height = 26;
+      height = 44;
       exclusive = false;
       passthrough = false;
       start_hidden = true;
@@ -33,8 +33,6 @@
         "pulseaudio"
         "custom/voxtype"
         "network"
-        # "cpu"
-        # "memory"
         "battery"
         "hyprland/language"
         "tray"
@@ -47,7 +45,6 @@
         on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         all-outputs = false;
         warp-on-scroll = true;
-        # on-click = "activate";
         format-icons = {
           urgent = "⧈";
           active = "▣";
@@ -56,7 +53,7 @@
       };
 
       tray = {
-        icon-size = 20;
+        icon-size = 24;
         spacing = 10;
       };
 
