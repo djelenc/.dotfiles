@@ -172,7 +172,6 @@ def main():
                     launcher_output = None
                 elif message == b"workspace-hold-start":
                     workspace_hold = True
-                    workspace_reveal_until = 0.0
                 elif message == b"workspace-hold-end":
                     workspace_hold = False
                     workspace_reveal_until = 0.0
