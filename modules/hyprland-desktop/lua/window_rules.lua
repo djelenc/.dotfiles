@@ -23,12 +23,12 @@ hl.window_rule({
   center = true,
 })
 
--- Some file choosers are not advertised as modal/transient. Match common
--- dialog titles so they stay floating even on monocle workspaces. This is a
--- fallback, not a reliable way to identify every dialog.
+-- Some applications do not advertise their dialogs as modal/transient.
+-- Fall back to common file chooser names and "application - Settings" titles.
+-- Keep the title match narrow so ordinary application windows stay tiled.
 hl.window_rule({
-  name = "float-common-file-dialogs",
-  match = { initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser)$" },
+  name = "float-common-dialogs",
+  match = { initial_title = "^((Open|Save|Select|Choose)( .*)?|File [Cc]hooser|.+ - (Settings|Preferences))$" },
   float = true,
   center = true,
 })
