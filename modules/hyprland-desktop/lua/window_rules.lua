@@ -33,6 +33,15 @@ hl.window_rule({
   center = true,
 })
 
+-- Welcome/start screens are separate top-level windows in many IDEs, not
+-- modal dialogs. Float these without affecting actual project/editor windows.
+hl.window_rule({
+  name = "float-welcome-windows",
+  match = { initial_title = "^Welcome to .+$" },
+  float = true,
+  center = true,
+})
+
 -- GTK's portal file chooser can restore a huge saved window geometry from
 -- an earlier tiled/monocle session. Float it at a sensible size and cap later
 -- client-side resizes, regardless of which application opened the dialog.
@@ -52,7 +61,6 @@ hl.window_rule({
 floating("float-all-files-dialog", { initial_title = "(All Files)" })
 floating("float-save-dialog", { initial_title = ".*wants to save$" })
 floating("float-print-dialog", { initial_title = "^(Print)$" })
-floating("float-pycharm-welcome", { initial_title = ".*Welcome to PyCharm" })
 
 -- gsimplecal: use monitor-local expressions.
 hl.window_rule({
