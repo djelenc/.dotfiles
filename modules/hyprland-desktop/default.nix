@@ -186,6 +186,9 @@
     enable = true;
     settings = {
       main = {
+        # Let clicking another focused surface dismiss the launcher.
+        keyboard-focus = "on-demand";
+        exit-on-keyboard-focus-loss = "yes";
         font = lib.mkForce "CaskaydiaMono Nerd Font";
         dpi-aware = lib.mkForce "yes";
         # icon-theme = "hicolor";
