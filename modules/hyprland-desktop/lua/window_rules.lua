@@ -15,7 +15,15 @@ floating("float-vlc", { class = "^(vlc)$" })
 floating("float-keepassxc", { class = "^(org.keepassxc.KeePassXC)$" })
 floating("zoom", { initial_class = "^(zoom)$" })
 
--- Dialogs.
+-- Dialogs marked modal by their application float at their preferred size.
+hl.window_rule({
+  name = "float-modal-dialogs",
+  match = { modal = true },
+  float = true,
+  center = true,
+})
+
+-- Fallbacks for dialogs that do not advertise modal state.
 floating("float-all-files-dialog", { initial_title = "(All Files)" })
 floating("float-save-dialog", { initial_title = ".*wants to save$" })
 floating("float-print-dialog", { initial_title = "^(Print)$" })
