@@ -184,6 +184,7 @@
   programs.fuzzel = {
     enable = true;
     settings = {
+      border.width = 0;
       main = {
         # Fuzzel's focus and namespace are set by the Super binding.
         # Also dismiss the launcher when another surface takes keyboard focus.
@@ -206,7 +207,6 @@
         selection = lib.mkForce "${base02}40";
         selection-text = lib.mkForce "${base0A}FF";
         selection-match = lib.mkForce "${base09}FF";
-        border = lib.mkForce "${base0D}FF";
       };
     };
   };
