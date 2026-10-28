@@ -11,7 +11,7 @@
   # One Waybar process per output is controlled by the Hyprland visibility helper.
   home.packages = [
     (pkgs.writeShellScriptBin "waybar-visibility" ''
-      exec ${lib.getExe pkgs.python3} ${./waybar-visibility.py}
+      exec ${lib.getExe pkgs.python3} ${./waybar-visibility.py} "$@"
     '')
   ];
 
