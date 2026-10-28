@@ -215,10 +215,6 @@
           font-weight: bold;
         }
 
-        #battery icon {
-            color: red;
-        }
-
         @keyframes blink {
             to {
                 background-color: #ffffff;
