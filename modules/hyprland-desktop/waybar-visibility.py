@@ -115,6 +115,7 @@ def main():
     clients = []
     next_refresh = 0.0
     workspace_reveal_until = 0.0
+    workspace_hold = False
     launcher_output = None
     dirty = True
     socket_buffer = b""
@@ -154,6 +155,7 @@ def main():
                 show = (
                     empty
                     or now < workspace_reveal_until
+                    or workspace_hold
                     or output == launcher_output
                     or (bar.visible and now < bar.hover_until)
                 )
@@ -169,6 +171,12 @@ def main():
                     )
                 elif message == b"launcher-close":
                     launcher_output = None
+                elif message == b"workspace-hold-start":
+                    workspace_hold = True
+                    workspace_reveal_until = 0.0
+                elif message == b"workspace-hold-end":
+                    workspace_hold = False
+                    workspace_reveal_until = 0.0
 
             if events in ready:
                 chunk = events.recv(65536)
@@ -180,7 +188,8 @@ def main():
                     # Repeated workspace events just extend the common one-second reveal.
                     # A focusedmon event alone must NOT reveal all bars when the pointer
                     # moves between monitors.
-                    workspace_reveal_until = time.monotonic() + WORKSPACE_REVEAL_SECONDS
+                    if not workspace_hold:
+                        workspace_reveal_until = time.monotonic() + WORKSPACE_REVEAL_SECONDS
                 if any(
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
                                      b"fullscreen>>", b"workspace>>", b"workspacev2>>", b"focusedmon>>",
@@ -198,11 +207,14 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2 and sys.argv[1] in ("launcher-open", "launcher-close"):
+    if len(sys.argv) == 2 and sys.argv[1] in (
+        "launcher-open", "launcher-close",
+        "workspace-hold-start", "workspace-hold-end",
+    ):
         notify_controller(sys.argv[1])
         sys.exit(0)
     if len(sys.argv) != 1:
-        sys.exit("usage: waybar-visibility [launcher-open|launcher-close]")
+        sys.exit("usage: waybar-visibility [launcher-open|launcher-close|workspace-hold-start|workspace-hold-end]")
     # Hyprland may stop this launcher during logout or config reload.
     signal.signal(signal.SIGTERM, lambda _sig, _frame: (_ for _ in ()).throw(KeyboardInterrupt))
     try:
