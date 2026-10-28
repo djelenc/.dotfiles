@@ -121,7 +121,6 @@
         interval = 10;
       };
       "pulseaudio" = {
-        # scroll-step = 1;
         format = "{volume} % {icon}";
         format-bluetooth = "{volume} % {icon} ";
         format-muted = "Muted 🔇";
@@ -165,7 +164,7 @@
             color: #${base04};
         }
 
-        #workspaces button.focused {
+        #workspaces button.active {
             padding: 2px 2px 2px 2px;
             color: #${base05};
         }
