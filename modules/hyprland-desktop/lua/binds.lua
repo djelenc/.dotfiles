@@ -311,6 +311,37 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Lock on lid-open.
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 
+-- Fuzzel is a layer surface, so losing keyboard focus on a normal mouse click
+-- is compositor-dependent. Explicitly dismiss it on clicks outside its bounds.
+-- The bind is non-consuming: applications still receive the original click.
+-- Only query compositor state in this callback; no blocking shell commands.
+local function inside_rect(x, y, rx, ry, rw, rh)
+  return x >= rx and y >= ry and x < rx + rw and y < ry + rh
+end
+
+hl.bind("mouse:272", function()
+  local pos = hl.get_cursor_pos()
+  if not pos then return end
+
+  for _, layer in ipairs(hl.get_layers()) do
+    if layer.mapped and (layer.namespace == "fuzzel" or layer.namespace == "launcher") then
+      local monitor = layer.monitor
+
+      -- On some compositor builds, layer coordinates are monitor-relative;
+      -- on others they are already in the global layout. Accept both.
+      local x, y, w, h = layer.x, layer.y, layer.w, layer.h
+      if inside_rect(pos.x, pos.y, x, y, w, h) then return end
+      if monitor and inside_rect(pos.x, pos.y, x + monitor.x, y + monitor.y, w, h) then
+        return
+      end
+
+      -- The layer is not under the pointer: close Fuzzel, not the app below.
+      hl.exec_cmd("pkill -x fuzzel")
+      return
+    end
+  end
+end, { non_consuming = true, ignore_mods = true })
+
 -- Execute on release.
 -- Explicit CLI focus mode avoids relying on an older/stale fuzzel.ini on reload.
 hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel --keyboard-focus=on-demand --namespace=fuzzel"), { release = true })
