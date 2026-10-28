@@ -6,7 +6,6 @@ one Waybar process per (non-mirrored) output so an empty workspace on one screen
 doesn't make the bar visible on another.
 """
 
-import copy
 import json
 import os
 import sys
@@ -19,12 +18,10 @@ import time
 
 POLL_SECONDS = 0.15
 REFRESH_SECONDS = 3.0
-LAYER_REFRESH_SECONDS = 0.2  # Fuzzel may not emit a reliable layer-open event.
 BAR_HEIGHT = 26
 LEAVE_GRACE_SECONDS = 0.45
 STARTUP_GRACE_SECONDS = 1.0
 WORKSPACE_REVEAL_SECONDS = 1.0
-LAUNCHER_REVEAL_GRACE_SECONDS = 1.0
 
 CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "waybar"
 RUNTIME_DIR = Path(os.environ["XDG_RUNTIME_DIR"]) / "waybar-visibility"
@@ -32,13 +29,13 @@ CONTROL_SOCKET = RUNTIME_DIR / "control.sock"
 HYPR_DIR = Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"]
 
 
-def request_launcher_reveal():
-    """Notify the already-running controller before starting Fuzzel."""
+def notify_controller(command):
+    """Send launcher lifecycle events without delaying Fuzzel."""
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as client:
-            client.sendto(b"launcher", str(CONTROL_SOCKET))
+            client.sendto(command.encode(), str(CONTROL_SOCKET))
     except OSError:
-        # Waybar is optional: a missing controller must never block the launcher.
+        # Fuzzel should still work if the Waybar controller is unavailable.
         pass
 
 
@@ -60,17 +57,6 @@ def active_outputs(monitors):
     }
 
 
-def fuzzel_outputs(layers):
-    return {
-        output for output, info in layers.items()
-        if any(
-            str(layer.get("namespace", "")).lower() in ("fuzzel", "launcher")
-            for level in info.get("levels", {}).values()
-            for layer in level
-        )
-    }
-
-
 def pointer_on_bar(pos, monitor):
     if not isinstance(pos, dict):
         return False
@@ -84,7 +70,7 @@ def pointer_on_bar(pos, monitor):
 
 class Bar:
     def __init__(self, output, base_config):
-        config = copy.deepcopy(base_config)
+        config = dict(base_config)
         config["output"] = output
         config["start_hidden"] = True
         path = RUNTIME_DIR / (output.replace("/", "_") + ".json")
@@ -127,12 +113,9 @@ def main():
     bars = {}
     monitors = {}
     clients = []
-    layers = {}
     next_refresh = 0.0
-    next_layer_refresh = 0.0
     workspace_reveal_until = 0.0
-    launcher_reveal_until = 0.0
-    launcher_reveal_output = None
+    launcher_output = None
     dirty = True
     socket_buffer = b""
     events = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -154,14 +137,6 @@ def main():
                 dirty = False
                 next_refresh = now + REFRESH_SECONDS
 
-            # Layer events are not guaranteed to arrive for short-lived launchers.
-            # Refresh them independently so opening Fuzzel reveals Waybar quickly.
-            if now >= next_layer_refresh:
-                new_layers = query("layers")
-                if isinstance(new_layers, dict):
-                    layers = new_layers
-                next_layer_refresh = now + LAYER_REFRESH_SECONDS
-
             for output in list(bars):
                 if output not in monitors or bars[output].process.poll() is not None:
                     bars.pop(output).stop()
@@ -170,7 +145,6 @@ def main():
                     bars[output] = Bar(output, base_config)
 
             cursor = query("cursorpos") if any(bar.visible for bar in bars.values()) else None
-            launcher_outputs = fuzzel_outputs(layers)
             occupied = {c.get("workspace", {}).get("id") for c in clients}
             for output, monitor in monitors.items():
                 bar = bars[output]
@@ -180,23 +154,21 @@ def main():
                 show = (
                     empty
                     or now < workspace_reveal_until
-                    or output in launcher_outputs
-                    or (output == launcher_reveal_output and now < launcher_reveal_until)
+                    or output == launcher_output
                     or (bar.visible and now < bar.hover_until)
                 )
                 bar.update(show, now)
 
             ready, _, _ = select.select([events, control], [], [], POLL_SECONDS)
-            if control in ready and control.recv(128) == b"launcher":
-                # The Super shortcut asks for visibility before Fuzzel maps its layer.
-                # Once Fuzzel maps, ordinary layer tracking takes over.
-                target = next(
-                    (name for name, monitor in monitors.items() if monitor.get("focused")),
-                    None,
-                )
-                if target is not None:
-                    launcher_reveal_output = target
-                    launcher_reveal_until = time.monotonic() + LAUNCHER_REVEAL_GRACE_SECONDS
+            if control in ready:
+                message = control.recv(128)
+                if message == b"launcher-open":
+                    launcher_output = next(
+                        (name for name, monitor in monitors.items() if monitor.get("focused")),
+                        None,
+                    )
+                elif message == b"launcher-close":
+                    launcher_output = None
 
             if events in ready:
                 chunk = events.recv(65536)
@@ -213,8 +185,7 @@ def main():
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
                                      b"fullscreen>>", b"workspace>>", b"workspacev2>>", b"focusedmon>>",
                                      b"moveworkspace>>", b"activespecial>>",
-                                     b"monitoradded", b"monitorremoved", b"openlayer>>",
-                                     b"closelayer>>", b"movewindowv2>>"))
+                                     b"monitoradded", b"monitorremoved", b"movewindowv2>>"))
                     for line in lines
                 ):
                     dirty = True
@@ -227,11 +198,11 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2 and sys.argv[1] == "--reveal-launcher":
-        request_launcher_reveal()
+    if len(sys.argv) == 2 and sys.argv[1] in ("launcher-open", "launcher-close"):
+        notify_controller(sys.argv[1])
         sys.exit(0)
     if len(sys.argv) != 1:
-        sys.exit("usage: waybar-visibility [--reveal-launcher]")
+        sys.exit("usage: waybar-visibility [launcher-open|launcher-close]")
     # Hyprland may stop this launcher during logout or config reload.
     signal.signal(signal.SIGTERM, lambda _sig, _frame: (_ for _ in ()).throw(KeyboardInterrupt))
     try:
