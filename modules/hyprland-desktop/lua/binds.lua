@@ -344,4 +344,4 @@ end, { non_consuming = true, ignore_mods = true })
 
 -- Execute on release.
 -- Explicit CLI focus mode avoids relying on an older/stale fuzzel.ini on reload.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill fuzzel || fuzzel --keyboard-focus=on-demand --namespace=fuzzel"), { release = true })
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("pkill -x fuzzel || { waybar-visibility --reveal-launcher; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; }"), { release = true })
