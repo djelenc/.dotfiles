@@ -30,7 +30,7 @@ HYPR_DIR = Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_I
 
 
 def notify_controller(command):
-    """Send launcher lifecycle events without delaying Fuzzel."""
+    """Send visibility events to the controller without blocking the caller."""
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as client:
             client.sendto(command.encode(), str(CONTROL_SOCKET))
