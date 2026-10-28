@@ -186,10 +186,8 @@
     enable = true;
     settings = {
       main = {
-        # Give the launcher a distinct Hyprland layer namespace for Waybar visibility.
-        namespace = "fuzzel";
-        # Let clicking another focused surface dismiss the launcher.
-        keyboard-focus = "on-demand";
+        # Fuzzel's focus and namespace are set by the Super binding.
+        # Also dismiss the launcher when another surface takes keyboard focus.
         exit-on-keyboard-focus-loss = "yes";
         font = lib.mkForce "CaskaydiaMono Nerd Font";
         dpi-aware = lib.mkForce "yes";
