@@ -58,6 +58,7 @@
         format-icons = {
           urgent = "⧈";
           active = "▣";
+          visible = "▣";
           default = "□";
         };
       };
@@ -199,7 +200,8 @@
             color: #${base04};
         }
 
-        #workspaces button.active {
+        #workspaces button.active,
+        #workspaces button.visible {
             color: #${base05};
         }
 
