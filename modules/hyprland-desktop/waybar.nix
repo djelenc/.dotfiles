@@ -124,8 +124,8 @@
       "network" = {
         # format-wifi = "  {essid}";
         # format-ethernet = " {ipaddr}/{cidr}";
-        format-wifi = "";
-        format-ethernet = "";
+        format-wifi = "  ";
+        format-ethernet = "  ";
         tooltip-format-wifi = "{essid} {frequency} GHz [{signalStrength}%]\n{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
         tooltip-format-ethernet = "{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
         format-disconnected = "Offline 🦖";
