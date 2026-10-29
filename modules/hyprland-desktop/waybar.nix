@@ -122,11 +122,11 @@
       };
 
       "network" = {
-        format-wifi = "{bandwidthDownBits}   {bandwidthUpBits}";
-        tooltip-format-wifi = "{ipaddr} @ {essid} {frequency} GHz [{signalStrength}%]";
-        format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
+        format-wifi = "  {essid}";
+        tooltip-format-wifi = "{ipaddr}/{cid} @ {frequency} GHz [{signalStrength}%]";
+        format-ethernet = " {ipaddr}/{cidr}";
         format-disconnected = "Offline 🦖";
-        min-length = 23;
+        min-length = 10;
         max-length = 23;
         interval = 10;
       };
