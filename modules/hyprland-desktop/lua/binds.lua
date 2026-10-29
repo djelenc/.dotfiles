@@ -96,6 +96,9 @@ hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-trans
 -- when their Control/Shift key is released. Poll only during an active chord.
 local workspace_hold_modifier = nil
 local workspace_hold_timer
+-- A Ctrl+Super chord must not be mistaken for a Super-only Fuzzel toggle
+-- when Control is released first and Super is released afterward.
+local suppress_super_launcher = false
 
 local function key_pair_down(left, right)
   return hl.is_key_down(left) or hl.is_key_down(right)
@@ -116,8 +119,13 @@ end
 workspace_hold_timer = hl.timer(function()
   if workspace_hold_modifier and not workspace_modifiers_down() then
     workspace_hold_modifier = nil
-    workspace_hold_timer:set_enabled(false)
     hl.exec_cmd("waybar-visibility workspace-hold-end")
+  end
+  if suppress_super_launcher and not key_pair_down("Super_L", "Super_R") then
+    suppress_super_launcher = false
+  end
+  if not workspace_hold_modifier and not suppress_super_launcher then
+    workspace_hold_timer:set_enabled(false)
   end
 end, { timeout = 20, type = "repeat" })
 workspace_hold_timer:set_enabled(false)
@@ -132,6 +140,17 @@ local function with_workspace_hold(modifier, action)
     action()
   end
 end
+
+-- Reveal all Waybars as soon as Control+Super are both held (without
+-- requiring a third key). Match either press order and either side.
+-- The existing hold timer hides them when either modifier is released.
+local reveal_control_super = with_workspace_hold("control", function()
+  suppress_super_launcher = true
+end)
+hl.bind("SUPER + Control_L", reveal_control_super)
+hl.bind("SUPER + Control_R", reveal_control_super)
+hl.bind("CONTROL + Super_L", reveal_control_super)
+hl.bind("CONTROL + Super_R", reveal_control_super)
 
 -- GNOME-style linked workspace navigation across the regular work monitors.
 hl.bind(mainMod .. " + CONTROL + j", with_workspace_hold("control", smw.cycle_workspaces("next")))
@@ -383,6 +402,12 @@ end, { non_consuming = true, ignore_mods = true })
 
 -- Fuzzel is only launched here. Notify the bar controller on both entry and exit,
 -- so it never needs to poll Hyprland's layer list.
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd(
-  "pkill -x fuzzel || { waybar-visibility launcher-open; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; waybar-visibility launcher-close; }"
-), { release = true })
+hl.bind(mainMod .. " + SUPER_L", function()
+  if suppress_super_launcher then
+    suppress_super_launcher = false
+    return
+  end
+  hl.exec_cmd(
+    "pkill -x fuzzel || { waybar-visibility launcher-open; fuzzel --keyboard-focus=on-demand --namespace=fuzzel; waybar-visibility launcher-close; }"
+  )
+end, { release = true })
