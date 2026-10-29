@@ -159,10 +159,10 @@ in
         signal = 8;
         tooltip = true;
         # Evaluate the exact same SMW action as the Super+number keybind.
-        on-click = "hyprctl eval 'require(\\"split_monitor_workspaces\\").workspace(\\"${toString n}\\")()'";
+        on-click = "hyprctl eval 'require(\"split_monitor_workspaces\").workspace(\"${toString n}\")()'";
         # Retain the original per-monitor scroll commands.
-        on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \\"e-1\\" })'";
-        on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \\"e+1\\" })'";
+        on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'";
+        on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
       };
     }) (lib.range 1 5));
 
