@@ -4,11 +4,6 @@
   lib,
   ...
 }:
-let
-  workspaceState = pkgs.writeShellScriptBin "waybar-workspace-state" ''
-    exec ${lib.getExe pkgs.python3} ${./waybar-workspace-state.py} "$@"
-  '';
-in
 {
   stylix.targets.waybar.enable = false;
 
@@ -36,7 +31,7 @@ in
       on-sigusr1 = "hide";
       on-sigusr2 = "show";
 
-      modules-left = [ "group/workspaces" ];
+      modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
       modules-right = [ "group/status" ];
 
@@ -53,10 +48,19 @@ in
         ];
       };
 
-      # Individual workspace slots support independent click commands.
-      "group/workspaces" = {
-        orientation = "horizontal";
-        modules = map (n: "custom/workspace-${toString n}") (lib.range 1 5);
+      "hyprland/workspaces" = {
+        disable-scroll = false;
+        format = "{icon}";
+        on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'";
+        on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
+        all-outputs = false;
+        warp-on-scroll = true;
+        format-icons = {
+          urgent = "⧈";
+          active = "▣";
+          visible = "▣";
+          default = "□";
+        };
       };
 
       tray = {
@@ -150,21 +154,7 @@ in
         on-click = "pwvucontrol";
         min-length = 8;
       };
-    } // builtins.listToAttrs (map (n: {
-      name = "custom/workspace-${toString n}";
-      value = {
-        exec = "${lib.getExe workspaceState} ${toString n}";
-        return-type = "json";
-        format = "{text}";
-        signal = 8;
-        tooltip = true;
-        # Evaluate the exact same SMW action as the Super+number keybind.
-        on-click = "hyprctl eval 'require(\"split_monitor_workspaces\").workspace(\"${toString n}\")()'";
-        # Retain the original per-monitor scroll commands.
-        on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'";
-        on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
-      };
-    }) (lib.range 1 5));
+    };
 
     style =
       with config.stylix.fonts;
@@ -205,17 +195,14 @@ in
             padding: 0 8px;
         }
 
-        #workspaces .module {
+        #workspaces button {
             padding: 2px 5px;
             color: #${base04};
         }
 
-        #workspaces .module.active {
+        #workspaces button.active,
+        #workspaces button.visible {
             color: #${base05};
-        }
-
-        #workspaces .module.urgent {
-            color: #${base08};
         }
 
         #battery, #pulseaudio, #tray {
