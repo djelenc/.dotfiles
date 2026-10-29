@@ -122,12 +122,15 @@
       };
 
       "network" = {
-        format-wifi = "  {essid}";
-        tooltip-format-wifi = "{ipaddr}/{cidr} @ {frequency} GHz [{signalStrength}%]";
-        format-ethernet = " {ipaddr}/{cidr}";
+        # format-wifi = "  {essid}";
+        # format-ethernet = " {ipaddr}/{cidr}";
+        format-wifi = "";
+        format-ethernet = "";
+        tooltip-format-wifi = "{essid} {frequency} GHz [{signalStrength}%]\n{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
+        tooltip-format-ethernet = "{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
         format-disconnected = "Offline 🦖";
-        min-length = 10;
-        max-length = 23;
+        min-length = 3;
+        max-length = 3;
         interval = 10;
       };
       "pulseaudio" = {
