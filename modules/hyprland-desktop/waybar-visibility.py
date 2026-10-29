@@ -179,7 +179,7 @@ def main():
                 *lines, socket_buffer = socket_buffer.split(b"\n")
                 if any(
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
-                                     b"workspace>>", b"workspacev2>>", b"focusedmon>>",
+                                     b"workspace>>", b"workspacev2>>",
                                      b"moveworkspace>>", b"activespecial>>",
                                      b"monitoradded", b"monitorremoved", b"movewindowv2>>"))
                     for line in lines
