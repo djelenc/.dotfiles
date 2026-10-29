@@ -29,14 +29,20 @@
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
-      modules-right = [
-        "pulseaudio"
-        "custom/voxtype"
-        "network"
-        "battery"
-        "hyprland/language"
-        "tray"
-      ];
+      modules-right = [ "group/status" ];
+
+      # Group the existing right-side modules in one floating island.
+      "group/status" = {
+        orientation = "horizontal";
+        modules = [
+          "pulseaudio"
+          "custom/voxtype"
+          "network"
+          "battery"
+          "hyprland/language"
+          "tray"
+        ];
+      };
 
       "hyprland/workspaces" = {
         disable-scroll = false;
@@ -45,11 +51,29 @@
         on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         all-outputs = false;
         warp-on-scroll = true;
-        format-icons = {
-          urgent = "⧈";
-          active = "▣";
-          default = "□";
-        };
+        # Waybar does not support arithmetic in {id}/{name} templates.
+        # Supply per-workspace icon text, preserving the existing active,
+        # urgent and default symbols and the module's native click behavior.
+        # Covers 20 groups of five workspaces (current setup uses three).
+        format-icons =
+          let
+            numberedIcons = id:
+              let
+                key = toString id;
+                number = toString (lib.mod (id - 1) 5 + 1);
+              in
+              [
+                { name = key; value = "□ ${number}"; }
+                { name = "active:${key}"; value = "▣ ${number}"; }
+                { name = "urgent:${key}"; value = "⧈ ${number}"; }
+              ];
+          in
+          builtins.listToAttrs (lib.concatMap numberedIcons (lib.range 1 100))
+          // {
+            urgent = "⧈";
+            active = "▣";
+            default = "□";
+          };
       };
 
       tray = {
@@ -155,21 +179,42 @@
         }
 
         window#waybar {
-            background: #${base00};
+            background: transparent;
             color: #${base05};
         }
 
+        /* The Waybar layer is transparent; only these three islands are opaque. */
+        #workspaces, #clock, #status {
+            background-color: #${base00};
+            border-radius: 16px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        #workspaces {
+            margin-left: 12px;
+            padding: 0 8px;
+        }
+
+        #clock {
+            padding: 0 16px;
+        }
+
+        #status {
+            margin-right: 12px;
+            padding: 0 8px;
+        }
+
         #workspaces button {
-            padding: 2px 2px 2px 2px;
+            padding: 2px 5px;
             color: #${base04};
         }
 
         #workspaces button.active {
-            padding: 2px 2px 2px 2px;
             color: #${base05};
         }
 
-        #clock, #battery, #pulseaudio, #tray {
+        #battery, #pulseaudio, #tray {
             padding-left: 5px;
             padding-right: 5px;
         }
