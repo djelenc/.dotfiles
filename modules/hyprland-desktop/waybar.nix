@@ -166,13 +166,13 @@
 
         window#waybar {
             background: transparent;
-            color: #${base07};
+            color: #${base05};
         }
 
-        /* Blend two Stylix palette colors for a brighter opaque teal surface. */
+        /* Solid Stylix base02 islands on a transparent Waybar background. */
         #workspaces, #clock, #status {
-            background-color: mix(#${base02}, #${base0D}, 0.3);
-            border-radius: 12px;
+            background-color: #${base02};
+            border-radius: 8px;
             margin-top: 6px;
             margin-bottom: 6px;
         }
@@ -193,11 +193,11 @@
 
         #workspaces button {
             padding: 2px 5px;
-            color: #${base06};
+            color: #${base04};
         }
 
         #workspaces button.active {
-            color: #${base07};
+            color: #${base05};
         }
 
         #battery, #pulseaudio, #tray {
@@ -209,7 +209,7 @@
           padding-left: 8px;
           padding-right: 8px;
           font-family: ${monospace.name};
-          color: #${base06};
+          color: #${base04};
         }
 
         #custom-voxtype.recording {
@@ -237,12 +237,12 @@
           padding-left: 5px;
           padding-right: 5px;
           font-family: ${monospace.name};
-          color: #${base06};
+          color: #${base04};
         }
 
         #clock {
           font-family: ${monospace.name};
-          color: #${base07};
+          color: #${base04};
           font-weight: bold;
         }
 
