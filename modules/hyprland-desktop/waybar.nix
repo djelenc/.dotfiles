@@ -20,7 +20,7 @@
     settings.mainBar = {
       layer = "top";
       position = "top";
-      height = 44;
+      height = 53;
       exclusive = false;
       passthrough = false;
       start_hidden = true;
@@ -59,8 +59,8 @@
       };
 
       tray = {
-        icon-size = 24;
-        spacing = 10;
+        icon-size = 29;
+        spacing = 12;
       };
 
       "hyprland/language" = {
@@ -156,7 +156,7 @@
             border: none;
             border-radius: 0;
             font-family: ${sansSerif.name};
-            font-size: ${(builtins.toString sizes.terminal) + "px"};
+            font-size: ${toString (sizes.terminal * 6 / 5)}px;
             min-height: 0;
         }
 
@@ -165,30 +165,30 @@
             color: #${base05};
         }
 
-        /* Transparent bar; islands use a 70% opaque Stylix background. */
+        /* Transparent bar; islands use the lighter base02 at 70% opacity. */
         #workspaces, #clock, #status {
-            background-color: alpha(#${base00}, 0.7);
-            border-radius: 16px;
-            margin-top: 6px;
-            margin-bottom: 6px;
+            background-color: alpha(#${base02}, 0.7);
+            border-radius: 19px;
+            margin-top: 7px;
+            margin-bottom: 7px;
         }
 
         #workspaces {
-            margin-left: 12px;
-            padding: 0 8px;
+            margin-left: 14px;
+            padding: 0 10px;
         }
 
         #clock {
-            padding: 0 16px;
+            padding: 0 19px;
         }
 
         #status {
-            margin-right: 12px;
-            padding: 0 8px;
+            margin-right: 14px;
+            padding: 0 10px;
         }
 
         #workspaces button {
-            padding: 2px 5px;
+            padding: 3px 6px;
             color: #${base04};
         }
 
@@ -197,13 +197,13 @@
         }
 
         #battery, #pulseaudio, #tray {
-            padding-left: 5px;
-            padding-right: 5px;
+            padding-left: 6px;
+            padding-right: 6px;
         }
 
         #custom-voxtype {
-          padding-left: 8px;
-          padding-right: 8px;
+          padding-left: 10px;
+          padding-right: 10px;
           font-family: ${monospace.name};
           color: #${base04};
         }
