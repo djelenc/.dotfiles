@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Show each Waybar for an empty workspace, Fuzzel, or an ongoing bar interaction.
+"""Show Waybar on each empty workspace or globally during a hold, launcher or hover.
 
-Waybar is never revealed simply by touching the screen edge. This controller owns
-one Waybar process per (non-mirrored) output so an empty workspace on one screen
-doesn't make the bar visible on another.
+Touching the screen edge alone never reveals a hidden bar. Each non-mirrored
+output has a persistent Waybar process; only the empty-workspace rule is local.
 """
 
 import json
@@ -20,7 +19,6 @@ POLL_SECONDS = 0.15
 REFRESH_SECONDS = 3.0
 LEAVE_GRACE_SECONDS = 0.45
 STARTUP_GRACE_SECONDS = 1.0
-WORKSPACE_REVEAL_SECONDS = 1.0
 
 CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "waybar"
 RUNTIME_DIR = Path(os.environ["XDG_RUNTIME_DIR"]) / "waybar-visibility"
@@ -82,7 +80,6 @@ class Bar:
         )
         self.started = time.monotonic()
         self.visible = False
-        self.hover_until = 0.0
 
     def update(self, show, now):
         if now - self.started < STARTUP_GRACE_SECONDS or show == self.visible:
@@ -115,9 +112,9 @@ def main():
     monitors = {}
     clients = []
     next_refresh = 0.0
-    workspace_reveal_until = 0.0
     workspace_hold = False
-    launcher_output = None
+    launcher_open = False
+    hover_until = 0.0
     dirty = True
     socket_buffer = b""
     events = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -146,37 +143,33 @@ def main():
                 if output not in bars:
                     bars[output] = Bar(output, base_config)
 
+            # Hovering any already-visible Waybar reveals all Waybars, including
+            # those on occupied workspaces. Keep the reveal briefly after leaving.
+            # A hidden Waybar cannot be shown just by moving to the screen edge.
             cursor = query("cursorpos") if any(bar.visible for bar in bars.values()) else None
+            if any(
+                bars[output].visible and pointer_on_bar(cursor, monitor, base_config)
+                for output, monitor in monitors.items()
+            ):
+                hover_until = now + LEAVE_GRACE_SECONDS
+
             occupied = {c.get("workspace", {}).get("id") for c in clients}
+            reveal_all = workspace_hold or launcher_open or now < hover_until
             for output, monitor in monitors.items():
-                bar = bars[output]
-                if bar.visible and pointer_on_bar(cursor, monitor, base_config):
-                    bar.hover_until = now + LEAVE_GRACE_SECONDS
                 empty = monitor.get("activeWorkspace", {}).get("id") not in occupied
-                show = (
-                    empty
-                    or now < workspace_reveal_until
-                    or workspace_hold
-                    or output == launcher_output
-                    or (bar.visible and now < bar.hover_until)
-                )
-                bar.update(show, now)
+                bars[output].update(empty or reveal_all, now)
 
             ready, _, _ = select.select([events, control], [], [], POLL_SECONDS)
             if control in ready:
                 message = control.recv(128)
                 if message == b"launcher-open":
-                    launcher_output = next(
-                        (name for name, monitor in monitors.items() if monitor.get("focused")),
-                        None,
-                    )
+                    launcher_open = True
                 elif message == b"launcher-close":
-                    launcher_output = None
+                    launcher_open = False
                 elif message == b"workspace-hold-start":
                     workspace_hold = True
                 elif message == b"workspace-hold-end":
                     workspace_hold = False
-                    workspace_reveal_until = 0.0
 
             if events in ready:
                 chunk = events.recv(65536)
@@ -184,12 +177,6 @@ def main():
                     raise ConnectionError("Hyprland event socket closed")
                 socket_buffer += chunk
                 *lines, socket_buffer = socket_buffer.split(b"\n")
-                if any(line.startswith((b"workspace>>", b"workspacev2>>")) for line in lines):
-                    # Repeated workspace events just extend the common one-second reveal.
-                    # A focusedmon event alone must NOT reveal all bars when the pointer
-                    # moves between monitors.
-                    if not workspace_hold:
-                        workspace_reveal_until = time.monotonic() + WORKSPACE_REVEAL_SECONDS
                 if any(
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
                                      b"workspace>>", b"workspacev2>>", b"focusedmon>>",
