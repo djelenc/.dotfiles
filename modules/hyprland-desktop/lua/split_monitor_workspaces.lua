@@ -40,6 +40,67 @@ smw.setup({
   link_monitors = true,
 })
 
+-- Waybar's hyprland/workspaces buttons use Hyprland's native workspace
+-- dispatcher, not SMW's linked workspace() action. Reconcile a native switch
+-- after its workspace.active event so clicking a button on any output selects
+-- the same 1-based slot on all outputs. Also handles other native switches.
+--
+-- Defer the check so SMW's own multi-monitor keybinds can finish switching
+-- all monitors before we inspect their state; aligned monitors need no action.
+local workspace_sync_pending = nil
+local workspace_sync_scheduled = false
+local workspace_sync_in_progress = false
+
+local function workspace_slot(workspace)
+  if not workspace or workspace.special or type(workspace.id) ~= "number" or workspace.id < 1 then
+    return nil
+  end
+  return ((workspace.id - 1) % smw.get_amount_of_workspaces()) + 1
+end
+
+local function reconcile_linked_workspaces()
+  workspace_sync_scheduled = false
+  local slot = workspace_sync_pending
+  workspace_sync_pending = nil
+  if not slot then return end
+
+  local count = 0
+  local out_of_sync = false
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if monitor_config.is_work_monitor(monitor) then
+      local current = hl.get_active_workspace(monitor)
+      local current_slot = workspace_slot(current)
+      if current_slot then
+        count = count + 1
+        if current_slot ~= slot then
+          out_of_sync = true
+        end
+      end
+    end
+  end
+
+  if count < 2 or not out_of_sync then return end
+
+  workspace_sync_in_progress = true
+  local ok, err = pcall(smw.workspace(tostring(slot)))
+  workspace_sync_in_progress = false
+  if not ok then
+    print("[split-monitor-workspaces] Could not reconcile workspace click: " .. tostring(err))
+  end
+end
+
+hl.on("workspace.active", function(workspace)
+  if workspace_sync_in_progress then return end
+  local slot = workspace_slot(workspace)
+  if not slot then return end
+
+  workspace_sync_pending = slot
+  if not workspace_sync_scheduled then
+    workspace_sync_scheduled = true
+    hl.timer(reconcile_linked_workspaces, { timeout = 35, type = "oneshot" })
+  end
+end)
+
 -- Layer 1 monitor-disconnect cleanup:
 -- move windows from a removed monitor's workspace range back into the
 -- corresponding primary-monitor workspace slot. This deliberately does not
