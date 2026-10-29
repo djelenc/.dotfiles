@@ -20,7 +20,11 @@
     settings.mainBar = {
       layer = "top";
       position = "top";
-      height = 53;
+      height = 44;
+      # Offset the whole Waybar layer from the screen edges.
+      margin-top = 10;
+      margin-left = 12;
+      margin-right = 12;
       exclusive = false;
       passthrough = false;
       start_hidden = true;
@@ -59,8 +63,8 @@
       };
 
       tray = {
-        icon-size = 29;
-        spacing = 12;
+        icon-size = 24;
+        spacing = 10;
       };
 
       "hyprland/language" = {
@@ -156,7 +160,7 @@
             border: none;
             border-radius: 0;
             font-family: ${sansSerif.name};
-            font-size: ${toString (sizes.terminal * 6 / 5)}px;
+            font-size: ${(builtins.toString sizes.terminal) + "px"};
             min-height: 0;
         }
 
@@ -165,30 +169,30 @@
             color: #${base05};
         }
 
-        /* Transparent bar; islands use the lighter base02 at 70% opacity. */
+        /* The bar is transparent; the floating islands use solid Stylix base02. */
         #workspaces, #clock, #status {
-            background-color: alpha(#${base02}, 0.7);
-            border-radius: 19px;
-            margin-top: 7px;
-            margin-bottom: 7px;
+            background-color: #${base02};
+            border-radius: 16px;
+            margin-top: 6px;
+            margin-bottom: 6px;
         }
 
         #workspaces {
-            margin-left: 14px;
-            padding: 0 10px;
+            margin-left: 12px;
+            padding: 0 8px;
         }
 
         #clock {
-            padding: 0 19px;
+            padding: 0 16px;
         }
 
         #status {
-            margin-right: 14px;
-            padding: 0 10px;
+            margin-right: 12px;
+            padding: 0 8px;
         }
 
         #workspaces button {
-            padding: 3px 6px;
+            padding: 2px 5px;
             color: #${base04};
         }
 
@@ -197,13 +201,13 @@
         }
 
         #battery, #pulseaudio, #tray {
-            padding-left: 6px;
-            padding-right: 6px;
+            padding-left: 5px;
+            padding-right: 5px;
         }
 
         #custom-voxtype {
-          padding-left: 10px;
-          padding-right: 10px;
+          padding-left: 8px;
+          padding-right: 8px;
           font-family: ${monospace.name};
           color: #${base04};
         }
