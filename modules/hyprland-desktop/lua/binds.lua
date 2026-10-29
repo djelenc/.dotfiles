@@ -133,6 +133,15 @@ local function with_workspace_hold(modifier, action)
   end
 end
 
+-- Reveal all Waybars as soon as Control+Super are both held (without
+-- requiring a third key). Match either press order and either side.
+-- The existing hold timer hides them when either modifier is released.
+local reveal_control_super = with_workspace_hold("control", function() end)
+hl.bind("SUPER + Control_L", reveal_control_super)
+hl.bind("SUPER + Control_R", reveal_control_super)
+hl.bind("CONTROL + Super_L", reveal_control_super)
+hl.bind("CONTROL + Super_R", reveal_control_super)
+
 -- GNOME-style linked workspace navigation across the regular work monitors.
 hl.bind(mainMod .. " + CONTROL + j", with_workspace_hold("control", smw.cycle_workspaces("next")))
 hl.bind(mainMod .. " + CONTROL + k", with_workspace_hold("control", smw.cycle_workspaces("prev")))
