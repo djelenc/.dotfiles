@@ -56,14 +56,17 @@ def active_outputs(monitors):
     }
 
 
-def pointer_on_bar(pos, monitor, bar_height):
+def pointer_on_bar(pos, monitor, bar_config):
     if not isinstance(pos, dict):
         return False
     scale = monitor.get("scale") or 1
     width = monitor["width"] / scale
+    left = monitor["x"] + bar_config.get("margin-left", 0)
+    top = monitor["y"] + bar_config.get("margin-top", 0)
+    right = monitor["x"] + width - bar_config.get("margin-right", 0)
     return (
-        monitor["x"] <= pos.get("x", -1) < monitor["x"] + width
-        and monitor["y"] <= pos.get("y", -1) < monitor["y"] + bar_height
+        left <= pos.get("x", -1) < right
+        and top <= pos.get("y", -1) < top + bar_config["height"]
     )
 
 
@@ -107,7 +110,6 @@ def main():
     if not isinstance(source, list) or len(source) != 1:
         raise RuntimeError("Expected exactly one Home Manager Waybar configuration")
     base_config = source[0]
-    bar_height = base_config["height"]
 
     bars = {}
     monitors = {}
@@ -148,7 +150,7 @@ def main():
             occupied = {c.get("workspace", {}).get("id") for c in clients}
             for output, monitor in monitors.items():
                 bar = bars[output]
-                if bar.visible and pointer_on_bar(cursor, monitor, bar_height):
+                if bar.visible and pointer_on_bar(cursor, monitor, base_config):
                     bar.hover_until = now + LEAVE_GRACE_SECONDS
                 empty = monitor.get("activeWorkspace", {}).get("id") not in occupied
                 show = (
