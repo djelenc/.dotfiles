@@ -21,8 +21,8 @@
       layer = "top";
       position = "top";
       height = 44;
-      # Offset the whole Waybar layer from the screen edges.
-      margin-top = 10;
+      # Match the visible top gap (18 + 6 CSS) to the side gaps (12 + 12 CSS).
+      margin-top = 18;
       margin-left = 12;
       margin-right = 12;
       exclusive = false;
