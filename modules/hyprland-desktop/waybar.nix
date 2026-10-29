@@ -51,29 +51,11 @@
         on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'";
         all-outputs = false;
         warp-on-scroll = true;
-        # Waybar does not support arithmetic in {id}/{name} templates.
-        # Supply per-workspace icon text, preserving the existing active,
-        # urgent and default symbols and the module's native click behavior.
-        # Covers 20 groups of five workspaces (current setup uses three).
-        format-icons =
-          let
-            numberedIcons = id:
-              let
-                key = toString id;
-                number = toString (lib.mod (id - 1) 5 + 1);
-              in
-              [
-                { name = key; value = "□ ${number}"; }
-                { name = "active:${key}"; value = "▣ ${number}"; }
-                { name = "urgent:${key}"; value = "⧈ ${number}"; }
-              ];
-          in
-          builtins.listToAttrs (lib.concatMap numberedIcons (lib.range 1 100))
-          // {
-            urgent = "⧈";
-            active = "▣";
-            default = "□";
-          };
+        format-icons = {
+          urgent = "⧈";
+          active = "▣";
+          default = "□";
+        };
       };
 
       tray = {
@@ -183,9 +165,9 @@
             color: #${base05};
         }
 
-        /* The Waybar layer is transparent; only these three islands are opaque. */
+        /* Transparent bar; islands use a 70% opaque Stylix background. */
         #workspaces, #clock, #status {
-            background-color: #${base00};
+            background-color: alpha(#${base00}, 0.7);
             border-radius: 16px;
             margin-top: 6px;
             margin-bottom: 6px;
