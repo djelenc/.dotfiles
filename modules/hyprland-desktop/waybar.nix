@@ -21,6 +21,10 @@
       layer = "top";
       position = "top";
       height = 44;
+      # Match the visible top gap (18 + 6 CSS) to the side gaps (12 + 12 CSS).
+      margin-top = 18;
+      margin-left = 12;
+      margin-right = 12;
       exclusive = false;
       passthrough = false;
       start_hidden = true;
@@ -29,14 +33,20 @@
 
       modules-left = [ "hyprland/workspaces" ];
       modules-center = [ "clock" ];
-      modules-right = [
-        "pulseaudio"
-        "custom/voxtype"
-        "network"
-        "battery"
-        "hyprland/language"
-        "tray"
-      ];
+      modules-right = [ "group/status" ];
+
+      # Group the existing right-side modules in one floating island.
+      "group/status" = {
+        orientation = "horizontal";
+        modules = [
+          "pulseaudio"
+          "custom/voxtype"
+          "network"
+          "battery"
+          "hyprland/language"
+          "tray"
+        ];
+      };
 
       "hyprland/workspaces" = {
         disable-scroll = false;
@@ -48,6 +58,7 @@
         format-icons = {
           urgent = "⧈";
           active = "▣";
+          visible = "▣";
           default = "□";
         };
       };
@@ -112,12 +123,15 @@
       };
 
       "network" = {
-        format-wifi = "{bandwidthDownBits}   {bandwidthUpBits}";
-        tooltip-format-wifi = "{ipaddr} @ {essid} {frequency} GHz [{signalStrength}%]";
-        format-ethernet = "{ifname}: {ipaddr}/{cidr} ";
+        # format-wifi = "  {essid}";
+        # format-ethernet = " {ipaddr}/{cidr}";
+        format-wifi = "  ";
+        format-ethernet = "  ";
+        tooltip-format-wifi = "{essid} {frequency} GHz [{signalStrength}%]\n{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
+        tooltip-format-ethernet = "{ipaddr}/{cidr}\n{bandwidthDownBits}/{bandwidthUpBits}";
         format-disconnected = "Offline 🦖";
-        min-length = 23;
-        max-length = 23;
+        min-length = 3;
+        max-length = 3;
         interval = 10;
       };
       "pulseaudio" = {
@@ -155,21 +169,43 @@
         }
 
         window#waybar {
-            background: #${base00};
+            background: transparent;
             color: #${base05};
+        }
+
+        /* Solid Stylix base02 islands on a transparent Waybar background. */
+        #workspaces, #clock, #status {
+            background-color: #${base02};
+            border-radius: 8px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        #workspaces {
+            margin-left: 12px;
+            padding: 0 8px;
+        }
+
+        #clock {
+            padding: 0 16px;
+        }
+
+        #status {
+            margin-right: 12px;
+            padding: 0 8px;
         }
 
         #workspaces button {
-            padding: 2px 2px 2px 2px;
+            padding: 2px 5px;
             color: #${base04};
         }
 
-        #workspaces button.active {
-            padding: 2px 2px 2px 2px;
+        #workspaces button.active,
+        #workspaces button.visible {
             color: #${base05};
         }
 
-        #clock, #battery, #pulseaudio, #tray {
+        #battery, #pulseaudio, #tray {
             padding-left: 5px;
             padding-right: 5px;
         }

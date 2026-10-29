@@ -91,9 +91,9 @@ hl.bind(
 -- Change keyboard layout.
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout at-translated-set-2-keyboard next"))
 
--- Keep Waybar on all monitors while navigating linked workspaces or moving
--- a window between them. Stop as soon as Super or the relevant modifier is
--- released. Poll key state only during an active shortcut (as for Super+Tab).
+-- Keep Waybar on all monitors during workspace navigation or window moves.
+-- Super+number holds until Super is released; modified shortcuts also stop
+-- when their Control/Shift key is released. Poll only during an active chord.
 local workspace_hold_modifier = nil
 local workspace_hold_timer
 
@@ -103,7 +103,9 @@ end
 
 local function workspace_modifiers_down()
   local super_down = key_pair_down("Super_L", "Super_R")
-  if workspace_hold_modifier == "control" then
+  if workspace_hold_modifier == "super" then
+    return super_down
+  elseif workspace_hold_modifier == "control" then
     return super_down and key_pair_down("Control_L", "Control_R")
   elseif workspace_hold_modifier == "shift" then
     return super_down and key_pair_down("Shift_L", "Shift_R")
@@ -147,13 +149,14 @@ hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
 hl.bind(mainMod .. " + SHIFT + N", move_to_work_monitor(1))
 hl.bind(mainMod .. " + SHIFT + P", move_to_work_monitor(-1))
 
--- Direct workspace selection. Because link_monitors is enabled, every monitor switches to
--- the corresponding workspace in its own monitor-specific range.
+-- Direct workspace selection switches the linked ranges on all monitors.
+-- Reuse the hold timer so Waybar remains visible until Super is released,
+-- rather than briefly revealing it on a workspace-change event.
 for i = 1, smw.get_amount_of_workspaces() do
   local n = tostring(i)
   if n == "10" then n = "0" end
-  hl.bind(mainMod .. " + " .. n, smw.workspace(n))
-  hl.bind(mainMod .. " + SHIFT + " .. n, smw.move_to_workspace(n))
+  hl.bind(mainMod .. " + " .. n, with_workspace_hold("super", smw.workspace(n)))
+  hl.bind(mainMod .. " + SHIFT + " .. n, with_workspace_hold("shift", smw.move_to_workspace(n)))
 end
 
 -- Super+Tab cycles only the active workspace, committing MRU focus on Super release.
