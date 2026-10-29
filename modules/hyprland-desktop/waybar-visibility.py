@@ -178,6 +178,18 @@ def main():
                 socket_buffer += chunk
                 *lines, socket_buffer = socket_buffer.split(b"\n")
                 if any(
+                    line.startswith((b"workspace>>", b"workspacev2>>",
+                                     b"openwindow>>", b"closewindow>>",
+                                     b"movewindow>>", b"movewindowv2>>",
+                                     b"urgent>>", b"monitoradded", b"monitorremoved"))
+                    for line in lines
+                ):
+                    # Custom workspace buttons refresh only after compositor
+                    # changes, not by polling the workspaces constantly.
+                    for bar in bars.values():
+                        if bar.process.poll() is None:
+                            bar.process.send_signal(signal.SIGRTMIN + 8)
+                if any(
                     line.startswith((b"openwindow>>", b"closewindow>>", b"movewindow>>",
                                      b"workspace>>", b"workspacev2>>",
                                      b"moveworkspace>>", b"activespecial>>",
