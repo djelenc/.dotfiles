@@ -123,7 +123,7 @@
 
       "network" = {
         format-wifi = "  {essid}";
-        tooltip-format-wifi = "{ipaddr}/{cid} @ {frequency} GHz [{signalStrength}%]";
+        tooltip-format-wifi = "{ipaddr}/{cidr} @ {frequency} GHz [{signalStrength}%]";
         format-ethernet = " {ipaddr}/{cidr}";
         format-disconnected = "Offline 🦖";
         min-length = 10;
