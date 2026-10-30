@@ -30,6 +30,10 @@
     enableCompletion = true;
     defaultKeymap = "emacs";
 
+    initContent = ''
+      setopt interactive_comments
+    '';
+
     completionInit = ''
       # default
       autoload -U compinit && compinit
